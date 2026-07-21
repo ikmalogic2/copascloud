@@ -1545,7 +1545,7 @@
             } else {
                 const allNotes = [...notes]; // Sudah diurutkan di fungsi fetch
                 html += `<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-5 lg:gap-6 pt-2">`;
-                allNotes.forEach(note => { html += window.buildNoteCard(note, true); });
+                allNotes.forEach(note => { html += window.buildNoteCard(note, false); });
                 html += `</div>`;
             }
 
