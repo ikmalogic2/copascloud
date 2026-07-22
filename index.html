@@ -195,6 +195,18 @@
                 </div>
             </div>
 
+            <!-- Mode Instruction -->
+            <div id="instruction-input-container" class="w-full flex-col hidden space-y-4 pb-5">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / Referensi</label>
+                    <input type="url" id="inst-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Instruksi / Catatan</label>
+                    <textarea id="inst-content" placeholder="Ketik instruksi di sini..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
+                </div>
+            </div>
+
             <!-- Mode One Shot -->
             <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-6">
                 <div class="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
@@ -510,8 +522,9 @@
             const pwContainer = document.getElementById('mypassword-input-container');
             const revContainer = document.getElementById('revisi-input-container');
             const oneshotContainer = document.getElementById('oneshot-input-container');
+            const instContainer = document.getElementById('instruction-input-container');
 
-            [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer].forEach(el => {
+            [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer, instContainer].forEach(el => {
                 if(el) {
                     el.classList.add('hidden');
                     el.classList.remove('flex');
@@ -526,6 +539,8 @@
                 revContainer.classList.remove('hidden'); revContainer.classList.add('flex');
             } else if (category === 'oneshot') {
                 oneshotContainer.classList.remove('hidden'); oneshotContainer.classList.add('flex');
+            } else if (category === 'myinstruction') {
+                instContainer.classList.remove('hidden'); instContainer.classList.add('flex');
             } else {
                 normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
             }
@@ -750,6 +765,10 @@
                 document.getElementById('rev-tujuan').value = "";
                 document.getElementById('rev-content').value = "";
             }
+            if (document.getElementById('inst-link')) {
+                document.getElementById('inst-link').value = "";
+                document.getElementById('inst-content').value = "";
+            }
             if (document.getElementById('oneshot-fs-hidden')) {
                 document.getElementById('oneshot-fs-hidden').value = "";
                 document.getElementById('oneshot-fs-visible').innerText = "";
@@ -816,6 +835,14 @@
                         if (document.getElementById('rev-tujuan')) {
                             document.getElementById('rev-tujuan').value = revData.tujuan || '';
                             document.getElementById('rev-content').value = revData.content || '';
+                        }
+                        window.initCarouselInputs(targetCarouselCount);
+                    } else if (note.category === 'myinstruction') {
+                        let instData = { link: '', content: '' };
+                        try { instData = JSON.parse(note.content); } catch(e) { instData.content = note.content; }
+                        if (document.getElementById('inst-link')) {
+                            document.getElementById('inst-link').value = instData.link || '';
+                            document.getElementById('inst-content').value = instData.content || '';
                         }
                         window.initCarouselInputs(targetCarouselCount);
                     } else if (note.category === 'oneshot') {
@@ -936,6 +963,14 @@
                 content = JSON.stringify(revData);
                 rawTextForTitle = revData.tujuan || revData.content || "Revisi";
 
+            } else if (category === 'myinstruction') {
+                const instData = {
+                    link: document.getElementById('inst-link').value.trim(),
+                    content: document.getElementById('inst-content').value.trim()
+                };
+                content = JSON.stringify(instData);
+                rawTextForTitle = instData.content || instData.link || "Instruction";
+
             } else if (category === 'oneshot') {
                 const hiddenVal = document.getElementById('oneshot-fs-hidden').value;
                 const visibleVal = document.getElementById('oneshot-fs-visible').innerText;
@@ -1025,6 +1060,31 @@
                 } catch (e) {
                     window.showToast("Gagal menghapus.");
                 }
+            }
+        };
+
+        window.toggleMemoTask = async function(noteId, idx) {
+            const note = window.notes.find(n => n.id === noteId);
+            if (!note) return;
+            
+            let lines = note.content.split('\n');
+            let line = lines[idx];
+            
+            if (line.startsWith('✓ ') || line.startsWith('- [x] ')) {
+                lines[idx] = line.replace(/^(✓ |- \[x\] )/, '☐ ');
+            } else if (line.startsWith('- [ ] ') || line.startsWith('☐ ')) {
+                lines[idx] = line.replace(/^(- \[ \] |☐ )/, '✓ ');
+            } else {
+                lines[idx] = '✓ ' + line;
+            }
+            
+            note.content = lines.join('\n');
+            note.updatedAt = Date.now();
+            
+            try {
+                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
+            } catch(e) {
+                window.showToast("Gagal memperbarui status centang.");
             }
         };
 
@@ -1227,6 +1287,14 @@
                     let rev = JSON.parse(note.content);
                     textToCopy += `Tujuan Revisi: ${rev.tujuan}\n\nTeks:\n${rev.content}`;
                 } catch(e) {}
+            } else if (note.category === 'myinstruction') {
+                try {
+                    let inst = JSON.parse(note.content);
+                    if (inst.link) textToCopy += `Link: ${inst.link}\n\n`;
+                    textToCopy += `Instruksi:\n${inst.content}`;
+                } catch(e) {
+                    textToCopy += note.content;
+                }
             } else {
                 textToCopy += note.content;
             }
@@ -1251,19 +1319,21 @@
             const note = window.notes.find(n => n.id === id);
             if (!note) return;
             
-            if (note.category === 'mypassword') {
+            if (note.category === 'mypassword' || note.category === 'myinstruction') {
                 try {
-                    const pw = JSON.parse(note.content);
-                    if (pw.link) {
-                        let url = pw.link;
+                    const data = JSON.parse(note.content);
+                    if (data.link) {
+                        let url = data.link;
                         if (!url.match(/^https?:\/\//i)) { url = 'https://' + url; }
                         window.open(url, '_blank');
                         window.showToast("Membuka tautan...");
                         return;
                     }
                 } catch(e) {}
-                window.showToast("Tidak ada tautan.");
-                return;
+                if (note.category === 'mypassword') {
+                    window.showToast("Tidak ada tautan.");
+                    return;
+                }
             }
 
             const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -1428,6 +1498,43 @@
                         </div>
                     </div>
                 `;
+            } else if (note.category === 'myinstruction') {
+                let inst = { link: '', content: '' };
+                try { inst = JSON.parse(note.content); } catch(e) { inst.content = note.content; }
+                
+                let safeLink = window.escapeHTML(inst.link);
+                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
+                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all block mb-3 bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-lg border border-blue-100 dark:border-blue-800/50"><i class="fa-solid fa-link mr-1.5"></i>${safeLink}</a>` : '';
+                
+                previewContent = `
+                    <div>
+                        ${linkHtml}
+                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${window.escapeHTML(inst.content)}</div>
+                    </div>
+                `;
+            } else if (note.category === 'memo') {
+                let lines = note.content.split('\n');
+                let htmlMemo = '<div class="space-y-2.5">';
+                lines.forEach((line, index) => {
+                    if (!line.trim()) return;
+                    let isChecked = line.startsWith('✓ ') || line.startsWith('- [x] ');
+                    let isUnchecked = line.startsWith('- [ ] ') || line.startsWith('☐ ');
+                    
+                    let cleanLine = line;
+                    if (isChecked) cleanLine = line.replace(/^(✓ |- \[x\] )/, '');
+                    else if (isUnchecked) cleanLine = line.replace(/^(- \[ \] |☐ )/, '');
+                    
+                    let icon = isChecked ? '<i class="fa-solid fa-circle-check text-green-500 text-[16px]"></i>' : '<i class="fa-regular fa-circle text-gray-300 dark:text-gray-600 text-[16px]"></i>';
+                    let lineClass = isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200';
+                    
+                    htmlMemo += `<div class="flex items-start cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 p-1.5 -ml-1.5 rounded-lg transition-colors" onclick="window.toggleMemoTask(${note.id}, ${index}); event.stopPropagation();">
+                        <div class="mt-0.5 mr-2.5 shrink-0 flex items-center justify-center">${icon}</div>
+                        <div class="${lineClass} text-[14px] leading-relaxed flex-1">${window.escapeHTML(cleanLine)}</div>
+                    </div>`;
+                });
+                htmlMemo += '</div>';
+                if(lines.length === 0 || !note.content.trim()) htmlMemo = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Kosong</p>';
+                previewContent = htmlMemo;
             } else {
                 previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${window.escapeHTML(note.content)}</div>`;
             }
@@ -1473,37 +1580,40 @@
 
             const timeCreated = window.formatTime(note.timestamp);
             const timeEdited = note.updatedAt && note.updatedAt !== note.timestamp ? window.formatTime(note.updatedAt) : '';
-            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1.5 truncate">Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}</div>`;
+            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1 truncate">Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}</div>`;
 
             return `
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5">
-                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="window.toggleNote(${note.id})">
-                        <div class="flex-1 pr-2 flex flex-col overflow-hidden justify-center">
-                            <div class="flex items-center overflow-hidden">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-[15px] truncate">${window.escapeHTML(note.title)}</h3>
-                                ${badgeHtml}
-                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] ml-2 shrink-0"></i>' : ''}
+                    <div class="px-4 py-3.5 flex flex-col cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="window.toggleNote(${note.id})">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1 pr-3 flex flex-col overflow-hidden">
+                                <div class="flex items-center flex-wrap gap-1.5 mb-0.5">
+                                    <h3 class="font-bold text-gray-900 dark:text-white text-[15px] leading-snug break-words">${window.escapeHTML(note.title)}</h3>
+                                    ${badgeHtml}
+                                    ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] shrink-0 ml-1"></i>' : ''}
+                                </div>
+                                ${timeHtml}
                             </div>
-                            ${timeHtml}
+                            <div class="shrink-0 pt-1">
+                                <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="note-icon-${note.id}"></i>
+                            </div>
                         </div>
                         
-                        <div class="flex items-center space-x-0.5 shrink-0">
-                            ${['mylink', 'mypassword'].includes(note.category) ? `
-                            <button onclick="window.visitLink(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 active:bg-indigo-50 dark:active:bg-indigo-900/30 rounded-full transition" title="Kunjungi Link">
+                        <div class="mt-3.5 pt-3 border-t border-gray-100 dark:border-gray-700/80 flex items-center space-x-1.5 shrink-0">
+                            ${['mylink', 'mypassword', 'myinstruction'].includes(note.category) ? `
+                            <button onclick="window.visitLink(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-full transition" title="Kunjungi Link">
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i>
                             </button>
                             ` : ''}
-                            <button onclick="window.openCopyOptions(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
+                            <button onclick="window.openCopyOptions(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-full transition" title="Salin Teks">
                                 <i class="fa-regular fa-copy text-[13px]"></i>
                             </button>
-                            <button onclick="window.openModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 active:bg-blue-50 dark:active:bg-blue-900/30 rounded-full transition" title="Edit Catatan">
+                            <button onclick="window.openModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full transition" title="Edit Catatan">
                                 <i class="fa-solid fa-pen text-[13px]"></i>
                             </button>
-                            <button onclick="window.openDeleteAlert(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/30 rounded-full transition" title="Hapus Catatan">
+                            <button onclick="window.openDeleteAlert(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-full transition" title="Hapus Catatan">
                                 <i class="fa-solid fa-trash text-[13px]"></i>
                             </button>
-                            <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 mx-1"></div>
-                            <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon pl-1 ${openClass}" id="note-icon-${note.id}"></i>
                         </div>
                     </div>
                     
