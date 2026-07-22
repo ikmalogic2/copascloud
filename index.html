@@ -57,15 +57,13 @@
 </head>
 <body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
 
-    <!-- Header dengan Tombol Aksi -->
     <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-4 md:px-6 lg:px-8">
-        <h1 class="text-[17px] font-bold text-gray-800 dark:text-white tracking-tight flex items-center">
-            <i class="fa-solid fa-cloud text-blue-600 dark:text-blue-500 mr-2"></i> i-cloud
-        </h1>
+        <div class="flex items-center space-x-2 text-gray-800 dark:text-white">
+            <i class="fa-solid fa-cloud text-xl text-blue-500"></i>
+            <h1 class="text-[17px] font-bold tracking-tight">i-cloud</h1>
+        </div>
         
         <div class="flex items-center space-x-3">
-            <div id="cloud-sync-icon" class="text-gray-400 mr-1" title="Menyambungkan ke Cloud..."><i class="fa-solid fa-cloud"></i></div>
-            
             <input type="file" id="import-file" accept=".json" class="hidden" onchange="window.importData(event)">
             
             <button onclick="document.getElementById('import-file').click()" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10" title="Import Data">
@@ -92,17 +90,12 @@
         </div>
     </header>
 
-    <!-- Area Utama: Penuh pada Desktop -->
     <main class="flex-1 overflow-y-auto hide-scrollbar pt-20 pb-10 px-4 lg:px-8" id="main-area">
         <div id="notes-container" class="w-full max-w-[1600px] mx-auto">
-            <!-- Loading Spinner -->
-            <div class="col-span-full flex justify-center py-20">
-                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-500"></i>
-            </div>
+            <!-- Catatan akan di-render di sini via JavaScript -->
         </div>
     </main>
 
-    <!-- MODAL TAMBAH/EDIT CATATAN -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 hidden opacity-0 transition-opacity duration-300" onclick="window.closeModal()"></div>
     
     <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-gray-800 rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
@@ -143,9 +136,8 @@
                 <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 dark:placeholder-gray-500 py-2 border-b border-gray-100 dark:border-gray-700">
             </div>
 
-            <!-- Bagian Lampiran (Disesuaikan untuk Cloud) -->
             <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (Maks 800KB/File untuk Cloud)</label>
+                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (File max 800KB)</label>
                 <div class="flex space-x-2 mb-2">
                     <button onclick="document.getElementById('attach-image').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-image text-blue-500 dark:text-blue-400 mr-1"></i> Gambar</button>
                     <button onclick="document.getElementById('attach-file').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-paperclip text-purple-500 dark:text-purple-400 mr-1"></i> File</button>
@@ -170,7 +162,9 @@
                         <button onclick="window.changeCarouselCount(1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-plus text-xs"></i></button>
                     </div>
                 </div>
-                <div id="carousel-cards-wrapper" class="space-y-3"></div>
+                <div id="carousel-cards-wrapper" class="space-y-3">
+                    <!-- Carousel inputs di-inject via JS -->
+                </div>
             </div>
             
             <!-- Mode My Password -->
@@ -205,7 +199,7 @@
             <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-6">
                 <div class="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mode Anti-Distraksi</h3>
-                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks otomatis hilang per kata saat menekan spasi untuk melatih aliran ide.</p>
+                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks akan otomatis hilang per kata saat Anda menekan spasi untuk melatih aliran ide tanpa henti.</p>
                 <button onclick="window.openOneShotFullscreen()" class="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold transition-colors shadow-lg active:scale-95 w-full md:w-auto flex items-center justify-center">
                     <i class="fa-solid fa-expand mr-2"></i> Buka Kanvas One Shot
                 </button>
@@ -221,7 +215,7 @@
                     <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Hapus Catatan?</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan. Catatan akan dihapus permanen dari Cloud.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan. Catatan akan dihapus permanen.</p>
             </div>
             <div class="flex border-t border-gray-100 dark:border-gray-700">
                 <button onclick="window.closeDeleteAlert()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
@@ -248,24 +242,28 @@
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none border border-gray-700 dark:border-gray-200">
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
         <i class="fa-solid fa-check-circle text-green-400 dark:text-green-500 text-lg mr-3"></i>
-        <span id="toast-message" class="text-[14px] font-medium">Teks berhasil disalin!</span>
+        <span id="toast-message" class="text-[14px] font-medium">Notifikasi</span>
     </div>
 
     <!-- CUSTOM ONE SHOT FULLSCREEN KANVAS -->
     <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-gray-900 z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
         <div class="absolute top-6 left-6 right-6 flex justify-between items-center z-30 pointer-events-none">
             <div id="oneshot-fs-stats" class="text-sm font-bold text-rose-500 bg-rose-100 dark:bg-rose-900/30 px-4 py-2 rounded-full shadow-sm pointer-events-auto">0 Kata</div>
-            <button onclick="window.closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white hover:scale-105 active:scale-95 transition pointer-events-auto">
+            <button onclick="window.closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white hover:scale-105 active:scale-95 transition pointer-events-auto" title="Selesai / Keluar Kanvas">
                 <i class="fa-solid fa-check text-xl"></i>
             </button>
         </div>
+
         <textarea id="oneshot-fs-hidden" class="hidden"></textarea>
+
         <div class="flex-1 flex items-center justify-center p-8 relative overflow-hidden z-10">
             <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="window.handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
         </div>
+
         <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-lg md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 z-20 border border-gray-200 dark:border-gray-700"></div>
+
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
             <button onclick="window.toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 active:scale-95 transition flex items-center text-sm md:text-base">
                 <i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span>
@@ -292,14 +290,13 @@
         </div>
     </div>
 
-    <!-- MODULE FIREBASE SCRIPT -->
     <script type="module">
-        // 1. Inisialisasi Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Konfigurasi Firebase milik pengguna
         const firebaseConfig = {
-            apiKey: "AIzaSyAE3MKjPahvYijBpd5ASU8z2MUFOTkSHGA",
+            apiKey: "AIzaSyAE3MKjPaHvYijBpd5ASU8z2MUFOTkSHGA",
             authDomain: "prompt-ikmal.firebaseapp.com",
             projectId: "prompt-ikmal",
             storageBucket: "prompt-ikmal.firebasestorage.app",
@@ -307,9 +304,17 @@
             appId: "1:503249462253:web:aa9e549138349925247de4"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const notesCollection = collection(db, "notes");
+        try {
+            window.app = initializeApp(firebaseConfig);
+            window.db = getFirestore(window.app);
+            window.doc = doc;
+            window.setDoc = setDoc;
+            window.deleteDoc = deleteDoc;
+            window.onSnapshot = onSnapshot;
+            window.collection = collection;
+        } catch(e) {
+            console.error("Firebase Initialization Error", e);
+        }
 
         const categories = {
             carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
@@ -327,97 +332,87 @@
             styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500 dark:text-fuchsia-400", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
         };
 
-        let notes = [];
-        let isGrouped = false; 
-        let openNotes = new Set();
-        let openCategories = new Set();
-        let currentAttachments = [];
-        let currentCarouselImages = {}; 
-        let currentCarouselCount = 3; 
-        let toastTimeout;
-        let noteIdToDelete = null;
-        let noteIdToCopy = null;
-        let activeCarouselEdit = { noteId: null, cardId: null };
-
-        // Expose functions to global window for inline HTML onclick handlers
-        window.addEventListener('DOMContentLoaded', () => {
-            window.initTheme();
-            window.loadNotesFromCloud();
-        });
+        window.notes = [];
+        window.isGrouped = false; 
+        window.openNotes = new Set();
+        window.openCategories = new Set();
+        
+        window.currentAttachments = [];
+        window.currentCarouselImages = {}; 
+        window.currentCarouselCount = 3; 
+        window.toastTimeout = null;
+        window.noteIdToDelete = null;
+        window.noteIdToCopy = null;
+        window.activeCarouselEdit = { noteId: null, cardId: null };
 
         window.initTheme = function() {
-            let savedTheme = 'light';
-            try { savedTheme = localStorage.getItem('theme'); } catch(e) {}
-            
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (savedTheme === 'light') {
-                html.classList.remove('dark');
-                icon.className = 'fa-solid fa-moon';
-                document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
-            } else {
-                html.classList.add('dark');
-                icon.className = 'fa-solid fa-sun';
-                document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
-            }
-        }
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                const html = document.documentElement;
+                const icon = document.getElementById('theme-icon');
+                
+                if (savedTheme === 'light') {
+                    html.classList.remove('dark');
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                    document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
+                } else {
+                    html.classList.add('dark');
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                    document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
+                }
+            } catch(e) {}
+        };
 
         window.toggleTheme = function() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
             const btn = document.getElementById('btn-theme');
+            
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                icon.className = 'fa-solid fa-moon';
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
                 btn.classList.replace('text-yellow-500', 'text-gray-500');
-                try { localStorage.setItem('theme', 'light'); } catch(e) {}
+                try { localStorage.setItem('theme', 'light'); } catch(e){}
             } else {
                 html.classList.add('dark');
-                icon.className = 'fa-solid fa-sun';
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
                 btn.classList.replace('text-gray-500', 'text-yellow-500');
-                try { localStorage.setItem('theme', 'dark'); } catch(e) {}
+                try { localStorage.setItem('theme', 'dark'); } catch(e){}
             }
-        }
+        };
 
         window.showToast = function(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
+            
             toast.classList.remove('translate-y-20', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
+            
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
             }, 3000);
-        }
+        };
 
-        /* --- CLOUD DATABASE (FIRESTORE) LOGIC --- */
-        window.loadNotesFromCloud = function() {
-            const q = query(notesCollection);
-            
-            onSnapshot(q, (snapshot) => {
-                notes = [];
-                snapshot.forEach((docSnap) => {
-                    notes.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                
-                // Urutkan dari terbaru ke terlama via JavaScript (lebih aman dan tidak perlu Index di Firebase)
-                notes.sort((a, b) => b.timestamp - a.timestamp);
-                
-                window.renderNotes();
-                const cloudIcon = document.getElementById('cloud-sync-icon');
-                cloudIcon.innerHTML = '<i class="fa-solid fa-cloud-check text-green-500"></i>';
-                cloudIcon.title = 'Tersinkronisasi dengan Cloud';
-            }, (error) => {
-                console.error("Firestore error:", error);
-                const cloudIcon = document.getElementById('cloud-sync-icon');
-                cloudIcon.innerHTML = '<i class="fa-solid fa-cloud-xmark text-red-500"></i>';
-                cloudIcon.title = 'Gagal terhubung ke Cloud';
-                window.showToast("Gagal tersambung ke Cloud Database.");
-            });
-        }
+        window.escapeHTML = function(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+        };
 
-        // --- MANAJEMEN ONE SHOT FULLSCREEN ---
+        window.formatTime = function(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            }).replace(/\./g, ':');
+        };
+
         window.openOneShotFullscreen = function() {
             const overlay = document.getElementById('oneshot-fullscreen-overlay');
             overlay.classList.remove('hidden');
@@ -426,7 +421,7 @@
                 overlay.classList.remove('opacity-0');
                 window.placeCaretAtEnd(document.getElementById('oneshot-fs-visible'));
             }, 10);
-        }
+        };
 
         window.closeOneShotFullscreen = function() {
             const overlay = document.getElementById('oneshot-fullscreen-overlay');
@@ -435,7 +430,7 @@
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
             }, 300);
-        }
+        };
 
         window.handleOneShotInput = function(e) {
             const visibleEl = document.getElementById('oneshot-fs-visible');
@@ -465,7 +460,7 @@
             if (!box.classList.contains('hidden')) {
                 box.innerText = hiddenEl.value + visibleEl.innerText;
             }
-        }
+        };
 
         window.placeCaretAtEnd = function(el) {
             el.focus();
@@ -477,7 +472,7 @@
                 sel.removeAllRanges();
                 sel.addRange(range);
             }
-        }
+        };
 
         window.updateOneShotStats = function() {
             const hiddenVal = document.getElementById('oneshot-fs-hidden')?.value || "";
@@ -486,7 +481,7 @@
             const wordCount = text ? text.split(/\s+/).length : 0;
             const statEl = document.getElementById('oneshot-fs-stats');
             if(statEl) statEl.innerText = `${wordCount} Kata`;
-        }
+        };
 
         window.toggleOneShotPreview = function() {
             const box = document.getElementById('oneshot-fs-preview-box');
@@ -506,7 +501,7 @@
                 btnIcon.className = "fa-solid fa-eye mr-2";
                 window.placeCaretAtEnd(visible);
             }
-        }
+        };
 
         window.toggleInputFields = function() {
             const category = document.getElementById('note-category').value;
@@ -534,10 +529,10 @@
             } else {
                 normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
             }
-        }
+        };
 
         window.initCarouselInputs = function(count = 3) {
-            currentCarouselCount = count;
+            window.currentCarouselCount = count;
             document.getElementById('carousel-count-display').innerText = count;
             const wrapper = document.getElementById('carousel-cards-wrapper');
             wrapper.innerHTML = '';
@@ -546,7 +541,7 @@
                 wrapper.appendChild(window.createCarouselInputGroup(i, i));
             }
             wrapper.appendChild(window.createCarouselInputGroup('caption', 'Caption'));
-        }
+        };
 
         window.createCarouselInputGroup = function(id, label) {
             const div = document.createElement('div');
@@ -572,10 +567,10 @@
                 </div>
             `;
             return div;
-        }
+        };
 
         window.changeCarouselCount = function(delta) {
-            const newCount = currentCarouselCount + delta;
+            const newCount = window.currentCarouselCount + delta;
             if (newCount < 1 || newCount > 20) {
                 if (newCount > 20) window.showToast("Maksimal 20 kartu.");
                 return;
@@ -585,18 +580,19 @@
             const captionEl = document.getElementById('car-input-group-caption');
             
             if (delta > 0) {
-                currentCarouselCount++;
-                wrapper.insertBefore(window.createCarouselInputGroup(currentCarouselCount, currentCarouselCount), captionEl);
+                window.currentCarouselCount++;
+                wrapper.insertBefore(window.createCarouselInputGroup(window.currentCarouselCount, window.currentCarouselCount), captionEl);
             } else {
-                const lastChild = document.getElementById(`car-input-group-${currentCarouselCount}`);
+                const lastChild = document.getElementById(`car-input-group-${window.currentCarouselCount}`);
                 if (lastChild) wrapper.removeChild(lastChild);
-                delete currentCarouselImages[currentCarouselCount]; 
-                currentCarouselCount--;
+                delete window.currentCarouselImages[window.currentCarouselCount]; 
+                window.currentCarouselCount--;
             }
-            document.getElementById('carousel-count-display').innerText = currentCarouselCount;
-        }
+            document.getElementById('carousel-count-display').innerText = window.currentCarouselCount;
+        };
 
         window.processImageFile = function(file, callback) {
+            window.showToast("Memproses gambar...");
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -605,7 +601,8 @@
                     let width = img.width;
                     let height = img.height;
                     
-                    const MAX_DIMENSION = 1200;
+                    // Lebih agresif: Maksimal dimensi 800px
+                    const MAX_DIMENSION = 800;
                     if (width > height && width > MAX_DIMENSION) {
                         height = Math.round(height * MAX_DIMENSION / width);
                         width = MAX_DIMENSION;
@@ -617,44 +614,59 @@
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
+                    
+                    // Solid Background mencegah PNG jadi balok hitam
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    const dataURL = canvas.toDataURL('image/jpeg', 0.6);
+                    // Kompresi Kualitas 50%
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.5);
+                    
+                    if (dataURL.length > 850 * 1024) {
+                        window.showToast("Gambar masih terlalu besar (>800KB). Mohon potong (crop) gambar Anda.");
+                        return;
+                    }
                     callback(dataURL, file.name, 'image/jpeg');
+                };
+                img.onerror = function() {
+                    window.showToast("Format gambar tidak didukung.");
                 };
                 img.src = e.target.result;
             };
+            reader.onerror = function() {
+                window.showToast("Gagal membaca file.");
+            };
             reader.readAsDataURL(file);
-        }
+        };
 
         window.handleModalCarouselImage = function(event, index) {
             const file = event.target.files[0];
             if (!file) return;
-            
             window.processImageFile(file, (dataUrl) => {
-                currentCarouselImages[index] = dataUrl;
+                window.currentCarouselImages[index] = dataUrl;
                 window.renderModalCarouselImagePreview(index);
             });
             event.target.value = '';
-        }
+        };
 
         window.removeModalCarouselImage = function(index) {
-            delete currentCarouselImages[index];
+            delete window.currentCarouselImages[index];
             window.renderModalCarouselImagePreview(index);
-        }
+        };
 
         window.renderModalCarouselImagePreview = function(index) {
             const box = document.getElementById(`car-img-preview-box-${index}`);
             const img = document.getElementById(`car-img-preview-src-${index}`);
             if (!box || !img) return; 
 
-            if (currentCarouselImages[index]) {
-                img.src = currentCarouselImages[index];
+            if (window.currentCarouselImages[index]) {
+                img.src = window.currentCarouselImages[index];
                 box.classList.remove('hidden');
             } else {
                 box.classList.add('hidden');
             }
-        }
+        };
 
         window.handleFileUpload = function(event, type) {
             const files = event.target.files;
@@ -663,7 +675,7 @@
             Array.from(files).forEach(file => {
                 if (type === 'image') {
                     window.processImageFile(file, (dataUrl, fileName, mimeType) => {
-                        currentAttachments.push({
+                        window.currentAttachments.push({
                             id: Date.now() + Math.random(),
                             type: 'image',
                             name: fileName,
@@ -673,14 +685,13 @@
                         window.renderAttachmentPreview();
                     });
                 } else {
-                    // Batas ukuran 800KB agar tidak overload Firestore document size limit (1MB)
-                    if (file.size > 800 * 1024) { 
+                    if (file.size > 1024 * 1024 * 0.8) { 
                         window.showToast(`File ${file.name} terlalu besar (Maks 800KB).`);
                         return;
                     }
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        currentAttachments.push({
+                        window.currentAttachments.push({
                             id: Date.now() + Math.random(),
                             type: 'file',
                             name: file.name,
@@ -693,17 +704,17 @@
                 }
             });
             event.target.value = ''; 
-        }
+        };
 
         window.removeAttachment = function(id) {
-            currentAttachments = currentAttachments.filter(a => a.id !== id);
+            window.currentAttachments = window.currentAttachments.filter(a => a.id !== id);
             window.renderAttachmentPreview();
-        }
+        };
 
         window.renderAttachmentPreview = function() {
             const container = document.getElementById('attachment-preview');
             container.innerHTML = '';
-            currentAttachments.forEach(att => {
+            window.currentAttachments.forEach(att => {
                 if (att.type === 'image') {
                     container.innerHTML += `
                         <div class="relative w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden shrink-0 shadow-sm">
@@ -720,7 +731,7 @@
                     `;
                 }
             });
-        }
+        };
 
         window.openModal = function(editId = null) {
             const overlay = document.getElementById('modal-overlay');
@@ -746,21 +757,21 @@
                 document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
             }
             
-            currentAttachments = []; 
-            currentCarouselImages = {}; 
+            window.currentAttachments = []; 
+            window.currentCarouselImages = {}; 
             
             document.getElementById('modal-title').innerText = "Buat Catatan";
             let targetCarouselCount = 3; 
 
             if (editId) {
-                const note = notes.find(n => n.id === editId);
+                const note = window.notes.find(n => n.id === editId);
                 if (note) {
                     document.getElementById('note-id').value = note.id;
                     document.getElementById('note-title').value = note.title;
                     document.getElementById('note-category').value = note.category;
                     document.getElementById('modal-title').innerText = "Edit Catatan";
                     
-                    if (note.attachments) currentAttachments = [...note.attachments];
+                    if (note.attachments) window.currentAttachments = [...note.attachments];
 
                     if (note.category === 'carousel') {
                         let parsed = [];
@@ -776,7 +787,7 @@
                             if (regularCards[i-1]) {
                                 document.getElementById(`car-content-${i}`).value = regularCards[i-1].content || '';
                                 if (regularCards[i-1].image) {
-                                    currentCarouselImages[i] = regularCards[i-1].image;
+                                    window.currentCarouselImages[i] = regularCards[i-1].image;
                                     window.renderModalCarouselImagePreview(i);
                                 }
                             }
@@ -786,7 +797,7 @@
                             const capEl = document.getElementById('car-content-caption');
                             if (capEl) capEl.value = captionCard.content || '';
                             if (captionCard.image) {
-                                currentCarouselImages['caption'] = captionCard.image;
+                                window.currentCarouselImages['caption'] = captionCard.image;
                                 window.renderModalCarouselImagePreview('caption');
                             }
                         }
@@ -832,7 +843,7 @@
                 overlay.classList.remove('opacity-0');
                 modal.classList.add('modal-active');
             }, 10);
-        }
+        };
 
         window.closeModal = function() {
             const overlay = document.getElementById('modal-overlay');
@@ -840,7 +851,21 @@
             overlay.classList.add('opacity-0');
             modal.classList.remove('modal-active');
             setTimeout(() => overlay.classList.add('hidden'), 300);
-        }
+        };
+
+        window.loadNotes = function() {
+            if (!window.db || !window.collection) {
+                window.showToast("Menunggu koneksi Firebase...");
+                return;
+            }
+            window.onSnapshot(window.collection(window.db, "notes"), (snapshot) => {
+                window.notes = snapshot.docs.map(doc => doc.data());
+                window.renderNotes();
+            }, (error) => {
+                console.error("Firebase error", error);
+                window.showToast("Gagal memuat catatan (Periksa Koneksi)");
+            });
+        };
 
         window.saveNote = async function() {
             const id = document.getElementById('note-id').value;
@@ -855,7 +880,7 @@
                 let parsedOld = [];
                 
                 if (id) {
-                    const existingNote = notes.find(n => n.id == id);
+                    const existingNote = window.notes.find(n => n.id == id);
                     if (existingNote) {
                         try { parsedOld = JSON.parse(existingNote.content); } catch(e){}
                     }
@@ -865,10 +890,10 @@
                 const oldCaption = parsedOld.find(c => c.isCaption);
 
                 let oldIdx = 0;
-                for(let i=1; i<=currentCarouselCount; i++) {
+                for(let i=1; i<=window.currentCarouselCount; i++) {
                     const elTxt = document.getElementById(`car-content-${i}`);
                     const txt = elTxt ? elTxt.value.trim() : "";
-                    const img = currentCarouselImages[i] || null;
+                    const img = window.currentCarouselImages[i] || null;
                     
                     carouselData.push({ 
                         id: oldRegulars[oldIdx]?.id || (Date.now() + i + Math.random()),
@@ -882,7 +907,7 @@
                 
                 const capTxtEl = document.getElementById('car-content-caption');
                 const capTxt = capTxtEl ? capTxtEl.value.trim() : "";
-                const capImg = currentCarouselImages['caption'] || null;
+                const capImg = window.currentCarouselImages['caption'] || null;
                 
                 carouselData.push({
                     id: oldCaption?.id || (Date.now() + 999 + Math.random()),
@@ -934,29 +959,32 @@
                 }
             }
 
-            const attachmentsToSave = [...currentAttachments];
-            window.showToast("Menyimpan ke Cloud...");
+            const attachmentsToSave = [...window.currentAttachments];
+            let existingNote = id ? window.notes.find(n => n.id == id) : null;
+            
+            const payload = {
+                id: id ? Number(id) : Date.now(),
+                category: category,
+                title: title,
+                content: content,
+                attachments: attachmentsToSave,
+                timestamp: existingNote ? existingNote.timestamp : Date.now(),
+                updatedAt: Date.now()
+            };
 
             try {
-                if (id) {
-                    await updateDoc(doc(db, "notes", id), {
-                        category, title, content, attachments: attachmentsToSave, updatedAt: Date.now()
-                    });
-                } else {
-                    await addDoc(notesCollection, {
-                        category, title, content, attachments: attachmentsToSave, timestamp: Date.now()
-                    });
-                }
+                window.showToast("Menyimpan ke Cloud...");
+                await window.setDoc(window.doc(window.db, "notes", payload.id.toString()), payload);
+                window.showToast("Catatan berhasil disimpan ke Cloud!");
                 window.closeModal();
-                window.showToast("Berhasil tersimpan di Cloud!");
             } catch (error) {
                 console.error(error);
-                window.showToast("Gagal menyimpan ke Cloud. Pastikan ukuran file aman.");
+                window.showToast("Gagal menyimpan. (Mungkin File Terlalu Besar)");
             }
-        }
+        };
 
         window.openDeleteAlert = function(id) {
-            noteIdToDelete = id;
+            window.noteIdToDelete = id;
             const overlay = document.getElementById('delete-alert-overlay');
             const box = document.getElementById('delete-alert-box');
             overlay.classList.remove('hidden');
@@ -966,7 +994,7 @@
                 box.classList.remove('scale-95');
                 box.classList.add('scale-100');
             }, 10);
-        }
+        };
 
         window.closeDeleteAlert = function() {
             const overlay = document.getElementById('delete-alert-overlay');
@@ -977,24 +1005,39 @@
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
-                noteIdToDelete = null;
+                window.noteIdToDelete = null;
             }, 300);
-        }
+        };
 
         window.confirmDelete = async function() {
-            if (noteIdToDelete !== null) {
+            if (window.noteIdToDelete !== null) {
                 try {
-                    await deleteDoc(doc(db, "notes", noteIdToDelete));
-                    window.showToast("Catatan dihapus dari Cloud.");
+                    await window.deleteDoc(window.doc(window.db, "notes", window.noteIdToDelete.toString()));
+                    window.showToast("Catatan dihapus.");
                     window.closeDeleteAlert();
-                } catch (err) {
-                    window.showToast("Gagal menghapus data.");
+                } catch (e) {
+                    window.showToast("Gagal menghapus.");
                 }
             }
-        }
+        };
+
+        window.removeCardImage = async function(noteId, attId) {
+            if(!confirm("Hapus lampiran gambar ini?")) return;
+            const note = window.notes.find(n => n.id === noteId);
+            if(!note) return;
+            
+            note.attachments = note.attachments.filter(a => a.id !== attId);
+            note.updatedAt = Date.now();
+            try {
+                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
+                window.showToast("Gambar dihapus.");
+            } catch(e) {
+                window.showToast("Gagal menghapus.");
+            }
+        };
 
         window.copyCarouselCard = function(noteId, cardId) {
-            const note = notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => n.id === noteId);
             if (!note) return;
             try {
                 const items = JSON.parse(note.content);
@@ -1009,45 +1052,43 @@
                     window.showToast("Teks kartu disalin!");
                 }
             } catch(e) {}
-        }
+        };
 
         window.deleteCarouselCard = async function(noteId, cardId) {
             if (!confirm("Hapus kartu ini dari Carousel?")) return;
-            const note = notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => n.id === noteId);
             if (!note) return;
             try {
                 let items = JSON.parse(note.content);
                 items = items.filter(i => i.id !== cardId);
-                await updateDoc(doc(db, "notes", noteId), {
-                    content: JSON.stringify(items),
-                    updatedAt: Date.now()
-                });
-                window.showToast("Kartu carousel dihapus.");
-            } catch(e) { window.showToast("Gagal menghapus kartu."); }
-        }
+                note.content = JSON.stringify(items);
+                note.updatedAt = Date.now();
+                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
+                window.showToast("Kartu dihapus.");
+            } catch(e) {}
+        };
 
         window.triggerCarouselImageUpload = function(noteId, cardId) {
-            activeCarouselEdit = { noteId, cardId };
+            window.activeCarouselEdit = { noteId, cardId };
             document.getElementById('carousel-image-input').click();
-        }
+        };
 
         window.handleCarouselImageUpload = function(event) {
             const file = event.target.files[0];
             if (!file) return;
             
-            window.showToast("Mengunggah gambar...");
             window.processImageFile(file, async (dataUrl) => {
-                const note = notes.find(n => n.id === activeCarouselEdit.noteId);
+                const note = window.notes.find(n => n.id === window.activeCarouselEdit.noteId);
                 if (note) {
                     try {
                         let items = JSON.parse(note.content);
-                        let card = items.find(i => i.id === activeCarouselEdit.cardId);
+                        let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
                         if (card) {
                             card.image = dataUrl;
-                            await updateDoc(doc(db, "notes", note.id), {
-                                content: JSON.stringify(items),
-                                updatedAt: Date.now()
-                            });
+                            note.content = JSON.stringify(items);
+                            note.updatedAt = Date.now();
+                            window.showToast("Menyimpan ke Cloud...");
+                            await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
                             window.showToast("Gambar ditambahkan ke kartu!");
                         }
                     } catch(err) {
@@ -1056,11 +1097,11 @@
                 }
             });
             event.target.value = '';
-        }
+        };
 
         window.openEditCarouselCardModal = function(noteId, cardId) {
-            activeCarouselEdit = { noteId, cardId };
-            const note = notes.find(n => n.id === noteId);
+            window.activeCarouselEdit = { noteId, cardId };
+            const note = window.notes.find(n => n.id === noteId);
             if (!note) return;
             try {
                 const items = JSON.parse(note.content);
@@ -1078,7 +1119,7 @@
                     }, 10);
                 }
             } catch(e) {}
-        }
+        };
 
         window.closeEditCarouselCardModal = function() {
             const overlay = document.getElementById('edit-card-overlay');
@@ -1090,28 +1131,27 @@
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
             }, 300);
-        }
+        };
 
         window.saveEditCarouselCard = async function() {
-            const note = notes.find(n => n.id === activeCarouselEdit.noteId);
+            const note = window.notes.find(n => n.id === window.activeCarouselEdit.noteId);
             if (!note) return;
             try {
                 let items = JSON.parse(note.content);
-                let card = items.find(i => i.id === activeCarouselEdit.cardId);
+                let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
                 if (card) {
                     card.content = document.getElementById('edit-card-textarea').value;
-                    await updateDoc(doc(db, "notes", note.id), {
-                        content: JSON.stringify(items),
-                        updatedAt: Date.now()
-                    });
+                    note.content = JSON.stringify(items);
+                    note.updatedAt = Date.now();
+                    await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
                     window.closeEditCarouselCardModal();
-                    window.showToast("Kartu berhasil diperbarui!");
+                    window.showToast("Kartu diperbarui!");
                 }
-            } catch(e) { window.showToast("Gagal menyimpan."); }
-        }
+            } catch(e) {}
+        };
 
         window.openCopyOptions = function(id) {
-            noteIdToCopy = id;
+            window.noteIdToCopy = id;
             const overlay = document.getElementById('copy-options-overlay');
             const box = document.getElementById('copy-options-box');
             
@@ -1122,7 +1162,7 @@
                 box.classList.remove('scale-95');
                 box.classList.add('scale-100');
             }, 10);
-        }
+        };
 
         window.closeCopyOptions = function() {
             const overlay = document.getElementById('copy-options-overlay');
@@ -1135,13 +1175,13 @@
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 overlay.classList.remove('flex');
-                noteIdToCopy = null;
+                window.noteIdToCopy = null;
             }, 300);
-        }
+        };
 
         window.executeCopy = function(withTitle) {
-            if (noteIdToCopy === null) return;
-            const note = notes.find(n => n.id === noteIdToCopy);
+            if (window.noteIdToCopy === null) return;
+            const note = window.notes.find(n => n.id === window.noteIdToCopy);
             if (!note) {
                 window.closeCopyOptions();
                 return;
@@ -1190,10 +1230,10 @@
             
             document.body.removeChild(textarea);
             window.closeCopyOptions();
-        }
+        };
 
         window.visitLink = function(id) {
-            const note = notes.find(n => n.id === id);
+            const note = window.notes.find(n => n.id === id);
             if (!note) return;
             
             if (note.category === 'mypassword') {
@@ -1207,7 +1247,7 @@
                         return;
                     }
                 } catch(e) {}
-                window.showToast("Tidak ditemukan link pada password ini.");
+                window.showToast("Tidak ada tautan.");
                 return;
             }
 
@@ -1218,32 +1258,32 @@
                 window.open(matches[0], '_blank');
                 window.showToast("Membuka tautan...");
             } else {
-                window.showToast("Tidak ditemukan link (http/https) pada catatan ini.");
+                window.showToast("Tidak ditemukan link pada catatan ini.");
             }
-        }
+        };
 
         window.toggleCategory = function(catKey) {
             const content = document.getElementById(`cat-body-${catKey}`);
             const icon = document.getElementById(`cat-icon-${catKey}`);
             const isOpen = content.classList.toggle('open');
             icon.classList.toggle('open');
-            if (isOpen) openCategories.add(catKey);
-            else openCategories.delete(catKey);
-        }
+            if (isOpen) window.openCategories.add(catKey);
+            else window.openCategories.delete(catKey);
+        };
 
         window.toggleNote = function(noteId) {
             const content = document.getElementById(`note-body-${noteId}`);
             const icon = document.getElementById(`note-icon-${noteId}`);
             const isOpen = content.classList.toggle('open');
             icon.classList.toggle('open');
-            if (isOpen) openNotes.add(noteId);
-            else openNotes.delete(noteId);
-        }
+            if (isOpen) window.openNotes.add(noteId);
+            else window.openNotes.delete(noteId);
+        };
 
         window.toggleGroupView = function() {
-            isGrouped = !isGrouped;
+            window.isGrouped = !window.isGrouped;
             const btn = document.getElementById('btn-group');
-            if (isGrouped) {
+            if (window.isGrouped) {
                 btn.innerHTML = '<i class="fa-solid fa-list"></i>'; 
                 btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
             } else {
@@ -1251,11 +1291,11 @@
                 btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
             }
             window.renderNotes();
-        }
+        };
 
         window.exportData = function() {
-            if (notes.length === 0) return window.showToast("Tidak ada data untuk diekspor!");
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes));
+            if (window.notes.length === 0) return window.showToast("Tidak ada data untuk diekspor!");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.notes));
             const downloadNode = document.createElement('a');
             downloadNode.setAttribute("href", dataStr);
             downloadNode.setAttribute("download", `MyNotes_Backup_${new Date().toISOString().slice(0,10)}.json`);
@@ -1263,9 +1303,9 @@
             downloadNode.click();
             downloadNode.remove();
             window.showToast("Berhasil diekspor!");
-        }
+        };
 
-        window.importData = function(event) {
+        window.importData = async function(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -1273,48 +1313,23 @@
                 try {
                     const importedNotes = JSON.parse(e.target.result);
                     if (Array.isArray(importedNotes)) {
-                        window.showToast("Mentransfer ke Cloud (mohon tunggu)...");
-                        for (const item of importedNotes) {
-                            // Menghindari duplikat berdasarkan timestamp (opsional, tapi disarankan)
-                            const exists = notes.some(n => n.timestamp === item.timestamp && n.title === item.title);
-                            if (!exists) {
-                                await addDoc(notesCollection, {
-                                    title: item.title,
-                                    category: item.category || 'copas',
-                                    content: item.content,
-                                    attachments: item.attachments || [],
-                                    timestamp: item.timestamp || Date.now(),
-                                    updatedAt: item.updatedAt || Date.now()
-                                });
-                            }
+                        window.showToast("Mengimpor data ke Cloud...");
+                        for(let note of importedNotes) {
+                            await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
                         }
-                        window.showToast("Data berhasil diimpor ke Cloud!");
+                        window.showToast("Data berhasil diimpor!");
                     } else { window.showToast("Format file tidak valid."); }
                 } catch (err) { 
-                    window.showToast("Gagal membaca file JSON."); 
+                    window.showToast("Gagal mengimpor file."); 
                 }
                 event.target.value = ''; 
             };
             reader.readAsText(file);
-        }
-
-        window.escapeHTML = function(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
-        }
-
-        window.formatTime = function(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            }).replace(/\./g, ':');
-        }
+        };
 
         window.buildNoteCard = function(note, showBadge = false) {
             const catConfig = categories[note.category] || categories['memo'];
-            const isNoteOpen = openNotes.has(note.id);
+            const isNoteOpen = window.openNotes.has(note.id);
             const openClass = isNoteOpen ? "open" : "";
             
             let previewContent = '';
@@ -1328,12 +1343,13 @@
                 let numIdx = 1;
                 items.forEach((it) => {
                     const imgHtml = it.image ? `
-                        <div class="relative mb-3 group">
-                            <img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
-                            <a href="${it.image}" download="carousel-image.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 bg-black/40 hover:bg-black/60 text-white w-7 h-7 flex items-center justify-center rounded-full backdrop-blur-md transition-colors" title="Unduh Gambar">
-                                <i class="fa-solid fa-download text-[11px]"></i>
-                            </a>
-                        </div>` : '';
+                    <div class="relative group">
+                        <img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-lg mb-3 shadow-sm border border-gray-200 dark:border-gray-600">
+                        <a href="${it.image}" download="carousel_${it.id}.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition opacity-100 md:opacity-0 md:group-hover:opacity-100" title="Unduh Gambar">
+                            <i class="fa-solid fa-download text-xs"></i>
+                        </a>
+                    </div>
+                    ` : '';
                     
                     const isCaption = it.isCaption;
                     const badgeHtml = isCaption 
@@ -1348,10 +1364,10 @@
                                 <div class="text-[13px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${window.escapeHTML(it.content)}</div>
                             </div>
                             <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                                <button onclick="window.copyCarouselCard('${note.id}', ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-green-500 hover:text-green-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Salin"><i class="fa-regular fa-copy text-[11px]"></i></button>
-                                <button onclick="window.openEditCarouselCardModal('${note.id}', ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-blue-500 hover:text-blue-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Edit Teks"><i class="fa-solid fa-pen text-[11px]"></i></button>
-                                <button onclick="window.triggerCarouselImageUpload('${note.id}', ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-purple-500 hover:text-purple-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Unggah Gambar"><i class="fa-solid fa-image text-[11px]"></i></button>
-                                <button onclick="window.deleteCarouselCard('${note.id}', ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-red-500 hover:text-red-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Hapus Kartu"><i class="fa-solid fa-trash text-[11px]"></i></button>
+                                <button onclick="window.copyCarouselCard(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-green-500 hover:text-green-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Salin"><i class="fa-regular fa-copy text-[11px]"></i></button>
+                                <button onclick="window.openEditCarouselCardModal(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-blue-500 hover:text-blue-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Edit Teks"><i class="fa-solid fa-pen text-[11px]"></i></button>
+                                <button onclick="window.triggerCarouselImageUpload(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-purple-500 hover:text-purple-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Unggah Gambar"><i class="fa-solid fa-image text-[11px]"></i></button>
+                                <button onclick="window.deleteCarouselCard(${note.id}, ${it.id}); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-red-500 hover:text-red-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Hapus Kartu"><i class="fa-solid fa-trash text-[11px]"></i></button>
                             </div>
                         </div>
                     `;
@@ -1412,15 +1428,19 @@
                     imagesHtml = `<div class="mb-4 space-y-3">`;
                     imageAtts.forEach(att => {
                         imagesHtml += `
-                            <div class="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-900">
-                                <a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()" class="block w-full">
-                                    <img src="${att.data}" class="w-full h-auto hover:opacity-90 transition">
+                        <div class="relative w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-900 group">
+                            <a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()">
+                                <img src="${att.data}" class="w-full h-auto hover:opacity-90 transition">
+                            </a>
+                            <div class="absolute top-3 right-3 flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
+                                <a href="${att.data}" download="${att.name || 'image.jpg'}" onclick="event.stopPropagation()" class="w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" title="Unduh Gambar">
+                                    <i class="fa-solid fa-download text-sm"></i>
                                 </a>
-                                <a href="${att.data}" download="${att.name || 'image.jpg'}" onclick="event.stopPropagation()" class="absolute top-3 right-3 bg-black/40 hover:bg-black/70 text-white w-8 h-8 flex items-center justify-center rounded-full backdrop-blur-md transition-colors shadow-lg" title="Unduh Gambar">
-                                    <i class="fa-solid fa-download text-[13px]"></i>
-                                </a>
+                                <button onclick="window.removeCardImage(${note.id}, ${att.id}); event.stopPropagation();" class="w-9 h-9 bg-red-500/80 hover:bg-red-600 text-white rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" title="Hapus Gambar">
+                                    <i class="fa-solid fa-times text-sm"></i>
+                                </button>
                             </div>
-                        `;
+                        </div>`;
                     });
                     imagesHtml += `</div>`;
                 }
@@ -1438,13 +1458,11 @@
 
             const timeCreated = window.formatTime(note.timestamp);
             const timeEdited = note.updatedAt && note.updatedAt !== note.timestamp ? window.formatTime(note.updatedAt) : '';
-            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1.5 truncate">
-                Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}
-            </div>`;
+            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1.5 truncate">Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}</div>`;
 
             return `
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5">
-                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="window.toggleNote('${note.id}')">
+                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="window.toggleNote(${note.id})">
                         <div class="flex-1 pr-2 flex flex-col overflow-hidden justify-center">
                             <div class="flex items-center overflow-hidden">
                                 <h3 class="font-bold text-gray-900 dark:text-white text-[15px] truncate">${window.escapeHTML(note.title)}</h3>
@@ -1456,17 +1474,17 @@
                         
                         <div class="flex items-center space-x-0.5 shrink-0">
                             ${['mylink', 'mypassword'].includes(note.category) ? `
-                            <button onclick="window.visitLink('${note.id}'); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 active:bg-indigo-50 dark:active:bg-indigo-900/30 rounded-full transition" title="Kunjungi Link">
+                            <button onclick="window.visitLink(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-indigo-600 dark:text-indigo-400 active:bg-indigo-50 dark:active:bg-indigo-900/30 rounded-full transition" title="Kunjungi Link">
                                 <i class="fa-solid fa-arrow-up-right-from-square text-[13px]"></i>
                             </button>
                             ` : ''}
-                            <button onclick="window.openCopyOptions('${note.id}'); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
+                            <button onclick="window.openCopyOptions(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-green-600 dark:text-green-400 active:bg-green-50 dark:active:bg-green-900/30 rounded-full transition" title="Salin Teks">
                                 <i class="fa-regular fa-copy text-[13px]"></i>
                             </button>
-                            <button onclick="window.openModal('${note.id}'); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 active:bg-blue-50 dark:active:bg-blue-900/30 rounded-full transition" title="Edit Catatan">
+                            <button onclick="window.openModal(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-blue-500 dark:text-blue-400 active:bg-blue-50 dark:active:bg-blue-900/30 rounded-full transition" title="Edit Catatan">
                                 <i class="fa-solid fa-pen text-[13px]"></i>
                             </button>
-                            <button onclick="window.openDeleteAlert('${note.id}'); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/30 rounded-full transition" title="Hapus Catatan">
+                            <button onclick="window.openDeleteAlert(${note.id}); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/30 rounded-full transition" title="Hapus Catatan">
                                 <i class="fa-solid fa-trash text-[13px]"></i>
                             </button>
                             <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 mx-1"></div>
@@ -1485,13 +1503,13 @@
                     </div>
                 </div>
             `;
-        }
+        };
 
         window.renderNotes = function() {
             const container = document.getElementById('notes-container');
             container.innerHTML = '';
 
-            if (notes.length === 0) {
+            if (window.notes.length === 0) {
                 container.innerHTML = `
                     <div class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 pt-20">
                         <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300 dark:text-gray-600"></i>
@@ -1503,14 +1521,14 @@
 
             let html = '';
 
-            if (isGrouped) {
+            if (window.isGrouped) {
                 html += `<div class="columns-1 lg:columns-2 xl:columns-3 gap-5 md:gap-6">`;
                 
                 Object.keys(categories).forEach(catKey => {
-                    const catNotes = notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
+                    const catNotes = window.notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
                     if (catNotes.length > 0) {
                         const config = categories[catKey];
-                        const isCatOpen = openCategories.has(catKey);
+                        const isCatOpen = window.openCategories.has(catKey);
                         const openClass = isCatOpen ? "open" : "";
                         
                         html += `
@@ -1530,9 +1548,7 @@
                                     <div class="accordion-inner bg-gray-50/50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
                                         <div class="p-3.5 pb-0">
                         `;
-
                         catNotes.forEach(note => { html += window.buildNoteCard(note, false); });
-
                         html += `       </div>
                                     </div>
                                 </div>
@@ -1540,17 +1556,21 @@
                         `;
                     }
                 });
-                
                 html += `</div>`;
             } else {
-                const allNotes = [...notes]; // Sudah diurutkan di fungsi fetch
+                const allNotes = [...window.notes].sort((a,b) => b.timestamp - a.timestamp);
                 html += `<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-5 lg:gap-6 pt-2">`;
                 allNotes.forEach(note => { html += window.buildNoteCard(note, false); });
                 html += `</div>`;
             }
 
             container.innerHTML = html;
-        }
+        };
+
+        window.onload = () => {
+            window.initTheme();
+            window.loadNotes();
+        };
     </script>
 </body>
 </html>
