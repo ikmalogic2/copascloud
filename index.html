@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>i-cloud</title>
     
-    <!-- Google Fonts: Space Grotesk -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -21,28 +18,28 @@
 
     <style>
         body {
-            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: '-apple-system', BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .modal-enter { transform: translateY(100%); opacity: 0; transition: all 0.3s ease-out; }
+        /* Animasi Modal */
+        .modal-enter { transform: translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.4s ease; }
         .modal-active { transform: translateY(0); opacity: 1; }
         
+        /* Glassmorphism Header iOS */
         .glass-header {
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
-
         .dark .glass-header {
-            background-color: rgba(17, 24, 39, 0.85);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background-color: rgba(0, 0, 0, 0.75);
         }
 
+        /* Akordion / Collapse */
         .accordion-content {
             display: grid;
             grid-template-rows: 0fr;
@@ -55,35 +52,33 @@
         .chevron-icon.open { transform: rotate(180deg); }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
+<body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-black transition-colors duration-300" onclick="window.closeAllActionMenus()">
 
-    <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-4 md:px-6 lg:px-8">
-        <div class="flex items-center space-x-2 text-gray-800 dark:text-white">
-            <i class="fa-solid fa-cloud text-xl text-blue-500"></i>
-            <h1 class="text-[17px] font-bold tracking-tight">i-cloud</h1>
+    <!-- Header iOS Style -->
+    <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-3 md:px-6 lg:px-8 border-b border-black/5 dark:border-white/10">
+        <div class="flex items-center w-1/3">
+            <button onclick="window.undo()" id="btn-undo" class="w-10 h-10 flex items-center justify-start text-[#007AFF] disabled:opacity-30 disabled:cursor-not-allowed transition" title="Undo (Batal)">
+                <i class="fa-solid fa-chevron-left text-[20px]"></i>
+            </button>
+            <button onclick="window.redo()" id="btn-redo" class="w-10 h-10 flex items-center justify-start text-[#007AFF] disabled:opacity-30 disabled:cursor-not-allowed transition" title="Redo (Ulangi)">
+                <i class="fa-solid fa-chevron-right text-[20px]"></i>
+            </button>
         </div>
         
-        <div class="flex items-center space-x-3">
-            <button onclick="window.performUndo()" id="btn-undo" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10 transition-opacity" style="opacity: 0.4; pointer-events: none;" title="Undo">
-                <i class="fa-solid fa-rotate-left text-[16px]"></i>
-                <span class="text-[9px] font-bold mt-0.5">UNDO</span>
-            </button>
-            <button onclick="window.performRedo()" id="btn-redo" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 active:opacity-50 w-10 transition-opacity" style="opacity: 0.4; pointer-events: none;" title="Redo">
-                <i class="fa-solid fa-rotate-right text-[16px]"></i>
-                <span class="text-[9px] font-bold mt-0.5">REDO</span>
-            </button>
-            
-            <div class="w-px h-5 bg-gray-300 dark:bg-gray-700 mx-1"></div>
-            
-            <button onclick="window.toggleTheme()" id="btn-theme" class="w-8 h-8 flex items-center justify-center text-yellow-500 active:opacity-50 text-[18px]" title="Ubah Tema">
+        <div class="flex-1 flex justify-center items-center">
+            <i id="header-cloud-icon" class="fa-solid fa-cloud text-gray-400 text-[20px] mr-1.5 transition-colors duration-500"></i>
+            <h1 class="text-[17px] font-semibold text-black dark:text-white tracking-tight">i-cloud</h1>
+        </div>
+        
+        <div class="flex items-center justify-end w-1/3 space-x-1">
+            <button onclick="window.toggleTheme()" id="btn-theme" class="w-9 h-9 flex items-center justify-center text-yellow-500 hover:opacity-70 transition text-[18px]" title="Ubah Tema">
                 <i class="fa-solid fa-sun" id="theme-icon"></i>
             </button>
-
-            <button onclick="window.toggleGroupView()" id="btn-group" class="w-8 h-8 flex items-center justify-center text-indigo-500 active:opacity-50 text-[18px]" title="Kategorikan">
+            <button onclick="window.toggleGroupView()" id="btn-group" class="w-9 h-9 flex items-center justify-center text-[#007AFF] hover:opacity-70 transition text-[18px]" title="Kategorikan">
                 <i class="fa-solid fa-layer-group"></i>
             </button>
-            <button onclick="window.openModal()" class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 active:opacity-50 text-[24px]" title="Tambah Catatan">
-                <i class="fa-solid fa-circle-plus"></i>
+            <button onclick="window.openModal()" class="w-9 h-9 flex items-center justify-end text-[#007AFF] hover:opacity-70 transition text-[22px]" title="Tambah Catatan">
+                <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
     </header>
@@ -94,57 +89,57 @@
         </div>
     </main>
 
-    <div id="modal-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 hidden opacity-0 transition-opacity duration-300" onclick="window.closeModal()"></div>
+    <!-- MODAL TAMBAH/EDIT CATATAN -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-300" onclick="window.closeModal()"></div>
     
-    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-gray-800 rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
-        <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-3xl shrink-0">
-            <button onclick="window.closeModal()" class="text-gray-500 dark:text-gray-400 font-medium">Batal</button>
-            <h2 class="font-semibold text-[17px] text-gray-800 dark:text-white" id="modal-title">Buat Catatan</h2>
-            <button onclick="window.saveNote()" class="text-blue-600 dark:text-blue-400 font-bold">Simpan</button>
+    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-[#1C1C1E] rounded-t-[32px] h-[85vh] md:max-w-2xl md:mx-auto shadow-[0_-10px_40px_rgba(0,0,0,0.2)] modal-enter flex flex-col transition-colors border-t border-black/5 dark:border-white/10">
+        <div class="flex justify-between items-center px-5 py-4 border-b border-black/5 dark:border-white/10 bg-white dark:bg-[#1C1C1E] rounded-t-[32px] shrink-0">
+            <button onclick="window.closeModal()" class="text-[#007AFF] text-[17px] font-normal hover:opacity-70">Batal</button>
+            <h2 class="font-semibold text-[17px] text-black dark:text-white tracking-tight" id="modal-title">Buat Catatan</h2>
+            <button onclick="window.saveNote()" class="text-[#007AFF] text-[17px] font-semibold hover:opacity-70">Simpan</button>
         </div>
         
-        <div class="p-5 flex-1 overflow-y-auto hide-scrollbar bg-white dark:bg-gray-800">
+        <div class="p-5 flex-1 overflow-y-auto hide-scrollbar bg-gray-50/50 dark:bg-black/20">
             <input type="hidden" id="note-id">
             
             <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Pilih Kategori</label>
+                <label class="block text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 ml-1">Kategori</label>
                 <div class="relative">
-                    <select id="note-category" onchange="window.toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
-                        <option value="brandkit">💼 Brand Kit</option>
-                        <option value="carousel">🗂️ Carousel Notes</option>
+                    <select id="note-category" onchange="window.toggleInputFields()" class="w-full appearance-none bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 text-black dark:text-white py-3.5 px-4 rounded-2xl text-[16px] font-medium focus:outline-none focus:ring-2 focus:ring-[#007AFF] transition-colors shadow-sm">
+                        <!-- Lengkap Semua Kategori -->
                         <option value="copas" selected>📋 Copas</option>
-                        <option value="efekfont">🔤 Efek Font</option>
-                        <option value="error">🐛 Error Book</option>
+                        <option value="carousel">🗂️ Carousel Notes</option>
+                        <option value="mypassword">🔑 My Password</option>
+                        <option value="mypurchase">🛍️ My Purchase</option>
+                        <option value="revisi">🔄 Revisi</option>
                         <option value="ideation">💡 Ideation</option>
-                        <option value="jenisfont">🔠 Jenis Font</option>
+                        <option value="oneshot">🎯 One Shot</option>
+                        <option value="error">🐛 Error Book</option>
+                        <option value="myprompt">⌨️ My Prompt</option>
+                        <option value="gemsgpt">💎 GEMS/GPT</option>
+                        <option value="myinstruction">💻 Instruction</option>
+                        <option value="mylink">🔗 My Link</option>
+                        <option value="memo">📝 Memo Tasks</option>
+                        <option value="jenisfont">🔤 Jenis Font</option>
+                        <option value="brandkit">🎨 Brand Kit</option>
                         <option value="jurnal">📓 Jurnal</option>
                         <option value="laporan">📊 Laporan</option>
-                        <option value="myinstruction">💻 Instruction</option>
-                        <option value="memo">📝 Memo Tasks</option>
-                        <option value="mylink">🔗 My Link</option>
-                        <option value="mypassword">🔑 My Password</option>
-                        <option value="myprompt">⌨️ My Prompt</option>
-                        <option value="mypurchase">🛍️ My Purchase</option>
-                        <option value="oneshot">🎯 One Shot</option>
-                        <option value="revisi">🔄 Revisi</option>
-                        <option value="screenshot">📸 Screenshot</option>
-                        <option value="styleart">🎨 Style Art</option>
+                        <option value="screenshot">📱 Screenshot</option>
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
                         <i class="fa-solid fa-chevron-down text-sm"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="mb-4">
-                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 dark:placeholder-gray-500 py-2 border-b border-gray-100 dark:border-gray-700">
+            <div class="mb-4 bg-white dark:bg-[#2C2C2E] rounded-2xl border border-black/5 dark:border-white/10 shadow-sm overflow-hidden px-4">
+                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[18px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-400 dark:placeholder-gray-500 py-3.5">
             </div>
 
             <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (File max 800KB)</label>
                 <div class="flex space-x-2 mb-2">
-                    <button onclick="document.getElementById('attach-image').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-image text-blue-500 dark:text-blue-400 mr-1"></i> Gambar</button>
-                    <button onclick="document.getElementById('attach-file').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-paperclip text-purple-500 dark:text-purple-400 mr-1"></i> File</button>
+                    <button onclick="document.getElementById('attach-image').click()" class="bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 text-[#007AFF] px-4 py-2.5 rounded-[14px] text-[15px] font-medium transition shadow-sm flex items-center"><i class="fa-solid fa-image mr-2 text-[18px]"></i> Gambar</button>
+                    <button onclick="document.getElementById('attach-file').click()" class="bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/5 text-[#AF52DE] px-4 py-2.5 rounded-[14px] text-[15px] font-medium transition shadow-sm flex items-center"><i class="fa-solid fa-paperclip mr-2 text-[18px]"></i> File</button>
                     <input type="file" id="attach-image" accept="image/*" class="hidden" onchange="window.handleFileUpload(event, 'image')" multiple>
                     <input type="file" id="attach-file" accept=".txt,.pdf,.html,.json,.doc,.docx,.xls,.xlsx,.csv" class="hidden" onchange="window.handleFileUpload(event, 'file')" multiple>
                 </div>
@@ -152,552 +147,291 @@
             </div>
             
             <!-- Mode Teks Biasa -->
-            <div id="normal-input-container" class="w-full flex-col flex h-48">
-                <textarea id="note-content" placeholder="Ketik isi catatan di sini..." class="w-full h-full text-[16px] focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500 resize-none leading-relaxed bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-100 dark:border-gray-600"></textarea>
+            <div id="normal-input-container" class="w-full flex-col flex h-56">
+                <textarea id="note-content" placeholder="Ketik isi catatan di sini... (Untuk mode Memo, gunakan format '- [ ] Tugas' agar menjadi ceklis otomatis)" class="w-full h-full text-[16px] focus:outline-none text-black dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none leading-relaxed bg-white dark:bg-[#2C2C2E] p-4 rounded-2xl border border-black/5 dark:border-white/10 shadow-sm"></textarea>
             </div>
 
             <!-- Mode Carousel -->
             <div id="carousel-input-container" class="w-full flex-col hidden pb-5">
                 <div class="flex justify-between items-center mb-3">
-                    <label class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Isi Kartu Carousel</label>
-                    <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1 border border-gray-200 dark:border-gray-600">
-                        <button onclick="window.changeCarouselCount(-1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-minus text-xs"></i></button>
-                        <span id="carousel-count-display" class="text-sm font-bold text-gray-800 dark:text-gray-200 w-6 text-center">3</span>
-                        <button onclick="window.changeCarouselCount(1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-plus text-xs"></i></button>
+                    <label class="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider ml-1">Isi Kartu</label>
+                    <div class="flex items-center space-x-2 bg-white dark:bg-[#2C2C2E] rounded-xl p-1 shadow-sm border border-black/5 dark:border-white/10">
+                        <button onclick="window.changeCarouselCount(-1)" class="w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg active:scale-95 transition-all"><i class="fa-solid fa-minus text-sm"></i></button>
+                        <span id="carousel-count-display" class="text-[16px] font-bold text-black dark:text-white w-6 text-center">3</span>
+                        <button onclick="window.changeCarouselCount(1)" class="w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg active:scale-95 transition-all"><i class="fa-solid fa-plus text-sm"></i></button>
                     </div>
                 </div>
-                <div id="carousel-cards-wrapper" class="space-y-3">
-                    <!-- Carousel inputs di-inject via JS -->
-                </div>
+                <div id="carousel-cards-wrapper" class="space-y-4"></div>
             </div>
             
             <!-- Mode My Password -->
             <div id="mypassword-input-container" class="w-full flex-col hidden space-y-4 pb-5">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Username / Email</label>
-                    <input type="text" id="pw-username" placeholder="Masukkan Username..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Password</label>
-                    <input type="text" id="pw-password" placeholder="Masukkan Password..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / URL</label>
-                    <input type="url" id="pw-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-            </div>
-
-            <!-- Mode Revisi -->
-            <div id="revisi-input-container" class="w-full flex-col hidden space-y-4 pb-5">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Tujuan Revisi</label>
-                    <input type="text" id="rev-tujuan" placeholder="Misal: Perbaiki grammar, kurangi pengulangan..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Teks Utama</label>
-                    <textarea id="rev-content" placeholder="Ketik teks yang akan atau telah direvisi..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
-                </div>
-            </div>
-
-            <!-- Mode Instruction -->
-            <div id="instruction-input-container" class="w-full flex-col hidden space-y-4 pb-5">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / Referensi</label>
-                    <input type="url" id="inst-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Instruksi / Catatan</label>
-                    <textarea id="inst-content" placeholder="Ketik instruksi di sini..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
-                </div>
+                <input type="text" id="pw-username" placeholder="Username / Email" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <input type="text" id="pw-password" placeholder="Password" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm font-mono">
+                <input type="url" id="pw-link" placeholder="Link (https://...)" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
             </div>
 
             <!-- Mode My Purchase -->
             <div id="mypurchase-input-container" class="w-full flex-col hidden space-y-4 pb-5">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Nama Produk</label>
-                    <input type="text" id="pur-nama" placeholder="Misal: Template Premium X..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Owner / Creator</label>
-                    <input type="text" id="pur-owner" placeholder="Nama Pembuat/Penjual..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Harga Beli</label>
-                    <input type="text" id="pur-harga" placeholder="Misal: Rp 150.000..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link Produk</label>
-                    <input type="url" id="pur-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Keterangan / Lisensi</label>
-                    <textarea id="pur-keterangan" placeholder="Ketik keterangan tambahan di sini..." class="w-full h-24 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
-                </div>
+                <input type="text" id="pur-name" placeholder="Nama Produk" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <input type="text" id="pur-owner" placeholder="Nama Toko / Owner" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <input type="text" id="pur-price" placeholder="Harga Beli (Opsional)" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <input type="url" id="pur-link" placeholder="Link Produk (Opsional)" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <textarea id="pur-notes" placeholder="Catatan Tambahan..." class="w-full h-32 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm resize-none"></textarea>
+            </div>
+
+            <!-- Mode Instruction -->
+            <div id="instruction-input-container" class="w-full flex-col hidden space-y-4 pb-5">
+                <input type="url" id="inst-link" placeholder="Link Referensi (Opsional)" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <textarea id="inst-content" placeholder="Tulis instruksi langkah demi langkah di sini..." class="w-full h-48 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm resize-none"></textarea>
+            </div>
+
+            <!-- Mode Revisi -->
+            <div id="revisi-input-container" class="w-full flex-col hidden space-y-4 pb-5">
+                <input type="text" id="rev-tujuan" placeholder="Tujuan Revisi (Misal: Perbaiki grammar...)" class="w-full bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm">
+                <textarea id="rev-content" placeholder="Teks Utama yang direvisi..." class="w-full h-40 bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl text-[16px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] shadow-sm resize-none leading-relaxed"></textarea>
             </div>
 
             <!-- Mode One Shot -->
             <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-6">
-                <div class="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mode Anti-Distraksi</h3>
-                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks akan otomatis hilang per kata saat Anda menekan spasi untuk melatih aliran ide tanpa henti.</p>
-                <button onclick="window.openOneShotFullscreen()" class="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold transition-colors shadow-lg active:scale-95 w-full md:w-auto flex items-center justify-center">
-                    <i class="fa-solid fa-expand mr-2"></i> Buka Kanvas One Shot
+                <div class="w-20 h-20 bg-[#FF3B30]/10 dark:bg-[#FF3B30]/20 text-[#FF3B30] rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
+                <h3 class="text-[18px] font-bold text-black dark:text-white mb-2">Mode Anti-Distraksi</h3>
+                <p class="text-center text-[14px] text-gray-500 dark:text-gray-400 mb-6 px-4 leading-relaxed">Teks akan otomatis hilang per kata saat Anda menekan spasi untuk melatih aliran ide tanpa henti.</p>
+                <button onclick="window.openOneShotFullscreen()" class="bg-[#FF3B30] hover:bg-[#FF453A] text-white px-8 py-3.5 rounded-full font-semibold transition-colors shadow-md active:scale-95 w-full md:w-auto flex items-center justify-center text-[16px]">
+                    <i class="fa-solid fa-expand mr-2"></i> Buka Kanvas
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM DELETE ALERT OVERLAY -->
-    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4 text-red-500">
-                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Hapus Catatan?</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan. Catatan akan dihapus permanen.</p>
+    <!-- CUSTOM DELETE ALERT OVERLAY (iOS Style) -->
+    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="delete-alert-box" class="bg-white/90 dark:bg-[#1E1E1E]/90 backdrop-blur-xl rounded-[20px] w-full max-w-[270px] overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-white/20 dark:border-white/10">
+            <div class="pt-5 pb-4 px-4 text-center">
+                <h3 class="text-[17px] font-semibold text-black dark:text-white leading-tight mb-1">Hapus Catatan?</h3>
+                <p class="text-[13px] text-black/70 dark:text-white/70 leading-tight">Tindakan ini tidak dapat dibatalkan.</p>
             </div>
-            <div class="flex border-t border-gray-100 dark:border-gray-700">
-                <button onclick="window.closeDeleteAlert()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
-                <button onclick="window.confirmDelete()" class="flex-1 py-3.5 text-red-600 dark:text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Hapus</button>
+            <div class="flex border-t border-black/10 dark:border-white/10">
+                <button onclick="window.closeDeleteAlert()" class="flex-1 py-3 text-[17px] text-[#007AFF] font-normal hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-r border-black/10 dark:border-white/10">Batal</button>
+                <button onclick="window.confirmDelete()" class="flex-1 py-3 text-[17px] text-[#FF3B30] font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Hapus</button>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM COPY OPTIONS OVERLAY -->
-    <div id="copy-options-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="copy-options-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-5 text-center border-b border-gray-100 dark:border-gray-700">
-                <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-3 text-blue-500">
-                    <i class="fa-regular fa-copy text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Opsi Salin</h3>
+    <!-- CUSTOM COPY OPTIONS OVERLAY (iOS Style) -->
+    <div id="copy-options-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="copy-options-box" class="bg-white/90 dark:bg-[#1E1E1E]/90 backdrop-blur-xl rounded-[20px] w-full max-w-[270px] overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 border border-white/20 dark:border-white/10">
+            <div class="pt-5 pb-4 px-4 text-center">
+                <h3 class="text-[17px] font-semibold text-black dark:text-white leading-tight">Opsi Salin</h3>
             </div>
-            <div class="flex flex-col">
-                <button onclick="window.executeCopy(true)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Beserta Judul</button>
-                <button onclick="window.executeCopy(false)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Tanpa Judul</button>
-                <button onclick="window.closeCopyOptions()" class="py-4 text-red-500 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Batal</button>
+            <div class="flex flex-col border-t border-black/10 dark:border-white/10">
+                <button onclick="window.executeCopy(true)" class="py-3 text-[17px] text-[#007AFF] font-normal hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-black/10 dark:border-white/10">Beserta Judul</button>
+                <button onclick="window.executeCopy(false)" class="py-3 text-[17px] text-[#007AFF] font-normal hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-black/10 dark:border-white/10">Tanpa Judul</button>
+                <button onclick="window.closeCopyOptions()" class="py-3 text-[17px] text-[#FF3B30] font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Batal</button>
             </div>
         </div>
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
-        <i class="fa-solid fa-check-circle text-green-400 dark:text-green-500 text-lg mr-3"></i>
-        <span id="toast-message" class="text-[14px] font-medium">Notifikasi</span>
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
+        <i class="fa-solid fa-check-circle text-[#34C759] text-lg mr-3"></i>
+        <span id="toast-message" class="text-[14px] font-medium tracking-wide">Notifikasi</span>
     </div>
 
     <!-- CUSTOM ONE SHOT FULLSCREEN KANVAS -->
-    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-gray-900 z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
+    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-black z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
         <div class="absolute top-6 left-6 right-6 flex justify-between items-center z-30 pointer-events-none">
-            <div id="oneshot-fs-stats" class="text-sm font-bold text-rose-500 bg-rose-100 dark:bg-rose-900/30 px-4 py-2 rounded-full shadow-sm pointer-events-auto">0 Kata</div>
-            <button onclick="window.closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white hover:scale-105 active:scale-95 transition pointer-events-auto" title="Selesai / Keluar Kanvas">
-                <i class="fa-solid fa-check text-xl"></i>
+            <div id="oneshot-fs-stats" class="text-[15px] font-semibold text-[#FF3B30] bg-[#FF3B30]/10 px-4 py-2 rounded-full backdrop-blur-md pointer-events-auto">0 Kata</div>
+            <button onclick="window.closeOneShotFullscreen()" class="w-10 h-10 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-full shadow-md flex items-center justify-center text-black dark:text-white hover:opacity-70 transition pointer-events-auto">
+                <i class="fa-solid fa-check text-[18px]"></i>
             </button>
         </div>
-
         <textarea id="oneshot-fs-hidden" class="hidden"></textarea>
-
         <div class="flex-1 flex items-center justify-center p-8 relative overflow-hidden z-10">
-            <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="window.handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
+            <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="window.handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-black dark:text-white focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
         </div>
-
-        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-lg md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 z-20 border border-gray-200 dark:border-gray-700"></div>
-
+        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl rounded-[32px] shadow-2xl p-8 hidden overflow-y-auto text-[18px] md:text-2xl leading-relaxed text-black dark:text-white z-20 border border-black/5 dark:border-white/10"></div>
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
-            <button onclick="window.toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 active:scale-95 transition flex items-center text-sm md:text-base">
+            <button onclick="window.toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-full font-semibold shadow-lg hover:opacity-80 transition flex items-center text-[15px]">
                 <i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span>
             </button>
         </div>
     </div>
 
     <input type="file" id="carousel-image-input" accept="image/*" class="hidden" onchange="window.handleCarouselImageUpload(event)">
-
-    <!-- CUSTOM EDIT CAROUSEL CARD MODAL -->
-    <div id="edit-card-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="edit-card-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
-                <h3 class="font-bold text-gray-900 dark:text-white">Edit Kartu Carousel</h3>
-                <button onclick="window.closeEditCarouselCardModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i class="fa-solid fa-times"></i></button>
+    <div id="edit-card-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="edit-card-box" class="bg-white/90 dark:bg-[#1E1E1E]/90 backdrop-blur-xl rounded-[20px] w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col border border-white/20 dark:border-white/10">
+            <div class="px-5 py-4 border-b border-black/10 dark:border-white/10 flex justify-center items-center">
+                <h3 class="font-semibold text-[17px] text-black dark:text-white">Edit Kartu</h3>
             </div>
-            <div class="p-5 flex-1 bg-white dark:bg-gray-800">
-                <textarea id="edit-card-textarea" placeholder="Isi kartu..." class="w-full h-32 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+            <div class="p-4 flex-1">
+                <textarea id="edit-card-textarea" placeholder="Isi kartu..." class="w-full h-32 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-[14px] text-[15px] text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF] resize-none"></textarea>
             </div>
-            <div class="flex border-t border-gray-100 dark:border-gray-700">
-                <button onclick="window.closeEditCarouselCardModal()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
-                <button onclick="window.saveEditCarouselCard()" class="flex-1 py-3.5 text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">Simpan</button>
+            <div class="flex border-t border-black/10 dark:border-white/10">
+                <button onclick="window.closeEditCarouselCardModal()" class="flex-1 py-3 text-[17px] text-[#007AFF] font-normal border-r border-black/10 dark:border-white/10">Batal</button>
+                <button onclick="window.saveEditCarouselCard()" class="flex-1 py-3 text-[17px] text-[#007AFF] font-semibold">Simpan</button>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Konfigurasi Firebase milik pengguna
-        const firebaseConfig = {
-            apiKey: "AIzaSyAE3MKjPaHvYijBpd5ASU8z2MUFOTkSHGA",
-            authDomain: "prompt-ikmal.firebaseapp.com",
-            projectId: "prompt-ikmal",
-            storageBucket: "prompt-ikmal.firebasestorage.app",
-            messagingSenderId: "503249462253",
-            appId: "1:503249462253:web:aa9e549138349925247de4"
-        };
-
-        try {
-            window.app = initializeApp(firebaseConfig);
-            window.db = getFirestore(window.app);
-            window.doc = doc;
-            window.setDoc = setDoc;
-            window.deleteDoc = deleteDoc;
-            window.onSnapshot = onSnapshot;
-            window.collection = collection;
-        } catch(e) {
-            console.error("Firebase Initialization Error", e);
-        }
-
+    <script>
         const categories = {
-            brandkit: { title: "Brand Kit", icon: "💼", color: "text-violet-500 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/30" },
-            carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
-            copas: { title: "Copas", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
-            efekfont: { title: "Efek Font", icon: "🔤", color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
-            error: { title: "Error Book", icon: "🐛", color: "text-red-500 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/30" },
-            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
-            jenisfont: { title: "Jenis Font", icon: "🔠", color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/30" },
-            jurnal: { title: "Jurnal", icon: "📓", color: "text-amber-600 dark:text-amber-500", bg: "bg-amber-100 dark:bg-amber-900/30" },
-            laporan: { title: "Laporan", icon: "📊", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500 dark:text-yellow-400", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
-            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
-            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
-            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
-            mypurchase: { title: "My Purchase", icon: "🛍️", color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
-            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
-            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500 dark:text-cyan-400", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
-            screenshot: { title: "Screenshot", icon: "📸", color: "text-sky-500 dark:text-sky-400", bg: "bg-sky-100 dark:bg-sky-900/30" },
-            styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500 dark:text-fuchsia-400", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
+            copas: { title: "Copas", icon: "📋", color: "text-[#34C759]", bg: "bg-[#34C759]/10" },
+            carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-[#FF2D55]", bg: "bg-[#FF2D55]/10" },
+            mypassword: { title: "My Password", icon: "🔑", color: "text-[#5AC8FA]", bg: "bg-[#5AC8FA]/10" },
+            mypurchase: { title: "My Purchase", icon: "🛍️", color: "text-[#FF9500]", bg: "bg-[#FF9500]/10" },
+            revisi: { title: "Revisi", icon: "🔄", color: "text-[#32ADE6]", bg: "bg-[#32ADE6]/10" },
+            ideation: { title: "Ideation", icon: "💡", color: "text-[#FFCC00]", bg: "bg-[#FFCC00]/10" },
+            oneshot: { title: "One Shot", icon: "🎯", color: "text-[#FF3B30]", bg: "bg-[#FF3B30]/10" },
+            error: { title: "Error Book", icon: "🐛", color: "text-[#FF3B30]", bg: "bg-[#FF3B30]/10" },
+            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-[#FF9500]", bg: "bg-[#FF9500]/10" },
+            gemsgpt: { title: "GEMS/GPT", icon: "💎", color: "text-[#5856D6]", bg: "bg-[#5856D6]/10" },
+            myinstruction: { title: "Instruction", icon: "💻", color: "text-[#5856D6]", bg: "bg-[#5856D6]/10" },
+            mylink: { title: "My Link", icon: "🔗", color: "text-[#AF52DE]", bg: "bg-[#AF52DE]/10" },
+            memo: { title: "Memo Tasks", icon: "📝", color: "text-[#FFCC00]", bg: "bg-[#FFCC00]/10" },
+            jenisfont: { title: "Jenis Font", icon: "🔤", color: "text-[#34C759]", bg: "bg-[#34C759]/10" },
+            brandkit: { title: "Brand Kit", icon: "🎨", color: "text-[#AF52DE]", bg: "bg-[#AF52DE]/10" },
+            jurnal: { title: "Jurnal", icon: "📓", color: "text-[#8E8E93]", bg: "bg-[#8E8E93]/10" },
+            laporan: { title: "Laporan", icon: "📊", color: "text-[#007AFF]", bg: "bg-[#007AFF]/10" },
+            screenshot: { title: "Screenshot", icon: "📱", color: "text-[#5AC8FA]", bg: "bg-[#5AC8FA]/10" }
         };
 
         window.notes = [];
-        window.isGrouped = false; 
-        window.openNotes = new Set();
-        window.openCategories = new Set();
+        const STORAGE_KEY = "icloud_notes_data";
         
-        window.currentAttachments = [];
-        window.currentCarouselImages = {}; 
-        window.currentCarouselCount = 3; 
-        window.toastTimeout = null;
-        window.noteIdToDelete = null;
-        window.noteIdToCopy = null;
-        window.activeCarouselEdit = { noteId: null, cardId: null };
+        let isGrouped = false; 
+        let openNotes = new Set();
+        let openCategories = new Set();
+        
+        let currentAttachments = [];
+        let currentCarouselImages = {}; 
+        let currentCarouselCount = 3; 
+        let toastTimeout;
+        let noteIdToDelete = null;
+        let noteIdToCopy = null;
+        let activeCarouselEdit = { noteId: null, cardId: null };
 
-        // SISTEM UNDO/REDO CLOUD
-        window.actionHistory = [];
-        window.redoStack = [];
+        // Undo/Redo Stacks
+        let historyStack = [];
+        let redoStack = [];
 
-        window.pushHistory = function(actionType, oldState, newState) {
-            window.actionHistory.push({ type: actionType, old: oldState, new: newState });
-            window.redoStack = [];
-            if (window.actionHistory.length > 30) window.actionHistory.shift();
-            window.updateUndoRedoUI();
-        };
+        // Dummy Cloud Sync Functions (Akan ditimpa oleh Modul Firebase)
+        window.isCloudReady = false;
+        window.syncNoteToCloud = async function(note) {};
+        window.deleteNoteFromCloud = async function(noteId) {};
+        window.syncAllToCloud = async function(notes) {};
 
-        window.updateUndoRedoUI = function() {
-            const btnUndo = document.getElementById('btn-undo');
-            const btnRedo = document.getElementById('btn-redo');
-            if(btnUndo) {
-                btnUndo.style.opacity = window.actionHistory.length > 0 ? '1' : '0.4';
-                btnUndo.style.pointerEvents = window.actionHistory.length > 0 ? 'auto' : 'none';
-            }
-            if(btnRedo) {
-                btnRedo.style.opacity = window.redoStack.length > 0 ? '1' : '0.4';
-                btnRedo.style.pointerEvents = window.redoStack.length > 0 ? 'auto' : 'none';
-            }
-        };
-
-        window.performUndo = async function() {
-            if (window.actionHistory.length === 0) return window.showToast("Tidak ada tindakan untuk di-undo");
-            const action = window.actionHistory.pop();
-            window.redoStack.push(action);
-            window.updateUndoRedoUI();
-
-            window.showToast("Mengembalikan (Undo)...");
-            try {
-                if (action.old) {
-                    await window.setDoc(window.doc(window.db, "notes", action.old.id.toString()), action.old);
-                } else if (action.new) {
-                    await window.deleteDoc(window.doc(window.db, "notes", action.new.id.toString()));
+        window.onload = () => {
+            window.initTheme();
+            window.loadNotes(); // Muat cepat dari Local Storage sambil tunggu Firebase
+            
+            // Global click listener to close action menus
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.action-menu-popup') && !e.target.closest('button[onclick*="toggleActionMenu"]')) {
+                    window.closeAllActionMenus();
                 }
-            } catch(e) { window.showToast("Gagal Undo"); }
+            });
         };
 
-        window.performRedo = async function() {
-            if (window.redoStack.length === 0) return window.showToast("Tidak ada tindakan untuk di-redo");
-            const action = window.redoStack.pop();
-            window.actionHistory.push(action);
-            window.updateUndoRedoUI();
+        window.saveStateToHistory = function() {
+            historyStack.push(JSON.stringify(window.notes));
+            if (historyStack.length > 50) historyStack.shift(); 
+            redoStack = [];
+            window.updateUndoRedoButtons();
+        }
 
-            window.showToast("Menerapkan ulang (Redo)...");
+        window.updateUndoRedoButtons = function() {
+            document.getElementById('btn-undo').disabled = historyStack.length === 0;
+            document.getElementById('btn-redo').disabled = redoStack.length === 0;
+        }
+
+        window.undo = function() {
+            if (historyStack.length === 0) return;
+            redoStack.push(JSON.stringify(window.notes));
+            const prevState = historyStack.pop();
+            window.notes = JSON.parse(prevState);
+            window.saveToStorage(false); 
+            if (window.isCloudReady) window.syncAllToCloud(window.notes); // Sinkronisasi Cloud
+            window.renderNotes();
+            window.updateUndoRedoButtons();
+            window.showToast("Batal (Undo)");
+        }
+
+        window.redo = function() {
+            if (redoStack.length === 0) return;
+            historyStack.push(JSON.stringify(window.notes));
+            const nextState = redoStack.pop();
+            window.notes = JSON.parse(nextState);
+            window.saveToStorage(false);
+            if (window.isCloudReady) window.syncAllToCloud(window.notes); // Sinkronisasi Cloud
+            window.renderNotes();
+            window.updateUndoRedoButtons();
+            window.showToast("Ulangi (Redo)");
+        }
+
+        window.saveToStorage = function(pushHistory = true) {
+            if (pushHistory) window.saveStateToHistory();
             try {
-                if (action.new) {
-                    await window.setDoc(window.doc(window.db, "notes", action.new.id.toString()), action.new);
-                } else if (action.old) {
-                    await window.deleteDoc(window.doc(window.db, "notes", action.old.id.toString()));
-                }
-            } catch(e) { window.showToast("Gagal Redo"); }
-        };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(window.notes));
+            } catch (e) {
+                console.warn("Storage Full");
+            }
+        }
+
+        window.loadNotes = function() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) window.notes = JSON.parse(saved);
+            window.renderNotes();
+            window.updateUndoRedoButtons();
+        }
 
         window.initTheme = function() {
             try {
-                const savedTheme = localStorage.getItem('theme');
+                const savedTheme = localStorage.getItem('icloud_theme') || 'light';
                 const html = document.documentElement;
                 const icon = document.getElementById('theme-icon');
-                
                 if (savedTheme === 'light') {
                     html.classList.remove('dark');
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
+                    icon.classList.replace('fa-sun', 'fa-moon');
                     document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
                 } else {
                     html.classList.add('dark');
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
+                    icon.classList.replace('fa-moon', 'fa-sun');
                     document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
                 }
-            } catch(e) {}
-        };
+            } catch(e){}
+        }
 
         window.toggleTheme = function() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            const btn = document.getElementById('btn-theme');
-            
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                btn.classList.replace('text-yellow-500', 'text-gray-500');
-                try { localStorage.setItem('theme', 'light'); } catch(e){}
-            } else {
-                html.classList.add('dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                btn.classList.replace('text-gray-500', 'text-yellow-500');
-                try { localStorage.setItem('theme', 'dark'); } catch(e){}
-            }
-        };
+            try {
+                const html = document.documentElement;
+                const icon = document.getElementById('theme-icon');
+                const btn = document.getElementById('btn-theme');
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    icon.classList.replace('fa-sun', 'fa-moon');
+                    btn.classList.replace('text-yellow-500', 'text-gray-500');
+                    localStorage.setItem('icloud_theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    icon.classList.replace('fa-moon', 'fa-sun');
+                    btn.classList.replace('text-gray-500', 'text-yellow-500');
+                    localStorage.setItem('icloud_theme', 'dark');
+                }
+            } catch(e){}
+        }
 
         window.showToast = function(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
-            
             toast.classList.remove('translate-y-20', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
-            
-            clearTimeout(window.toastTimeout);
-            window.toastTimeout = setTimeout(() => {
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
             }, 3000);
-        };
-
-        window.escapeHTML = function(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
-        };
-
-        window.formatTime = function(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            }).replace(/\./g, ':');
-        };
-
-        window.openOneShotFullscreen = function() {
-            const overlay = document.getElementById('oneshot-fullscreen-overlay');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                window.placeCaretAtEnd(document.getElementById('oneshot-fs-visible'));
-            }, 10);
-        };
-
-        window.closeOneShotFullscreen = function() {
-            const overlay = document.getElementById('oneshot-fullscreen-overlay');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
-        };
-
-        window.handleOneShotInput = function(e) {
-            const visibleEl = document.getElementById('oneshot-fs-visible');
-            const hiddenEl = document.getElementById('oneshot-fs-hidden');
-            let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
-
-            if (val.length === 1 && val.match(/[a-z]/)) {
-                const hiddenVal = hiddenEl.value;
-                if (hiddenVal === "" || /(?:[.!?])[\s\n]*$/.test(hiddenVal)) {
-                    val = val.toUpperCase();
-                    visibleEl.innerText = val;
-                    window.placeCaretAtEnd(visibleEl);
-                }
-            }
-
-            if (val.includes(' ') || val.includes('\n')) {
-                const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
-                if (match) {
-                    hiddenEl.value += match[1];
-                    visibleEl.innerText = match[2];
-                    window.placeCaretAtEnd(visibleEl);
-                }
-            }
-            window.updateOneShotStats();
-            
-            const box = document.getElementById('oneshot-fs-preview-box');
-            if (!box.classList.contains('hidden')) {
-                box.innerText = hiddenEl.value + visibleEl.innerText;
-            }
-        };
-
-        window.placeCaretAtEnd = function(el) {
-            el.focus();
-            if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
-                const range = document.createRange();
-                range.selectNodeContents(el);
-                range.collapse(false);
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-        };
-
-        window.updateOneShotStats = function() {
-            const hiddenVal = document.getElementById('oneshot-fs-hidden')?.value || "";
-            const visibleVal = document.getElementById('oneshot-fs-visible')?.innerText || "";
-            const text = (hiddenVal + visibleVal).trim();
-            const wordCount = text ? text.split(/\s+/).length : 0;
-            const statEl = document.getElementById('oneshot-fs-stats');
-            if(statEl) statEl.innerText = `${wordCount} Kata`;
-        };
-
-        window.toggleOneShotPreview = function() {
-            const box = document.getElementById('oneshot-fs-preview-box');
-            const hidden = document.getElementById('oneshot-fs-hidden');
-            const visible = document.getElementById('oneshot-fs-visible');
-            const btnText = document.getElementById('oneshot-preview-btn-text');
-            const btnIcon = document.querySelector('#btn-oneshot-preview i');
-
-            if (box.classList.contains('hidden')) {
-                box.innerText = hidden.value + visible.innerText;
-                box.classList.remove('hidden');
-                btnText.innerText = "Tutup Intip";
-                btnIcon.className = "fa-solid fa-eye-slash mr-2";
-            } else {
-                box.classList.add('hidden');
-                btnText.innerText = "Intip Teks";
-                btnIcon.className = "fa-solid fa-eye mr-2";
-                window.placeCaretAtEnd(visible);
-            }
-        };
-
-        window.toggleInputFields = function() {
-            const category = document.getElementById('note-category').value;
-            const normalContainer = document.getElementById('normal-input-container');
-            const carouselContainer = document.getElementById('carousel-input-container');
-            const pwContainer = document.getElementById('mypassword-input-container');
-            const revContainer = document.getElementById('revisi-input-container');
-            const oneshotContainer = document.getElementById('oneshot-input-container');
-            const instContainer = document.getElementById('instruction-input-container');
-            const purContainer = document.getElementById('mypurchase-input-container');
-
-            [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer, instContainer, purContainer].forEach(el => {
-                if(el) {
-                    el.classList.add('hidden');
-                    el.classList.remove('flex');
-                }
-            });
-
-            if (category === 'carousel') {
-                carouselContainer.classList.remove('hidden'); carouselContainer.classList.add('flex');
-            } else if (category === 'mypassword') {
-                pwContainer.classList.remove('hidden'); pwContainer.classList.add('flex');
-            } else if (category === 'revisi') {
-                revContainer.classList.remove('hidden'); revContainer.classList.add('flex');
-            } else if (category === 'oneshot') {
-                oneshotContainer.classList.remove('hidden'); oneshotContainer.classList.add('flex');
-            } else if (category === 'myinstruction') {
-                instContainer.classList.remove('hidden'); instContainer.classList.add('flex');
-            } else if (category === 'mypurchase') {
-                purContainer.classList.remove('hidden'); purContainer.classList.add('flex');
-            } else {
-                normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
-            }
-        };
-
-        window.initCarouselInputs = function(count = 3) {
-            window.currentCarouselCount = count;
-            document.getElementById('carousel-count-display').innerText = count;
-            const wrapper = document.getElementById('carousel-cards-wrapper');
-            wrapper.innerHTML = '';
-            
-            for(let i=1; i<=count; i++) {
-                wrapper.appendChild(window.createCarouselInputGroup(i, i));
-            }
-            wrapper.appendChild(window.createCarouselInputGroup('caption', 'Caption'));
-        };
-
-        window.createCarouselInputGroup = function(id, label) {
-            const div = document.createElement('div');
-            div.id = `car-input-group-${id}`;
-            div.className = "relative bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl transition-colors mt-3";
-            
-            const badgeClass = id === 'caption' ? 'bg-purple-500 w-auto px-2' : 'bg-pink-500 w-6';
-            
-            div.innerHTML = `
-                <div class="absolute -top-2 -left-2 ${badgeClass} text-white h-6 flex items-center justify-center rounded-full text-[11px] font-bold shadow-md z-10">${label}</div>
-                <textarea id="car-content-${id}" placeholder="Konten ${id === 'caption' ? 'caption' : 'kartu ke-'+id}..." class="w-full bg-transparent text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none resize-none h-16 pt-1"></textarea>
-                
-                <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                    <button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[12px] text-blue-500 hover:text-blue-600 font-medium flex items-center">
-                        <i class="fa-solid fa-image mr-1"></i> Tambah Gambar
-                    </button>
-                    <input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="window.handleModalCarouselImage(event, '${id}')">
-                    
-                    <div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2">
-                        <img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded border border-gray-300 dark:border-gray-500">
-                        <button onclick="window.removeModalCarouselImage('${id}')" class="text-red-500 hover:text-red-600 text-[12px] bg-red-50 dark:bg-red-900/30 w-5 h-5 rounded flex items-center justify-center"><i class="fa-solid fa-times"></i></button>
-                    </div>
-                </div>
-            `;
-            return div;
-        };
-
-        window.changeCarouselCount = function(delta) {
-            const newCount = window.currentCarouselCount + delta;
-            if (newCount < 1 || newCount > 20) {
-                if (newCount > 20) window.showToast("Maksimal 20 kartu.");
-                return;
-            }
-            
-            const wrapper = document.getElementById('carousel-cards-wrapper');
-            const captionEl = document.getElementById('car-input-group-caption');
-            
-            if (delta > 0) {
-                window.currentCarouselCount++;
-                wrapper.insertBefore(window.createCarouselInputGroup(window.currentCarouselCount, window.currentCarouselCount), captionEl);
-            } else {
-                const lastChild = document.getElementById(`car-input-group-${window.currentCarouselCount}`);
-                if (lastChild) wrapper.removeChild(lastChild);
-                delete window.currentCarouselImages[window.currentCarouselCount]; 
-                window.currentCarouselCount--;
-            }
-            document.getElementById('carousel-count-display').innerText = window.currentCarouselCount;
-        };
+        }
 
         window.processImageFile = function(file, callback) {
             window.showToast("Memproses gambar...");
@@ -709,8 +443,8 @@
                     let width = img.width;
                     let height = img.height;
                     
-                    // Lebih agresif untuk mode Carousel & Cloud: Maksimal dimensi 600px
-                    const MAX_DIMENSION = 600;
+                    // Lebih Agresif: Max 600px untuk menghemat ruang Cloud (Batas Firestore 1MB/catatan)
+                    const MAX_DIMENSION = 600; 
                     if (width > height && width > MAX_DIMENSION) {
                         height = Math.round(height * MAX_DIMENSION / width);
                         width = MAX_DIMENSION;
@@ -722,124 +456,40 @@
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    
-                    // Solid Background mencegah PNG jadi balok hitam
-                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillStyle = "#FFFFFF"; 
                     ctx.fillRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Kompresi Kualitas 40% (sangat penting agar bisa banyak gambar di Carousel)
+                    // Kualitas 40% (0.4) agar lebih ringan
                     const dataURL = canvas.toDataURL('image/jpeg', 0.4);
                     
-                    if (dataURL.length > 500 * 1024) {
-                        window.showToast("Gambar masih terlalu besar. Mohon potong (crop) gambar Anda sedikit.");
+                    // Safety check ukuran base64 (~850KB limit)
+                    if (dataURL.length > 850 * 1024) {
+                        window.showToast("Gambar terlalu besar/kompleks. Mohon potong (crop).");
                         return;
                     }
                     callback(dataURL, file.name, 'image/jpeg');
                 };
-                img.onerror = function() {
-                    window.showToast("Format gambar tidak didukung.");
-                };
+                img.onerror = () => window.showToast("Format tidak didukung.");
                 img.src = e.target.result;
             };
-            reader.onerror = function() {
-                window.showToast("Gagal membaca file.");
-            };
             reader.readAsDataURL(file);
-        };
+        }
 
-        window.handleModalCarouselImage = function(event, index) {
-            const file = event.target.files[0];
-            if (!file) return;
-            window.processImageFile(file, (dataUrl) => {
-                window.currentCarouselImages[index] = dataUrl;
-                window.renderModalCarouselImagePreview(index);
-            });
-            event.target.value = '';
-        };
+        window.toggleInputFields = function() {
+            const category = document.getElementById('note-category').value;
+            const containers = ['normal', 'carousel', 'mypassword', 'mypurchase', 'instruction', 'revisi', 'oneshot'].map(id => document.getElementById(`${id}-input-container`));
+            
+            containers.forEach(el => { if(el) { el.classList.add('hidden'); el.classList.remove('flex'); } });
 
-        window.removeModalCarouselImage = function(index) {
-            delete window.currentCarouselImages[index];
-            window.renderModalCarouselImagePreview(index);
-        };
-
-        window.renderModalCarouselImagePreview = function(index) {
-            const box = document.getElementById(`car-img-preview-box-${index}`);
-            const img = document.getElementById(`car-img-preview-src-${index}`);
-            if (!box || !img) return; 
-
-            if (window.currentCarouselImages[index]) {
-                img.src = window.currentCarouselImages[index];
-                box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-            }
-        };
-
-        window.handleFileUpload = function(event, type) {
-            const files = event.target.files;
-            if (!files) return;
-
-            Array.from(files).forEach(file => {
-                if (type === 'image') {
-                    window.processImageFile(file, (dataUrl, fileName, mimeType) => {
-                        window.currentAttachments.push({
-                            id: Date.now() + Math.random(),
-                            type: 'image',
-                            name: fileName,
-                            data: dataUrl,
-                            mimeType: mimeType
-                        });
-                        window.renderAttachmentPreview();
-                    });
-                } else {
-                    if (file.size > 1024 * 1024 * 0.8) { 
-                        window.showToast(`File ${file.name} terlalu besar (Maks 800KB).`);
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        window.currentAttachments.push({
-                            id: Date.now() + Math.random(),
-                            type: 'file',
-                            name: file.name,
-                            data: e.target.result,
-                            mimeType: file.type
-                        });
-                        window.renderAttachmentPreview();
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            event.target.value = ''; 
-        };
-
-        window.removeAttachment = function(id) {
-            window.currentAttachments = window.currentAttachments.filter(a => a.id !== id);
-            window.renderAttachmentPreview();
-        };
-
-        window.renderAttachmentPreview = function() {
-            const container = document.getElementById('attachment-preview');
-            container.innerHTML = '';
-            window.currentAttachments.forEach(att => {
-                if (att.type === 'image') {
-                    container.innerHTML += `
-                        <div class="relative w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden shrink-0 shadow-sm">
-                            <img src="${att.data}" class="object-cover w-full h-full" />
-                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-0 right-0 bg-red-500/90 text-white w-5 h-5 flex items-center justify-center text-xs"><i class="fa-solid fa-times"></i></button>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML += `
-                        <div class="relative bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-lg text-xs flex items-center max-w-[150px] shadow-sm text-gray-700 dark:text-gray-200">
-                            <i class="fa-solid fa-file text-gray-400 mr-2"></i> <span class="truncate pr-4">${att.name}</span>
-                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-1 right-1 bg-red-500/90 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px]"><i class="fa-solid fa-times"></i></button>
-                        </div>
-                    `;
-                }
-            });
-        };
+            if (category === 'carousel') { document.getElementById('carousel-input-container').classList.remove('hidden'); document.getElementById('carousel-input-container').classList.add('flex'); }
+            else if (category === 'mypassword') { document.getElementById('mypassword-input-container').classList.remove('hidden'); document.getElementById('mypassword-input-container').classList.add('flex'); }
+            else if (category === 'mypurchase') { document.getElementById('mypurchase-input-container').classList.remove('hidden'); document.getElementById('mypurchase-input-container').classList.add('flex'); }
+            else if (category === 'myinstruction') { document.getElementById('instruction-input-container').classList.remove('hidden'); document.getElementById('instruction-input-container').classList.add('flex'); }
+            else if (category === 'revisi') { document.getElementById('revisi-input-container').classList.remove('hidden'); document.getElementById('revisi-input-container').classList.add('flex'); }
+            else if (category === 'oneshot') { document.getElementById('oneshot-input-container').classList.remove('hidden'); document.getElementById('oneshot-input-container').classList.add('flex'); }
+            else { document.getElementById('normal-input-container').classList.remove('hidden'); document.getElementById('normal-input-container').classList.add('flex'); }
+        }
 
         window.openModal = function(editId = null) {
             const overlay = document.getElementById('modal-overlay');
@@ -849,26 +499,10 @@
             document.getElementById('note-title').value = "";
             document.getElementById('note-content').value = "";
             
-            if (document.getElementById('pw-username')) {
-                document.getElementById('pw-username').value = "";
-                document.getElementById('pw-password').value = "";
-                document.getElementById('pw-link').value = "";
-            }
-            if (document.getElementById('rev-tujuan')) {
-                document.getElementById('rev-tujuan').value = "";
-                document.getElementById('rev-content').value = "";
-            }
-            if (document.getElementById('inst-link')) {
-                document.getElementById('inst-link').value = "";
-                document.getElementById('inst-content').value = "";
-            }
-            if (document.getElementById('pur-nama')) {
-                document.getElementById('pur-nama').value = "";
-                document.getElementById('pur-owner').value = "";
-                document.getElementById('pur-harga').value = "";
-                document.getElementById('pur-link').value = "";
-                document.getElementById('pur-keterangan').value = "";
-            }
+            ['pw-username', 'pw-password', 'pw-link', 'pur-name', 'pur-owner', 'pur-price', 'pur-link', 'pur-notes', 'inst-link', 'inst-content', 'rev-tujuan', 'rev-content'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = "";
+            });
+            
             if (document.getElementById('oneshot-fs-hidden')) {
                 document.getElementById('oneshot-fs-hidden').value = "";
                 document.getElementById('oneshot-fs-visible').innerText = "";
@@ -876,9 +510,8 @@
                 document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
             }
             
-            window.currentAttachments = []; 
-            window.currentCarouselImages = {}; 
-            
+            currentAttachments = []; 
+            currentCarouselImages = {}; 
             document.getElementById('modal-title').innerText = "Buat Catatan";
             let targetCarouselCount = 3; 
 
@@ -890,12 +523,11 @@
                     document.getElementById('note-category').value = note.category;
                     document.getElementById('modal-title').innerText = "Edit Catatan";
                     
-                    if (note.attachments) window.currentAttachments = [...note.attachments];
+                    if (note.attachments) currentAttachments = [...note.attachments];
 
                     if (note.category === 'carousel') {
                         let parsed = [];
                         try { parsed = JSON.parse(note.content); } catch(e) {}
-                        
                         const regularCards = parsed.filter(c => !c.isCaption);
                         const captionCard = parsed.find(c => c.isCaption);
                         
@@ -906,63 +538,46 @@
                             if (regularCards[i-1]) {
                                 document.getElementById(`car-content-${i}`).value = regularCards[i-1].content || '';
                                 if (regularCards[i-1].image) {
-                                    window.currentCarouselImages[i] = regularCards[i-1].image;
+                                    currentCarouselImages[i] = regularCards[i-1].image;
                                     window.renderModalCarouselImagePreview(i);
                                 }
                             }
                         }
-                        
                         if (captionCard) {
-                            const capEl = document.getElementById('car-content-caption');
-                            if (capEl) capEl.value = captionCard.content || '';
+                            if (document.getElementById('car-content-caption')) document.getElementById('car-content-caption').value = captionCard.content || '';
                             if (captionCard.image) {
-                                window.currentCarouselImages['caption'] = captionCard.image;
+                                currentCarouselImages['caption'] = captionCard.image;
                                 window.renderModalCarouselImagePreview('caption');
                             }
                         }
                     } else if (note.category === 'mypassword') {
-                        let pwData = { username: '', password: '', link: '' };
-                        try { pwData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('pw-username')) {
-                            document.getElementById('pw-username').value = pwData.username || '';
-                            document.getElementById('pw-password').value = pwData.password || '';
-                            document.getElementById('pw-link').value = pwData.link || '';
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
-                    } else if (note.category === 'revisi') {
-                        let revData = { tujuan: '', content: '' };
-                        try { revData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('rev-tujuan')) {
-                            document.getElementById('rev-tujuan').value = revData.tujuan || '';
-                            document.getElementById('rev-content').value = revData.content || '';
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
-                    } else if (note.category === 'myinstruction') {
-                        let instData = { link: '', content: '' };
-                        try { instData = JSON.parse(note.content); } catch(e) { instData.content = note.content; }
-                        if (document.getElementById('inst-link')) {
-                            document.getElementById('inst-link').value = instData.link || '';
-                            document.getElementById('inst-content').value = instData.content || '';
-                        }
+                        let pwData = {}; try { pwData = JSON.parse(note.content); } catch(e) {}
+                        document.getElementById('pw-username').value = pwData.username || '';
+                        document.getElementById('pw-password').value = pwData.password || '';
+                        document.getElementById('pw-link').value = pwData.link || '';
                         window.initCarouselInputs(targetCarouselCount);
                     } else if (note.category === 'mypurchase') {
-                        let purData = { nama: '', owner: '', harga: '', link: '', keterangan: '' };
-                        try { purData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('pur-nama')) {
-                            document.getElementById('pur-nama').value = purData.nama || '';
-                            document.getElementById('pur-owner').value = purData.owner || '';
-                            document.getElementById('pur-harga').value = purData.harga || '';
-                            document.getElementById('pur-link').value = purData.link || '';
-                            document.getElementById('pur-keterangan').value = purData.keterangan || '';
-                        }
+                        let pd = {}; try { pd = JSON.parse(note.content); } catch(e) {}
+                        document.getElementById('pur-name').value = pd.name || '';
+                        document.getElementById('pur-owner').value = pd.owner || '';
+                        document.getElementById('pur-price').value = pd.price || '';
+                        document.getElementById('pur-link').value = pd.link || '';
+                        document.getElementById('pur-notes').value = pd.notes || '';
+                        window.initCarouselInputs(targetCarouselCount);
+                    } else if (note.category === 'myinstruction') {
+                        let idat = {}; try { idat = JSON.parse(note.content); } catch(e) {}
+                        document.getElementById('inst-link').value = idat.link || '';
+                        document.getElementById('inst-content').value = idat.content || '';
+                        window.initCarouselInputs(targetCarouselCount);
+                    } else if (note.category === 'revisi') {
+                        let revData = {}; try { revData = JSON.parse(note.content); } catch(e) {}
+                        document.getElementById('rev-tujuan').value = revData.tujuan || '';
+                        document.getElementById('rev-content').value = revData.content || '';
                         window.initCarouselInputs(targetCarouselCount);
                     } else if (note.category === 'oneshot') {
-                        if (document.getElementById('oneshot-fs-hidden')) {
-                            document.getElementById('oneshot-fs-hidden').value = note.content || '';
-                            document.getElementById('oneshot-fs-visible').innerText = '';
-                            window.updateOneShotStats();
-                            document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
-                        }
+                        document.getElementById('oneshot-fs-hidden').value = note.content || '';
+                        document.getElementById('oneshot-fs-visible').innerText = '';
+                        window.updateOneShotStats();
                         window.initCarouselInputs(targetCarouselCount);
                     } else {
                         document.getElementById('note-content').value = note.content;
@@ -981,7 +596,7 @@
                 overlay.classList.remove('opacity-0');
                 modal.classList.add('modal-active');
             }, 10);
-        };
+        }
 
         window.closeModal = function() {
             const overlay = document.getElementById('modal-overlay');
@@ -989,27 +604,11 @@
             overlay.classList.add('opacity-0');
             modal.classList.remove('modal-active');
             setTimeout(() => overlay.classList.add('hidden'), 300);
-        };
+        }
 
-        window.loadNotes = function() {
-            if (!window.db || !window.collection) {
-                window.showToast("Menunggu koneksi Firebase...");
-                return;
-            }
-            window.onSnapshot(window.collection(window.db, "notes"), (snapshot) => {
-                window.notes = snapshot.docs.map(doc => {
-                    let data = doc.data();
-                    if (!data.id) data.id = doc.id; // PROTEKSI: Gunakan ID dokumen bawaan jika field id kosong
-                    return data;
-                });
-                window.renderNotes();
-            }, (error) => {
-                console.error("Firebase error", error);
-                window.showToast("Gagal memuat catatan (Periksa Koneksi)");
-            });
-        };
+        window.saveNote = function() {
+            window.saveStateToHistory(); 
 
-        window.saveNote = async function() {
             const id = document.getElementById('note-id').value;
             const category = document.getElementById('note-category').value;
             const titleInput = document.getElementById('note-title').value.trim();
@@ -1020,89 +619,62 @@
             if (category === 'carousel') {
                 const carouselData = [];
                 let parsedOld = [];
-                
                 if (id) {
-                    const existingNote = window.notes.find(n => n.id == id);
-                    if (existingNote) {
-                        try { parsedOld = JSON.parse(existingNote.content); } catch(e){}
-                    }
+                    const existingNote = window.notes.find(n => String(n.id) === String(id));
+                    if (existingNote) { try { parsedOld = JSON.parse(existingNote.content); } catch(e){} }
                 }
-
                 const oldRegulars = parsedOld.filter(c => !c.isCaption);
                 const oldCaption = parsedOld.find(c => c.isCaption);
 
                 let oldIdx = 0;
-                for(let i=1; i<=window.currentCarouselCount; i++) {
+                for(let i=1; i<=currentCarouselCount; i++) {
                     const elTxt = document.getElementById(`car-content-${i}`);
                     const txt = elTxt ? elTxt.value.trim() : "";
-                    const img = window.currentCarouselImages[i] || null;
-                    
-                    carouselData.push({ 
-                        id: oldRegulars[oldIdx]?.id || (Date.now() + i + Math.random()),
-                        content: txt,
-                        image: img,
-                        isCaption: false
-                    });
+                    const img = currentCarouselImages[i] || null;
+                    carouselData.push({ id: oldRegulars[oldIdx]?.id || (Date.now() + i + Math.random()), content: txt, image: img, isCaption: false });
                     if (!rawTextForTitle && txt) rawTextForTitle = txt; 
                     oldIdx++;
                 }
-                
-                const capTxtEl = document.getElementById('car-content-caption');
-                const capTxt = capTxtEl ? capTxtEl.value.trim() : "";
-                const capImg = window.currentCarouselImages['caption'] || null;
-                
-                carouselData.push({
-                    id: oldCaption?.id || (Date.now() + 999 + Math.random()),
-                    content: capTxt,
-                    image: capImg,
-                    isCaption: true
-                });
+                const capTxt = document.getElementById('car-content-caption') ? document.getElementById('car-content-caption').value.trim() : "";
+                const capImg = currentCarouselImages['caption'] || null;
+                carouselData.push({ id: oldCaption?.id || (Date.now() + 999 + Math.random()), content: capTxt, image: capImg, isCaption: true });
                 if (!rawTextForTitle && capTxt) rawTextForTitle = capTxt;
-                
                 content = JSON.stringify(carouselData);
-
             } else if (category === 'mypassword') {
-                const pwData = {
+                const data = {
                     username: document.getElementById('pw-username').value.trim(),
                     password: document.getElementById('pw-password').value.trim(),
                     link: document.getElementById('pw-link').value.trim()
                 };
-                content = JSON.stringify(pwData);
-                rawTextForTitle = pwData.username || pwData.link || "My Password";
-
-            } else if (category === 'revisi') {
-                const revData = {
-                    tujuan: document.getElementById('rev-tujuan').value.trim(),
-                    content: document.getElementById('rev-content').value.trim()
+                content = JSON.stringify(data);
+                rawTextForTitle = data.username || data.link || "My Password";
+            } else if (category === 'mypurchase') {
+                const data = {
+                    name: document.getElementById('pur-name').value.trim(),
+                    owner: document.getElementById('pur-owner').value.trim(),
+                    price: document.getElementById('pur-price').value.trim(),
+                    link: document.getElementById('pur-link').value.trim(),
+                    notes: document.getElementById('pur-notes').value.trim()
                 };
-                content = JSON.stringify(revData);
-                rawTextForTitle = revData.tujuan || revData.content || "Revisi";
-
+                content = JSON.stringify(data);
+                rawTextForTitle = data.name || data.owner || "My Purchase";
             } else if (category === 'myinstruction') {
-                const instData = {
+                const data = {
                     link: document.getElementById('inst-link').value.trim(),
                     content: document.getElementById('inst-content').value.trim()
                 };
-                content = JSON.stringify(instData);
-                rawTextForTitle = instData.content || instData.link || "Instruction";
-
-            } else if (category === 'mypurchase') {
-                const purData = {
-                    nama: document.getElementById('pur-nama').value.trim(),
-                    owner: document.getElementById('pur-owner').value.trim(),
-                    harga: document.getElementById('pur-harga').value.trim(),
-                    link: document.getElementById('pur-link').value.trim(),
-                    keterangan: document.getElementById('pur-keterangan').value.trim()
+                content = JSON.stringify(data);
+                rawTextForTitle = data.content || data.link || "Instruction";
+            } else if (category === 'revisi') {
+                const data = {
+                    tujuan: document.getElementById('rev-tujuan').value.trim(),
+                    content: document.getElementById('rev-content').value.trim()
                 };
-                content = JSON.stringify(purData);
-                rawTextForTitle = purData.nama || purData.owner || "My Purchase";
-
+                content = JSON.stringify(data);
+                rawTextForTitle = data.tujuan || data.content || "Revisi";
             } else if (category === 'oneshot') {
-                const hiddenVal = document.getElementById('oneshot-fs-hidden').value;
-                const visibleVal = document.getElementById('oneshot-fs-visible').innerText;
-                content = hiddenVal + visibleVal;
+                content = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText;
                 rawTextForTitle = content;
-
             } else {
                 content = document.getElementById('note-content').value.trim();
                 rawTextForTitle = content;
@@ -1120,44 +692,225 @@
                 }
             }
 
-            const attachmentsToSave = [...window.currentAttachments];
-            let existingNote = id ? window.notes.find(n => String(n.id) === String(id)) : null;
-            const finalId = id ? (isNaN(Number(id)) ? id : Number(id)) : Date.now();
-            
-            const payload = {
-                id: finalId,
-                category: category,
-                title: title,
-                content: content,
-                attachments: attachmentsToSave,
-                timestamp: existingNote ? existingNote.timestamp : Date.now(),
-                updatedAt: Date.now()
-            };
+            const attachmentsToSave = [...currentAttachments];
 
-            // CEK UKURAN PAYLOAD UNTUK MENCEGAH ERROR LIMIT 1MB DARI FIRESTORE
-            const payloadSize = JSON.stringify(payload).length;
-            if (payloadSize > 950000) { // ~950KB batas aman
-                window.showToast("Gagal: Total ukuran (teks + gambar) melebihi batas 1MB Cloud. Kurangi gambar!");
-                return;
+            if (id) {
+                const index = window.notes.findIndex(n => String(n.id) === String(id));
+                if(index > -1) {
+                    window.notes[index] = { ...window.notes[index], category, title, content, attachments: attachmentsToSave, updatedAt: Date.now() };
+                    if (window.isCloudReady) window.syncNoteToCloud(window.notes[index]);
+                }
+            } else {
+                const newNote = { id: Date.now().toString(), category, title, content, attachments: attachmentsToSave, timestamp: Date.now() };
+                window.notes.push(newNote);
+                if (window.isCloudReady) window.syncNoteToCloud(newNote);
             }
 
-            const oldState = existingNote ? JSON.parse(JSON.stringify(existingNote)) : null;
-            const newState = JSON.parse(JSON.stringify(payload));
+            window.saveToStorage(false);
+            window.showToast("Catatan tersimpan!");
+            window.closeModal();
+            window.renderNotes();
+        }
 
-            try {
-                window.showToast("Menyimpan ke Cloud...");
-                await window.setDoc(window.doc(window.db, "notes", payload.id.toString()), payload);
-                window.pushHistory('save', oldState, newState);
-                window.showToast("Catatan berhasil disimpan ke Cloud!");
-                window.closeModal();
-            } catch (error) {
-                console.error(error);
-                window.showToast("Gagal menyimpan. (Mungkin File Terlalu Besar)");
+        window.handleFileUpload = function(event, type) {
+            const files = event.target.files;
+            if (!files) return;
+            Array.from(files).forEach(file => {
+                if (type === 'image') {
+                    window.processImageFile(file, (dataUrl, fileName, mimeType) => {
+                        currentAttachments.push({ id: Date.now() + Math.random(), type: 'image', name: fileName, data: dataUrl, mimeType: mimeType });
+                        window.renderAttachmentPreview();
+                    });
+                } else {
+                    if (file.size > 1024 * 1024 * 2) { 
+                        window.showToast(`File ${file.name} terlalu besar (Maks 2MB).`); return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentAttachments.push({ id: Date.now() + Math.random(), type: 'file', name: file.name, data: e.target.result, mimeType: file.type });
+                        window.renderAttachmentPreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            event.target.value = ''; 
+        }
+
+        window.removeAttachment = function(id) {
+            currentAttachments = currentAttachments.filter(a => a.id !== id);
+            window.renderAttachmentPreview();
+        }
+
+        window.renderAttachmentPreview = function() {
+            const container = document.getElementById('attachment-preview');
+            container.innerHTML = '';
+            currentAttachments.forEach(att => {
+                if (att.type === 'image') {
+                    container.innerHTML += `
+                        <div class="relative w-16 h-16 rounded-[10px] border border-black/5 dark:border-white/10 overflow-hidden shrink-0 shadow-sm">
+                            <img src="${att.data}" class="object-cover w-full h-full" />
+                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-0 right-0 bg-[#FF3B30]/90 text-white w-5 h-5 flex items-center justify-center text-xs backdrop-blur-sm"><i class="fa-solid fa-times"></i></button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <div class="relative bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 px-3 py-2 rounded-[10px] text-[12px] flex items-center max-w-[150px] shadow-sm text-black dark:text-white">
+                            <i class="fa-solid fa-file text-[#007AFF] mr-2"></i> <span class="truncate pr-4">${att.name}</span>
+                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-1 right-1 bg-[#FF3B30]/90 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] backdrop-blur-sm"><i class="fa-solid fa-times"></i></button>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        window.initCarouselInputs = function(count = 3) {
+            currentCarouselCount = count;
+            const disp = document.getElementById('carousel-count-display');
+            if(disp) disp.innerText = count;
+            const wrapper = document.getElementById('carousel-cards-wrapper');
+            if(!wrapper) return;
+            wrapper.innerHTML = '';
+            for(let i=1; i<=count; i++) { wrapper.appendChild(window.createCarouselInputGroup(i, i)); }
+            wrapper.appendChild(window.createCarouselInputGroup('caption', 'Caption'));
+        }
+
+        window.createCarouselInputGroup = function(id, label) {
+            const div = document.createElement('div');
+            div.id = `car-input-group-${id}`;
+            div.className = "relative bg-white dark:bg-[#2C2C2E] border border-black/5 dark:border-white/10 p-4 rounded-2xl shadow-sm transition-colors mt-3";
+            const badgeClass = id === 'caption' ? 'bg-[#AF52DE] w-auto px-2' : 'bg-[#FF2D55] w-6';
+            div.innerHTML = `
+                <div class="absolute -top-2.5 -left-2 ${badgeClass} text-white h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-sm z-10 uppercase tracking-wider">${label}</div>
+                <textarea id="car-content-${id}" placeholder="Konten..." class="w-full bg-transparent text-[15px] text-black dark:text-white focus:outline-none resize-none h-16 pt-1"></textarea>
+                <div class="mt-2 pt-2 border-t border-black/5 dark:border-white/10 flex justify-between items-center">
+                    <button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[13px] text-[#007AFF] font-medium flex items-center hover:opacity-70">
+                        <i class="fa-solid fa-image mr-1.5"></i> Tambah Gambar
+                    </button>
+                    <input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="window.handleModalCarouselImage(event, '${id}')">
+                    <div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2">
+                        <img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded-[6px] border border-black/10 dark:border-white/10">
+                        <button onclick="window.removeModalCarouselImage('${id}')" class="text-[#FF3B30] bg-[#FF3B30]/10 hover:bg-[#FF3B30]/20 w-6 h-6 rounded flex items-center justify-center transition"><i class="fa-solid fa-times text-[12px]"></i></button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        window.changeCarouselCount = function(delta) {
+            const newCount = currentCarouselCount + delta;
+            if (newCount < 1 || newCount > 20) {
+                if (newCount > 20) window.showToast("Maksimal 20 kartu."); return;
             }
-        };
+            const wrapper = document.getElementById('carousel-cards-wrapper');
+            const captionEl = document.getElementById('car-input-group-caption');
+            if (delta > 0) {
+                currentCarouselCount++;
+                wrapper.insertBefore(window.createCarouselInputGroup(currentCarouselCount, currentCarouselCount), captionEl);
+            } else {
+                const lastChild = document.getElementById(`car-input-group-${currentCarouselCount}`);
+                if (lastChild) wrapper.removeChild(lastChild);
+                delete currentCarouselImages[currentCarouselCount]; 
+                currentCarouselCount--;
+            }
+            document.getElementById('carousel-count-display').innerText = currentCarouselCount;
+        }
+
+        window.handleModalCarouselImage = function(event, index) {
+            const file = event.target.files[0];
+            if (!file) return;
+            window.processImageFile(file, (dataUrl) => {
+                currentCarouselImages[index] = dataUrl;
+                window.renderModalCarouselImagePreview(index);
+            });
+            event.target.value = '';
+        }
+
+        window.removeModalCarouselImage = function(index) {
+            delete currentCarouselImages[index];
+            window.renderModalCarouselImagePreview(index);
+        }
+
+        window.renderModalCarouselImagePreview = function(index) {
+            const box = document.getElementById(`car-img-preview-box-${index}`);
+            const img = document.getElementById(`car-img-preview-src-${index}`);
+            if (!box || !img) return; 
+            if (currentCarouselImages[index]) {
+                img.src = currentCarouselImages[index];
+                box.classList.remove('hidden');
+            } else {
+                img.src = '';
+                box.classList.add('hidden');
+            }
+        }
+
+        window.handleCarouselImageUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            window.processImageFile(file, (dataUrl) => {
+                window.saveStateToHistory();
+                const note = window.notes.find(n => String(n.id) === String(activeCarouselEdit.noteId));
+                if (note) {
+                    try {
+                        let items = JSON.parse(note.content);
+                        let card = items.find(i => String(i.id) === String(activeCarouselEdit.cardId));
+                        if (card) {
+                            card.image = dataUrl;
+                            note.content = JSON.stringify(items);
+                            note.updatedAt = Date.now();
+                            window.saveToStorage(false);
+                            if (window.isCloudReady) window.syncNoteToCloud(note);
+                            window.renderNotes();
+                            window.showToast("Gambar ditambahkan!");
+                        }
+                    } catch(err) {}
+                }
+            });
+            event.target.value = '';
+        }
+
+        window.triggerCarouselImageUpload = function(noteId, cardId) {
+            activeCarouselEdit = { noteId, cardId };
+            document.getElementById('carousel-image-input').click();
+        }
+
+        window.toggleActionMenu = function(id) {
+            window.closeAllActionMenus(); 
+            const menu = document.getElementById(`action-menu-${id}`);
+            if (menu) menu.classList.toggle('hidden');
+        }
+        window.closeAllActionMenus = function() {
+            document.querySelectorAll('.action-menu-popup').forEach(el => el.classList.add('hidden'));
+        }
+
+        window.toggleCategory = function(catKey) {
+            const content = document.getElementById(`cat-body-${catKey}`);
+            const icon = document.getElementById(`cat-icon-${catKey}`);
+            const isOpen = content.classList.toggle('open');
+            icon.classList.toggle('open');
+            if (isOpen) openCategories.add(catKey); else openCategories.delete(catKey);
+        }
+
+        window.toggleNote = function(noteId) {
+            const content = document.getElementById(`note-body-${noteId}`);
+            const icon = document.getElementById(`note-icon-${noteId}`);
+            const isOpen = content.classList.toggle('open');
+            icon.classList.toggle('open');
+            if (isOpen) openNotes.add(String(noteId)); else openNotes.delete(String(noteId));
+        }
+
+        window.toggleGroupView = function() {
+            isGrouped = !isGrouped;
+            const btn = document.getElementById('btn-group');
+            if (isGrouped) {
+                btn.innerHTML = '<i class="fa-solid fa-list"></i>'; 
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
+            }
+            window.renderNotes();
+        }
 
         window.openDeleteAlert = function(id) {
-            window.noteIdToDelete = id;
+            noteIdToDelete = id;
             const overlay = document.getElementById('delete-alert-overlay');
             const box = document.getElementById('delete-alert-box');
             overlay.classList.remove('hidden');
@@ -1167,7 +920,7 @@
                 box.classList.remove('scale-95');
                 box.classList.add('scale-100');
             }, 10);
-        };
+        }
 
         window.closeDeleteAlert = function() {
             const overlay = document.getElementById('delete-alert-overlay');
@@ -1175,84 +928,413 @@
             overlay.classList.add('opacity-0');
             box.classList.remove('scale-100');
             box.classList.add('scale-95');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                window.noteIdToDelete = null;
-            }, 300);
-        };
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); noteIdToDelete = null; }, 300);
+        }
 
-        window.confirmDelete = async function() {
-            if (window.noteIdToDelete !== null && window.noteIdToDelete !== undefined) {
-                const noteToDelete = window.notes.find(n => String(n.id) === String(window.noteIdToDelete));
-                const oldState = noteToDelete ? JSON.parse(JSON.stringify(noteToDelete)) : null;
-
-                try {
-                    await window.deleteDoc(window.doc(window.db, "notes", String(window.noteIdToDelete)));
-                    if(oldState) window.pushHistory('delete', oldState, null);
-                    window.showToast("Catatan dihapus.");
-                    window.closeDeleteAlert();
-                } catch (e) {
-                    console.error("Error Delete:", e);
-                    window.showToast("Gagal menghapus.");
-                }
+        window.confirmDelete = function() {
+            if (noteIdToDelete !== null) {
+                window.saveStateToHistory();
+                window.notes = window.notes.filter(n => String(n.id) !== String(noteIdToDelete));
+                window.saveToStorage(false);
+                if (window.isCloudReady) window.deleteNoteFromCloud(noteIdToDelete);
+                window.renderNotes();
+                window.showToast("Dihapus.");
+                window.closeDeleteAlert();
             }
-        };
+        }
 
-        window.toggleMemoTask = async function(noteId, idx) {
+        window.openCopyOptions = function(id) {
+            noteIdToCopy = id;
+            const overlay = document.getElementById('copy-options-overlay');
+            const box = document.getElementById('copy-options-box');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
+        }
+
+        window.closeCopyOptions = function() {
+            const overlay = document.getElementById('copy-options-overlay');
+            const box = document.getElementById('copy-options-box');
+            overlay.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); noteIdToCopy = null; }, 300);
+        }
+
+        window.executeCopy = function(withTitle) {
+            if (noteIdToCopy === null) return;
+            const note = window.notes.find(n => String(n.id) === String(noteIdToCopy));
+            if (!note) { window.closeCopyOptions(); return; }
+            
+            let textToCopy = "";
+            if (withTitle && note.title) textToCopy += `${note.title}\n\n`;
+            
+            if (note.category === 'carousel') {
+                try {
+                    let items = JSON.parse(note.content); let numIdx = 1;
+                    textToCopy += items.map((it) => {
+                        const title = it.isCaption ? 'Caption' : `Kartu ${numIdx++}`;
+                        return `[${title}]\n${it.content}`;
+                    }).join('\n\n---\n\n');
+                } catch(e) {}
+            } else if (note.category === 'mypassword') {
+                try { let pw = JSON.parse(note.content); textToCopy += `Username: ${pw.username}\nPassword: ${pw.password}\nLink: ${pw.link}`; } catch(e) {}
+            } else if (note.category === 'mypurchase') {
+                try { let p = JSON.parse(note.content); textToCopy += `Produk: ${p.name}\nOwner: ${p.owner}\nHarga: ${p.price}\nLink: ${p.link}\nNotes: ${p.notes}`; } catch(e) {}
+            } else if (note.category === 'myinstruction') {
+                try { let i = JSON.parse(note.content); textToCopy += `Link: ${i.link}\n\nInstruksi:\n${i.content}`; } catch(e) {}
+            } else if (note.category === 'revisi') {
+                try { let rev = JSON.parse(note.content); textToCopy += `Tujuan Revisi: ${rev.tujuan}\n\nTeks:\n${rev.content}`; } catch(e) {}
+            } else {
+                textToCopy += note.content;
+            }
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy.trim();
+            document.body.appendChild(textarea);
+            textarea.select();
+            try { document.execCommand('copy'); window.showToast("Teks disalin!"); } catch (err) {}
+            document.body.removeChild(textarea);
+            window.closeCopyOptions();
+        }
+
+        window.visitLink = function(id) {
+            const note = window.notes.find(n => String(n.id) === String(id));
+            if (!note) return;
+            let urlToOpen = null;
+
+            if (note.category === 'mypassword') {
+                try { const pw = JSON.parse(note.content); if (pw.link) urlToOpen = pw.link; } catch(e) {}
+            } else if (note.category === 'mypurchase') {
+                try { const p = JSON.parse(note.content); if (p.link) urlToOpen = p.link; } catch(e) {}
+            } else if (note.category === 'myinstruction') {
+                try { const i = JSON.parse(note.content); if (i.link) urlToOpen = i.link; } catch(e) {}
+            } else {
+                const urlRegex = /(https?:\/\/[^\s]+)/;
+                const match = note.content.match(urlRegex);
+                if (match) urlToOpen = match[0];
+            }
+
+            if (urlToOpen) {
+                if (!urlToOpen.match(/^https?:\/\//i)) urlToOpen = 'https://' + urlToOpen;
+                window.open(urlToOpen, '_blank');
+                window.showToast("Membuka tautan...");
+            } else {
+                window.showToast("Tidak ditemukan link pada catatan ini.");
+            }
+        }
+
+        window.toggleMemoCheckbox = function(noteId, lineIndex, isChecked) {
+            window.saveStateToHistory();
             const note = window.notes.find(n => String(n.id) === String(noteId));
             if (!note) return;
-            
-            const oldState = JSON.parse(JSON.stringify(note));
-
             let lines = note.content.split('\n');
-            let line = lines[idx];
+            let match = lines[lineIndex].match(/^-\s+\[([xX ])\](.*)/);
+            if (match) {
+                lines[lineIndex] = `- [${isChecked ? 'x' : ' '}]${match[2]}`;
+                note.content = lines.join('\n');
+                window.saveToStorage(false);
+                if (window.isCloudReady) window.syncNoteToCloud(note);
+                window.renderNotes();
+            }
+        }
+
+        window.escapeHTML = function(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+        }
+
+        window.formatTextWithLinks = function(text, noteId, isMemo = false) {
+            if (!text) return "";
+            if (isMemo) {
+                return text.split('\n').map((line, idx) => {
+                    const cbMatch = line.match(/^-\s+\[([xX ])\]/);
+                    if (cbMatch) {
+                        const isChecked = cbMatch[1].toLowerCase() === 'x';
+                        const cleanText = line.replace(/^-\s+\[[xX ]\]\s*/, '');
+                        const linkedText = cleanText.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] hover:underline break-all">${url}</a>`);
+                        return `<label class="flex items-start space-x-2.5 my-1.5 cursor-pointer" onclick="event.stopPropagation()">
+                                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="window.toggleMemoCheckbox('${noteId}', ${idx}, this.checked)" class="mt-1 w-4 h-4 rounded text-[#007AFF] focus:ring-[#007AFF]">
+                                    <span class="${isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-black dark:text-white'} leading-snug">${linkedText}</span>
+                                </label>`;
+                    }
+                    const linkedLine = window.escapeHTML(line).replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] hover:underline break-all">${url}</a>`);
+                    return `<div class="my-0.5">${linkedLine}</div>`;
+                }).join('');
+            }
             
-            if (line.startsWith('✓ ') || line.startsWith('- [x] ')) {
-                lines[idx] = line.replace(/^(✓ |- \[x\] )/, '☐ ');
-            } else if (line.startsWith('- [ ] ') || line.startsWith('☐ ')) {
-                lines[idx] = line.replace(/^(- \[ \] |☐ )/, '✓ ');
+            const safeText = window.escapeHTML(text);
+            return safeText.replace(/(https?:\/\/[^\s]+)/g, url => `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] hover:underline break-all">${url}</a>`);
+        }
+
+        window.formatTime = function(timestamp) {
+            if (!timestamp) return '';
+            return new Date(timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(/\./g, ':');
+        }
+
+        window.downloadImage = function(dataUrl, fileName) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = fileName || 'download.jpg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.showToast("Mengunduh gambar...");
+        }
+
+        window.buildNoteCard = function(note, showBadge = false) {
+            const catConfig = categories[note.category] || categories['memo'];
+            const isNoteOpen = openNotes.has(String(note.id));
+            const openClass = isNoteOpen ? "open" : "";
+            
+            let previewContent = '';
+            let isMemoMode = note.category === 'memo';
+            
+            if (note.category === 'carousel') {
+                let items = []; try { items = JSON.parse(note.content); } catch(e){}
+                previewContent = `<div class="flex gap-3 overflow-x-auto hide-scrollbar py-3 pl-2 items-start">`;
+                let numIdx = 1;
+                items.forEach((it) => {
+                    const imgHtml = it.image ? `
+                        <div class="relative group">
+                            <img src="${it.image}" class="w-full h-auto max-h-48 object-cover object-center rounded-[14px] mb-3 border border-black/5 dark:border-white/10">
+                            <div class="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="window.downloadImage('${it.image}', 'carousel_${it.id}.jpg'); event.stopPropagation();" class="w-7 h-7 bg-black/50 hover:bg-black/70 backdrop-blur-md text-white rounded-full flex items-center justify-center transition" title="Unduh"><i class="fa-solid fa-download text-[11px]"></i></button>
+                                <button onclick="window.deleteCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 bg-[#FF3B30]/80 hover:bg-[#FF3B30] backdrop-blur-md text-white rounded-full flex items-center justify-center transition" title="Hapus"><i class="fa-solid fa-times text-[11px]"></i></button>
+                            </div>
+                        </div>` : '';
+                    const badgeHtml = it.isCaption ? `<div class="absolute -top-2 -left-2 bg-[#AF52DE] text-white px-2 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-sm z-10 uppercase">Caption</div>` : `<div class="absolute -top-2 -left-2 bg-[#FF2D55] text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-sm z-10">${numIdx++}</div>`;
+                    previewContent += `
+                        <div class="shrink-0 w-56 bg-white dark:bg-[#2C2C2E] p-4 rounded-[20px] border border-black/5 dark:border-white/10 flex flex-col justify-between shadow-sm relative">
+                            ${badgeHtml}
+                            <div>
+                                ${imgHtml}
+                                <div class="text-[14px] text-black dark:text-white whitespace-pre-wrap">${window.formatTextWithLinks(it.content, note.id)}</div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-black/5 dark:border-white/10 flex justify-between items-center">
+                                <button onclick="window.copyCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 dark:bg-black/30 text-[#34C759] hover:opacity-70 transition" title="Salin"><i class="fa-regular fa-copy text-[11px]"></i></button>
+                                <button onclick="window.openEditCarouselCardModal('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 dark:bg-black/30 text-[#007AFF] hover:opacity-70 transition" title="Edit Teks"><i class="fa-solid fa-pen text-[11px]"></i></button>
+                                <button onclick="window.triggerCarouselImageUpload('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 dark:bg-black/30 text-[#AF52DE] hover:opacity-70 transition" title="Unggah Gambar"><i class="fa-solid fa-image text-[11px]"></i></button>
+                            </div>
+                        </div>`;
+                });
+                previewContent += `</div>`;
+                if(items.length === 0) previewContent = '<p class="text-[13px] text-gray-500 italic">Carousel kosong</p>';
+            } else if (note.category === 'mypassword') {
+                let pw = {username: '', password: '', link: ''}; try { pw = JSON.parse(note.content); } catch(e){}
+                let safeLink = window.escapeHTML(pw.link); let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
+                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] hover:underline break-all">${safeLink}</a>` : '-';
+                previewContent = `
+                    <div class="space-y-3 text-[15px] text-black dark:text-white bg-white dark:bg-[#2C2C2E] p-4 rounded-[20px] border border-black/5 dark:border-white/10">
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Username / Email</span><span class="font-medium select-all">${window.escapeHTML(pw.username) || '-'}</span></div>
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Password</span><span class="font-mono bg-gray-100 dark:bg-black/50 px-2 py-1 rounded-md inline-block w-fit select-all">${window.escapeHTML(pw.password) || '-'}</span></div>
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link / URL</span><span>${linkHtml}</span></div>
+                    </div>`;
+            } else if (note.category === 'mypurchase') {
+                let pd = {name: '', owner: '', price: '', link: '', notes: ''}; try { pd = JSON.parse(note.content); } catch(e){}
+                let safeLink = window.escapeHTML(pd.link); let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
+                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] hover:underline break-all">${safeLink}</a>` : '-';
+                previewContent = `
+                    <div class="space-y-3 text-[15px] text-black dark:text-white bg-white dark:bg-[#2C2C2E] p-4 rounded-[20px] border border-black/5 dark:border-white/10">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Produk</span><span class="font-medium">${window.escapeHTML(pd.name) || '-'}</span></div>
+                            <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Owner</span><span class="font-medium">${window.escapeHTML(pd.owner) || '-'}</span></div>
+                        </div>
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Harga</span><span class="text-[#FF9500] font-semibold">${window.escapeHTML(pd.price) || '-'}</span></div>
+                        <div class="flex flex-col"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link</span><span>${linkHtml}</span></div>
+                        ${pd.notes ? `<div class="flex flex-col border-t border-black/5 dark:border-white/10 pt-2 mt-2"><span class="text-[11px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">Catatan</span><span class="whitespace-pre-wrap">${window.formatTextWithLinks(pd.notes, note.id)}</span></div>` : ''}
+                    </div>`;
+            } else if (note.category === 'myinstruction') {
+                let idat = {link: '', content: ''}; try { idat = JSON.parse(note.content); } catch(e){}
+                let safeLink = window.escapeHTML(idat.link); let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
+                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-[#007AFF] hover:underline break-all block mb-3 pb-3 border-b border-black/5 dark:border-white/10">${safeLink}</a>` : '';
+                previewContent = `
+                    <div class="bg-white dark:bg-[#2C2C2E] p-4 rounded-[20px] border border-black/5 dark:border-white/10">
+                        ${linkHtml}
+                        <div class="text-[15px] text-black dark:text-white whitespace-pre-wrap leading-relaxed">${window.formatTextWithLinks(idat.content, note.id)}</div>
+                    </div>`;
+            } else if (note.category === 'revisi') {
+                let rev = { tujuan: '', content: '' }; try { rev = JSON.parse(note.content); } catch(e){}
+                previewContent = `
+                    <div class="space-y-3">
+                        <div class="bg-[#32ADE6]/10 p-4 rounded-[20px]">
+                            <span class="block text-[11px] text-[#32ADE6] uppercase font-bold tracking-wider mb-1">Tujuan Revisi</span>
+                            <span class="text-[14px] text-black dark:text-white">${window.escapeHTML(rev.tujuan) || '-'}</span>
+                        </div>
+                        <div class="text-[15px] text-black dark:text-white whitespace-pre-wrap leading-relaxed px-1">
+                            ${window.formatTextWithLinks(rev.content, note.id)}
+                        </div>
+                    </div>`;
             } else {
-                lines[idx] = '✓ ' + line;
+                previewContent = `<div class="text-[15px] text-black dark:text-white whitespace-pre-wrap leading-relaxed">${window.formatTextWithLinks(note.content, note.id, isMemoMode)}</div>`;
             }
-            
-            note.content = lines.join('\n');
-            note.updatedAt = Date.now();
-            const newState = JSON.parse(JSON.stringify(note));
-            
-            try {
-                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                window.pushHistory('update', oldState, newState);
-            } catch(e) {
-                window.showToast("Gagal memperbarui status centang.");
-            }
-        };
 
-        window.removeCardImage = async function(noteId, attId) {
-            if(!confirm("Hapus lampiran gambar ini?")) return;
+            let imagesHtml = ''; let filesHtml = '';
+            if (note.attachments && note.attachments.length > 0) {
+                const imageAtts = note.attachments.filter(a => a.type === 'image');
+                const fileAtts = note.attachments.filter(a => a.type !== 'image');
+                
+                if (imageAtts.length > 0) {
+                    imagesHtml = `<div class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">`;
+                    imageAtts.forEach(att => {
+                        imagesHtml += `
+                            <div class="relative group">
+                                <a href="${att.data}" target="_blank" onclick="event.stopPropagation()" class="block w-full rounded-[16px] overflow-hidden border border-black/5 dark:border-white/10 shadow-sm bg-gray-100 dark:bg-[#2C2C2E]">
+                                    <img src="${att.data}" class="w-full h-auto max-h-64 object-cover hover:opacity-90 transition">
+                                </a>
+                                <div class="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto">
+                                    <button onclick="window.downloadImage('${att.data}', '${att.name}'); event.stopPropagation();" class="w-8 h-8 bg-black/50 hover:bg-black/70 backdrop-blur-md text-white rounded-full flex items-center justify-center transition" title="Unduh"><i class="fa-solid fa-download text-[13px]"></i></button>
+                                </div>
+                            </div>`;
+                    });
+                    imagesHtml += `</div>`;
+                }
+                
+                if (fileAtts.length > 0) {
+                    filesHtml = `<div class="mt-4 pt-3 border-t border-black/5 dark:border-white/10 flex flex-wrap gap-2">`;
+                    fileAtts.forEach(att => {
+                        filesHtml += `<a href="${att.data}" download="${att.name}" onclick="event.stopPropagation()" class="bg-white dark:bg-[#2C2C2E] hover:opacity-70 px-4 py-2.5 rounded-[12px] text-[13px] text-[#007AFF] font-medium flex items-center transition border border-black/5 dark:border-white/10 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
+                    });
+                    filesHtml += `</div>`;
+                }
+            }
+
+            const badgeHtml = showBadge ? `<span class="px-2.5 py-1 rounded-[8px] ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0 tracking-wide">${catConfig.icon} ${catConfig.title}</span>` : '';
+            const timeCreated = window.formatTime(note.timestamp);
+            const timeHtml = `<div class="text-[12px] text-gray-400 dark:text-gray-500 mt-1 truncate font-medium">${timeCreated}</div>`;
+
+            const visitBtnVisible = ['mylink', 'mypassword', 'myinstruction', 'mypurchase', 'gemsgpt'].includes(note.category);
+
+            return `
+                <div class="bg-white dark:bg-[#1C1C1E] rounded-[24px] shadow-sm border border-black/5 dark:border-white/10 overflow-visible transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5 relative">
+                    <div class="px-5 py-4 flex justify-between items-start cursor-pointer active:bg-gray-50 dark:active:bg-white/5 transition-colors rounded-t-[24px]" onclick="window.toggleNote('${note.id}')">
+                        <div class="flex-1 pr-2 flex flex-col overflow-hidden justify-center min-w-0">
+                            <div class="flex items-center overflow-hidden">
+                                <h3 class="font-semibold text-black dark:text-white text-[17px] tracking-tight truncate">${window.escapeHTML(note.title)}</h3>
+                                ${badgeHtml}
+                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 text-[11px] ml-2 shrink-0"></i>' : ''}
+                            </div>
+                            ${timeHtml}
+                        </div>
+                        
+                        <div class="relative flex items-center shrink-0 ml-2 mt-0.5">
+                            <button onclick="window.toggleActionMenu('${String(note.id)}'); event.stopPropagation();" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-black dark:hover:text-white transition bg-transparent rounded-full">
+                                <i class="fa-solid fa-ellipsis text-[20px]"></i>
+                            </button>
+                            
+                            <!-- Context Menu POPUP -->
+                            <div id="action-menu-${note.id}" class="action-menu-popup hidden absolute right-8 top-8 w-48 bg-white/85 dark:bg-[#252525]/85 backdrop-blur-2xl border border-black/5 dark:border-white/10 rounded-[14px] shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex-col z-[60] overflow-hidden text-[15px] transform origin-top-right transition-all">
+                                ${visitBtnVisible ? `
+                                <button onclick="window.visitLink('${note.id}'); window.closeAllActionMenus(); event.stopPropagation();" class="w-full px-4 py-2.5 flex justify-between items-center text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors border-b border-black/5 dark:border-white/10">
+                                    <span>Buka Link</span><i class="fa-solid fa-arrow-up-right-from-square text-[14px] opacity-50"></i>
+                                </button>` : ''}
+                                <button onclick="window.openCopyOptions('${note.id}'); window.closeAllActionMenus(); event.stopPropagation();" class="w-full px-4 py-2.5 flex justify-between items-center text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors border-b border-black/5 dark:border-white/10">
+                                    <span>Salin Teks</span><i class="fa-regular fa-copy text-[14px] opacity-50"></i>
+                                </button>
+                                <button onclick="window.openModal('${note.id}'); window.closeAllActionMenus(); event.stopPropagation();" class="w-full px-4 py-2.5 flex justify-between items-center text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors border-b border-black/5 dark:border-white/10">
+                                    <span>Edit Catatan</span><i class="fa-solid fa-pen text-[14px] opacity-50"></i>
+                                </button>
+                                <button onclick="window.openDeleteAlert('${note.id}'); window.closeAllActionMenus(); event.stopPropagation();" class="w-full px-4 py-2.5 flex justify-between items-center text-[#FF3B30] hover:bg-[#FF3B30]/10 transition-colors">
+                                    <span>Hapus</span><i class="fa-solid fa-trash text-[14px]"></i>
+                                </button>
+                            </div>
+                            
+                            <i class="fa-solid fa-chevron-down text-gray-400 text-sm chevron-icon pl-2 ml-1 ${openClass}" id="note-icon-${note.id}"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-content border-t border-transparent ${openClass}" id="note-body-${note.id}">
+                        <div class="accordion-inner">
+                            <div class="p-5 pt-1">
+                                ${imagesHtml}
+                                ${previewContent}
+                                ${filesHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.renderNotes = function() {
+            const container = document.getElementById('notes-container');
+            container.innerHTML = '';
+            if (window.notes.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center text-gray-400 pt-32">
+                        <i class="fa-solid fa-cloud text-7xl mb-4 text-gray-300 dark:text-gray-700"></i>
+                        <p class="font-semibold text-xl text-black dark:text-white tracking-tight">i-cloud Kosong</p>
+                        <p class="text-[15px] mt-1">Ketuk ikon pensil untuk memulai.</p>
+                    </div>`;
+                return;
+            }
+
+            let html = '';
+            if (isGrouped) {
+                html += `<div class="columns-1 lg:columns-2 xl:columns-3 gap-5 md:gap-6">`;
+                Object.keys(categories).forEach(catKey => {
+                    const catNotes = window.notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
+                    if (catNotes.length > 0) {
+                        const config = categories[catKey];
+                        const isCatOpen = openCategories.has(catKey);
+                        const openClass = isCatOpen ? "open" : "";
+                        html += `
+                            <div class="mb-5 md:mb-6 break-inside-avoid inline-block w-full bg-white dark:bg-[#1C1C1E] border border-black/5 dark:border-white/10 rounded-[24px] shadow-sm overflow-hidden transition-colors">
+                                <div class="flex justify-between items-center px-5 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors" onclick="window.toggleCategory('${catKey}')">
+                                    <div class="flex items-center">
+                                        <div class="w-9 h-9 rounded-[10px] ${config.bg} ${config.color} flex items-center justify-center mr-3 text-lg">${config.icon}</div>
+                                        <h2 class="text-[17px] font-semibold text-black dark:text-white tracking-tight">${config.title}</h2>
+                                        <span class="ml-3 bg-gray-100 dark:bg-[#2C2C2E] text-gray-500 px-2.5 py-0.5 rounded-full text-xs font-bold">${catNotes.length}</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down text-gray-400 text-sm chevron-icon ${openClass}" id="cat-icon-${catKey}"></i>
+                                </div>
+                                <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
+                                    <div class="accordion-inner bg-gray-50/50 dark:bg-black/20 border-t border-black/5 dark:border-white/10">
+                                        <div class="p-4 pb-0">`;
+                        catNotes.forEach(note => { html += window.buildNoteCard(note, false); });
+                        html += `       </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+                });
+                html += `</div>`;
+            } else {
+                const allNotes = [...window.notes].sort((a,b) => b.timestamp - a.timestamp);
+                html += `<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-5 lg:gap-6 pt-2">`;
+                allNotes.forEach(note => { html += window.buildNoteCard(note, false); });
+                html += `</div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        window.deleteCarouselCard = function(noteId, cardId) {
+            if (!confirm("Hapus kartu ini dari Carousel?")) return;
+            window.saveStateToHistory();
             const note = window.notes.find(n => String(n.id) === String(noteId));
-            if(!note) return;
-            
-            const oldState = JSON.parse(JSON.stringify(note));
-            note.attachments = note.attachments.filter(a => a.id !== attId);
-            note.updatedAt = Date.now();
-            const newState = JSON.parse(JSON.stringify(note));
-
+            if (!note) return;
             try {
-                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                window.pushHistory('update', oldState, newState);
-                window.showToast("Gambar dihapus.");
-            } catch(e) {
-                window.showToast("Gagal menghapus.");
-            }
-        };
-
+                let items = JSON.parse(note.content);
+                items = items.filter(i => String(i.id) !== String(cardId));
+                note.content = JSON.stringify(items);
+                note.updatedAt = Date.now();
+                window.saveToStorage(false);
+                if (window.isCloudReady) window.syncNoteToCloud(note);
+                window.renderNotes();
+                window.showToast("Kartu carousel dihapus.");
+            } catch(e) {}
+        }
+        
         window.copyCarouselCard = function(noteId, cardId) {
             const note = window.notes.find(n => String(n.id) === String(noteId));
             if (!note) return;
             try {
                 const items = JSON.parse(note.content);
-                const card = items.find(i => i.id === cardId);
+                const card = items.find(i => String(i.id) === String(cardId));
                 if (card) {
                     const textarea = document.createElement('textarea');
                     textarea.value = card.content;
@@ -1263,621 +1345,171 @@
                     window.showToast("Teks kartu disalin!");
                 }
             } catch(e) {}
-        };
+        }
 
-        window.deleteCarouselCard = async function(noteId, cardId) {
-            if (!confirm("Hapus kartu ini dari Carousel?")) return;
-            const note = window.notes.find(n => String(n.id) === String(noteId));
+        window.saveEditCarouselCard = function() {
+            const note = window.notes.find(n => String(n.id) === String(activeCarouselEdit.noteId));
             if (!note) return;
-
-            const oldState = JSON.parse(JSON.stringify(note));
             try {
                 let items = JSON.parse(note.content);
-                items = items.filter(i => i.id !== cardId);
-                note.content = JSON.stringify(items);
-                note.updatedAt = Date.now();
-                const newState = JSON.parse(JSON.stringify(note));
-
-                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                window.pushHistory('update', oldState, newState);
-                window.showToast("Kartu dihapus.");
-            } catch(e) {}
-        };
-
-        window.triggerCarouselImageUpload = function(noteId, cardId) {
-            window.activeCarouselEdit = { noteId, cardId };
-            document.getElementById('carousel-image-input').click();
-        };
-
-        window.handleCarouselImageUpload = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            window.processImageFile(file, async (dataUrl) => {
-                const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId));
-                if (note) {
-                    const oldState = JSON.parse(JSON.stringify(note));
-                    try {
-                        let items = JSON.parse(note.content);
-                        let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
-                        if (card) {
-                            card.image = dataUrl;
-                            note.content = JSON.stringify(items);
-                            note.updatedAt = Date.now();
-                            
-                            // CEK UKURAN PAYLOAD SEBELUM DISIMPAN
-                            const payloadSize = JSON.stringify(note).length;
-                            if (payloadSize > 950000) {
-                                window.showToast("Gagal: Penambahan gambar ini membuat catatan melebihi batas 1MB Cloud.");
-                                return;
-                            }
-
-                            const newState = JSON.parse(JSON.stringify(note));
-                            window.showToast("Menyimpan ke Cloud...");
-                            await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                            window.pushHistory('update', oldState, newState);
-                            window.showToast("Gambar ditambahkan ke kartu!");
-                        }
-                    } catch(err) {
-                        window.showToast("Gagal menyimpan gambar.");
-                    }
-                }
-            });
-            event.target.value = '';
-        };
-
-        window.openEditCarouselCardModal = function(noteId, cardId) {
-            window.activeCarouselEdit = { noteId, cardId };
-            const note = window.notes.find(n => String(n.id) === String(noteId));
-            if (!note) return;
-            try {
-                const items = JSON.parse(note.content);
-                const card = items.find(i => i.id === cardId);
-                if (card) {
-                    document.getElementById('edit-card-textarea').value = card.content;
-                    const overlay = document.getElementById('edit-card-overlay');
-                    const box = document.getElementById('edit-card-box');
-                    overlay.classList.remove('hidden');
-                    overlay.classList.add('flex');
-                    setTimeout(() => {
-                        overlay.classList.remove('opacity-0');
-                        box.classList.remove('scale-95');
-                        box.classList.add('scale-100');
-                    }, 10);
-                }
-            } catch(e) {}
-        };
-
-        window.closeEditCarouselCardModal = function() {
-            const overlay = document.getElementById('edit-card-overlay');
-            const box = document.getElementById('edit-card-box');
-            overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
-        };
-
-        window.saveEditCarouselCard = async function() {
-            const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId));
-            if (!note) return;
-
-            const oldState = JSON.parse(JSON.stringify(note));
-            try {
-                let items = JSON.parse(note.content);
-                let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
+                let card = items.find(i => String(i.id) === String(activeCarouselEdit.cardId));
                 if (card) {
                     card.content = document.getElementById('edit-card-textarea').value;
                     note.content = JSON.stringify(items);
                     note.updatedAt = Date.now();
-                    const newState = JSON.parse(JSON.stringify(note));
-
-                    await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                    window.pushHistory('update', oldState, newState);
+                    window.saveToStorage(false);
+                    if (window.isCloudReady) window.syncNoteToCloud(note);
+                    window.renderNotes();
                     window.closeEditCarouselCardModal();
-                    window.showToast("Kartu diperbarui!");
+                    window.showToast("Kartu berhasil diperbarui!");
                 }
             } catch(e) {}
-        };
+        }
 
-        window.openCopyOptions = function(id) {
-            window.noteIdToCopy = id;
-            const overlay = document.getElementById('copy-options-overlay');
-            const box = document.getElementById('copy-options-box');
-            
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-                box.classList.add('scale-100');
-            }, 10);
-        };
-
-        window.closeCopyOptions = function() {
-            const overlay = document.getElementById('copy-options-overlay');
-            const box = document.getElementById('copy-options-box');
-            
+        window.openOneShotFullscreen = function() {
+            const overlay = document.getElementById('oneshot-fullscreen-overlay');
+            overlay.classList.remove('hidden'); overlay.classList.add('flex');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); window.placeCaretAtEnd(document.getElementById('oneshot-fs-visible')); }, 10);
+        }
+        window.closeOneShotFullscreen = function() {
+            const overlay = document.getElementById('oneshot-fullscreen-overlay');
             overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                window.noteIdToCopy = null;
-            }, 300);
-        };
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
+        }
+        window.handleOneShotInput = function(e) {
+            const visibleEl = document.getElementById('oneshot-fs-visible');
+            const hiddenEl = document.getElementById('oneshot-fs-hidden');
+            let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
+            if (val.length === 1 && val.match(/[a-z]/)) {
+                const hiddenVal = hiddenEl.value;
+                if (hiddenVal === "" || /(?:[.!?])[\s\n]*$/.test(hiddenVal)) {
+                    val = val.toUpperCase(); visibleEl.innerText = val; window.placeCaretAtEnd(visibleEl);
+                }
+            }
+            if (val.includes(' ') || val.includes('\n')) {
+                const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
+                if (match) { hiddenEl.value += match[1]; visibleEl.innerText = match[2]; window.placeCaretAtEnd(visibleEl); }
+            }
+            window.updateOneShotStats();
+            const box = document.getElementById('oneshot-fs-preview-box');
+            if (!box.classList.contains('hidden')) box.innerText = hiddenEl.value + visibleEl.innerText;
+        }
+        window.placeCaretAtEnd = function(el) {
+            el.focus();
+            if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+                const range = document.createRange(); range.selectNodeContents(el); range.collapse(false);
+                const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+            }
+        }
+        window.updateOneShotStats = function() {
+            const hiddenVal = document.getElementById('oneshot-fs-hidden')?.value || "";
+            const visibleVal = document.getElementById('oneshot-fs-visible')?.innerText || "";
+            const text = (hiddenVal + visibleVal).trim();
+            const wordCount = text ? text.split(/\s+/).length : 0;
+            const statEl = document.getElementById('oneshot-fs-stats');
+            if(statEl) statEl.innerText = `${wordCount} Kata`;
+        }
+        window.toggleOneShotPreview = function() {
+            const box = document.getElementById('oneshot-fs-preview-box');
+            const hidden = document.getElementById('oneshot-fs-hidden');
+            const visible = document.getElementById('oneshot-fs-visible');
+            const btnText = document.getElementById('oneshot-preview-btn-text');
+            const btnIcon = document.querySelector('#btn-oneshot-preview i');
+            if (box.classList.contains('hidden')) {
+                box.innerText = hidden.value + visible.innerText;
+                box.classList.remove('hidden'); btnText.innerText = "Tutup Intip"; btnIcon.className = "fa-solid fa-eye-slash mr-2";
+            } else {
+                box.classList.add('hidden'); btnText.innerText = "Intip Teks"; btnIcon.className = "fa-solid fa-eye mr-2"; window.placeCaretAtEnd(visible);
+            }
+        }
+    </script>
 
-        window.executeCopy = function(withTitle) {
-            if (window.noteIdToCopy === null) return;
-            const note = window.notes.find(n => String(n.id) === String(window.noteIdToCopy));
-            if (!note) {
-                window.closeCopyOptions();
+    <!-- FIREBASE CLOUD STORAGE MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const initCloud = async () => {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'icloud-notes';
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+            if (!firebaseConfig) {
+                console.warn("Modul Cloud tidak menerima Konfigurasi. Tetap di Local Storage.");
                 return;
             }
-            
-            let textToCopy = "";
-            if (withTitle && note.title) {
-                textToCopy += `${note.title}\n\n`;
-            }
-            
-            if (note.category === 'carousel') {
-                try {
-                    let items = JSON.parse(note.content);
-                    let numIdx = 1;
-                    const cardTexts = items.map((it) => {
-                        const title = it.isCaption ? 'Caption' : `Kartu ${numIdx++}`;
-                        return `[${title}]\n${it.content}`;
-                    }).join('\n\n---\n\n');
-                    textToCopy += cardTexts;
-                } catch(e) {}
-            } else if (note.category === 'mypassword') {
-                try {
-                    let pw = JSON.parse(note.content);
-                    textToCopy += `Username: ${pw.username}\nPassword: ${pw.password}\nLink: ${pw.link}`;
-                } catch(e) {}
-            } else if (note.category === 'revisi') {
-                try {
-                    let rev = JSON.parse(note.content);
-                    textToCopy += `Tujuan Revisi: ${rev.tujuan}\n\nTeks:\n${rev.content}`;
-                } catch(e) {}
-            } else if (note.category === 'myinstruction') {
-                try {
-                    let inst = JSON.parse(note.content);
-                    if (inst.link) textToCopy += `Link: ${inst.link}\n\n`;
-                    textToCopy += `Instruksi:\n${inst.content}`;
-                } catch(e) {
-                    textToCopy += note.content;
-                }
-            } else if (note.category === 'mypurchase') {
-                try {
-                    let pur = JSON.parse(note.content);
-                    textToCopy += `Nama Produk: ${pur.nama}\nOwner: ${pur.owner}\nHarga Beli: ${pur.harga}\nLink: ${pur.link}\n\nKeterangan:\n${pur.keterangan}`;
-                } catch(e) {
-                    textToCopy += note.content;
-                }
-            } else {
-                textToCopy += note.content;
-            }
-            
-            const textarea = document.createElement('textarea');
-            textarea.value = textToCopy.trim();
-            document.body.appendChild(textarea);
-            textarea.select();
-            
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
             try {
-                document.execCommand('copy');
-                window.showToast("Teks berhasil disalin!");
-            } catch (err) {
-                window.showToast("Gagal menyalin teks.");
-            }
-            
-            document.body.removeChild(textarea);
-            window.closeCopyOptions();
-        };
-
-        window.visitLink = function(id) {
-            const note = window.notes.find(n => String(n.id) === String(id));
-            if (!note) return;
-            
-            if (note.category === 'mypassword' || note.category === 'myinstruction' || note.category === 'mypurchase') {
-                try {
-                    const data = JSON.parse(note.content);
-                    if (data.link) {
-                        let url = data.link;
-                        if (!url.match(/^https?:\/\//i)) { url = 'https://' + url; }
-                        window.open(url, '_blank');
-                        window.showToast("Membuka tautan...");
-                        return;
-                    }
-                } catch(e) {}
-                if (note.category === 'mypassword' || note.category === 'mypurchase') {
-                    window.showToast("Tidak ada tautan.");
-                    return;
+                const userCredential = initialAuthToken 
+                    ? await signInWithCustomToken(auth, initialAuthToken) 
+                    : await signInAnonymously(auth);
+                
+                const userId = userCredential.user.uid;
+                window.isCloudReady = true;
+                
+                // Ubah Indikator Awan menjadi Biru karena terhubung ke Cloud
+                const cloudIcon = document.getElementById('header-cloud-icon');
+                if(cloudIcon) {
+                    cloudIcon.classList.remove('text-gray-400');
+                    cloudIcon.classList.add('text-[#007AFF]');
+                    cloudIcon.title = "Terhubung ke Cloud";
                 }
-            }
 
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const matches = note.content.match(urlRegex);
-            
-            if (matches && matches.length > 0) {
-                window.open(matches[0], '_blank');
-                window.showToast("Membuka tautan...");
-            } else {
-                window.showToast("Tidak ditemukan link pada catatan ini.");
-            }
-        };
-
-        window.toggleCategory = function(catKey) {
-            const content = document.getElementById(`cat-body-${catKey}`);
-            const icon = document.getElementById(`cat-icon-${catKey}`);
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-            if (isOpen) window.openCategories.add(catKey);
-            else window.openCategories.delete(catKey);
-        };
-
-        window.toggleActions = function(e, id) {
-            e.stopPropagation(); // Cegah akordion ikut terbuka saat klik menu
-            const el = document.getElementById(`note-actions-${id}`);
-            if (el.classList.contains('hidden')) {
-                // Sembunyikan menu lain yang mungkin sedang terbuka agar rapi
-                document.querySelectorAll('.note-actions-menu').forEach(menu => {
-                    menu.classList.add('hidden');
-                    menu.classList.remove('flex');
+                // Listener Real-time
+                const notesRef = collection(db, 'artifacts', appId, 'users', userId, 'notes');
+                onSnapshot(notesRef, (snapshot) => {
+                    const fetchedNotes = [];
+                    snapshot.forEach(doc => fetchedNotes.push(doc.data()));
+                    // Timpa data lokal dengan data dari awan, urutkan berdasarkan waktu
+                    window.notes = fetchedNotes.sort((a, b) => b.timestamp - a.timestamp);
+                    window.renderNotes();
+                    window.updateUndoRedoButtons();
+                }, (err) => {
+                    console.error("Cloud Listener Error:", err);
+                    window.showToast("Koneksi ke Cloud Terputus.");
                 });
-                el.classList.remove('hidden');
-                el.classList.add('flex');
-            } else {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
+
+                // Menimpa fungsi dummy dengan kemampuan injeksi Cloud
+                window.syncNoteToCloud = async function(note) {
+                    try { await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'notes', String(note.id)), note); } 
+                    catch(e) { console.error("Cloud Sync Error:", e); }
+                };
+
+                window.deleteNoteFromCloud = async function(noteId) {
+                    try { await deleteDoc(doc(db, 'artifacts', appId, 'users', userId, 'notes', String(noteId))); } 
+                    catch(e) { console.error("Cloud Delete Error:", e); }
+                };
+
+                window.syncAllToCloud = async function(restoredNotes) {
+                    try {
+                        const snap = await getDocs(collection(db, 'artifacts', appId, 'users', userId, 'notes'));
+                        const currentIds = snap.docs.map(d => d.id);
+                        const restoredIds = restoredNotes.map(n => String(n.id));
+
+                        for (const id of currentIds) {
+                            if (!restoredIds.includes(id)) {
+                                await deleteDoc(doc(db, 'artifacts', appId, 'users', userId, 'notes', id));
+                            }
+                        }
+                        for (const note of restoredNotes) {
+                            await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'notes', String(note.id)), note);
+                        }
+                    } catch(e) { console.error("Cloud SyncAll Error:", e); }
+                };
+
+            } catch (error) {
+                console.error("Gagal Autentikasi ke Cloud:", error);
+                window.showToast("Menggunakan Penyimpanan Lokal Sementara");
             }
         };
 
-        window.toggleNote = function(noteId) {
-            // Sembunyikan menu aksi otomatis jika sedang terbuka dan area kartu diklik
-            const actionsMenu = document.getElementById(`note-actions-${noteId}`);
-            if (actionsMenu && !actionsMenu.classList.contains('hidden')) {
-                actionsMenu.classList.add('hidden');
-                actionsMenu.classList.remove('flex');
-            }
-
-            const content = document.getElementById(`note-body-${noteId}`);
-            const icon = document.getElementById(`note-icon-${noteId}`);
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-            if (isOpen) window.openNotes.add(noteId);
-            else window.openNotes.delete(noteId);
-        };
-
-        window.toggleGroupView = function() {
-            window.isGrouped = !window.isGrouped;
-            const btn = document.getElementById('btn-group');
-            if (window.isGrouped) {
-                btn.innerHTML = '<i class="fa-solid fa-list"></i>'; 
-                btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
-                btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
-            }
-            window.renderNotes();
-        };
-
-        window.buildNoteCard = function(note, showBadge = false) {
-            const catConfig = categories[note.category] || categories['memo'];
-            const isNoteOpen = window.openNotes.has(String(note.id));
-            const openClass = isNoteOpen ? "open" : "";
-            
-            let previewContent = '';
-            
-            if (note.category === 'carousel') {
-                let items = [];
-                try { items = JSON.parse(note.content); } catch(e){}
-                
-                previewContent = `<div class="flex gap-3 overflow-x-auto hide-scrollbar py-3 pl-2 items-start">`;
-                
-                let numIdx = 1;
-                items.forEach((it) => {
-                    const imgHtml = it.image ? `
-                    <div class="relative group">
-                        <img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-lg mb-3 shadow-sm border border-gray-200 dark:border-gray-600">
-                        <a href="${it.image}" download="carousel_${it.id}.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition opacity-100 md:opacity-0 md:group-hover:opacity-100" title="Unduh Gambar">
-                            <i class="fa-solid fa-download text-xs"></i>
-                        </a>
-                    </div>
-                    ` : '';
-                    
-                    const isCaption = it.isCaption;
-                    const badgeHtml = isCaption 
-                        ? `<div class="absolute -top-2 -left-2 bg-purple-500 text-white px-2 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">Caption</div>`
-                        : `<div class="absolute -top-2 -left-2 bg-pink-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">${numIdx++}</div>`;
-                        
-                    previewContent += `
-                        <div class="shrink-0 w-52 bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex flex-col justify-between transition-colors relative">
-                            ${badgeHtml}
-                            <div>
-                                ${imgHtml}
-                                <div class="text-[13px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${window.escapeHTML(it.content)}</div>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                                <button onclick="window.copyCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-green-500 hover:text-green-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Salin"><i class="fa-regular fa-copy text-[11px]"></i></button>
-                                <button onclick="window.openEditCarouselCardModal('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-blue-500 hover:text-blue-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Edit Teks"><i class="fa-solid fa-pen text-[11px]"></i></button>
-                                <button onclick="window.triggerCarouselImageUpload('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-purple-500 hover:text-purple-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Unggah Gambar"><i class="fa-solid fa-image text-[11px]"></i></button>
-                                <button onclick="window.deleteCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-red-500 hover:text-red-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Hapus Kartu"><i class="fa-solid fa-trash text-[11px]"></i></button>
-                            </div>
-                        </div>
-                    `;
-                });
-                previewContent += `</div>`;
-                if(items.length === 0) previewContent = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Carousel kosong</p>';
-                
-            } else if (note.category === 'mypassword') {
-                let pw = {username: '', password: '', link: ''};
-                try { pw = JSON.parse(note.content); } catch(e){}
-                
-                let safeLink = window.escapeHTML(pw.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${safeLink}</a>` : '-';
-                
-                previewContent = `
-                    <div class="space-y-3 text-[14px] text-gray-700 dark:text-gray-300">
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Username / Email</span><span class="font-medium select-all">${window.escapeHTML(pw.username) || '-'}</span></div>
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Password</span><span class="font-mono bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded inline-block w-fit select-all">${window.escapeHTML(pw.password) || '-'}</span></div>
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link / URL</span><span class="">${linkHtml}</span></div>
-                    </div>
-                `;
-                
-            } else if (note.category === 'mylink') {
-                const safeContent = window.escapeHTML(note.content);
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                const linkedContent = safeContent.replace(urlRegex, function(url) {
-                    return `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${url}</a>`;
-                });
-                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${linkedContent}</div>`;
-                
-            } else if (note.category === 'revisi') {
-                let rev = { tujuan: '', content: '' };
-                try { rev = JSON.parse(note.content); } catch(e){}
-                previewContent = `
-                    <div class="space-y-3">
-                        <div class="bg-cyan-50 dark:bg-cyan-900/20 p-3 rounded-xl border border-cyan-100 dark:border-cyan-800/50">
-                            <span class="block text-[11px] text-cyan-600 dark:text-cyan-400 uppercase font-bold tracking-wider mb-1">Tujuan Revisi</span>
-                            <span class="text-[13px] text-gray-800 dark:text-gray-200">${window.escapeHTML(rev.tujuan) || '-'}</span>
-                        </div>
-                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed px-1">
-                            ${window.escapeHTML(rev.content)}
-                        </div>
-                    </div>
-                `;
-            } else if (note.category === 'myinstruction') {
-                let inst = { link: '', content: '' };
-                try { inst = JSON.parse(note.content); } catch(e) { inst.content = note.content; }
-                
-                let safeLink = window.escapeHTML(inst.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all block mb-3 bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-lg border border-blue-100 dark:border-blue-800/50"><i class="fa-solid fa-link mr-1.5"></i>${safeLink}</a>` : '';
-                
-                previewContent = `
-                    <div>
-                        ${linkHtml}
-                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${window.escapeHTML(inst.content)}</div>
-                    </div>
-                `;
-            } else if (note.category === 'mypurchase') {
-                let pur = { nama: '', owner: '', harga: '', link: '', keterangan: '' };
-                try { pur = JSON.parse(note.content); } catch(e){}
-                
-                let safeLink = window.escapeHTML(pur.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-emerald-600 dark:text-emerald-400 hover:underline truncate block w-full">${safeLink}</a>` : '-';
-                
-                previewContent = `
-                    <div class="space-y-3">
-                        <div class="bg-emerald-50 dark:bg-emerald-900/20 p-3.5 rounded-xl border border-emerald-100 dark:border-emerald-800/50 space-y-2.5">
-                            <div class="flex flex-col"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Nama Produk</span><span class="font-bold text-gray-900 dark:text-white text-[15px]">${window.escapeHTML(pur.nama) || '-'}</span></div>
-                            <div class="grid grid-cols-2 gap-3 pt-1">
-                                <div class="flex flex-col"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Owner / Creator</span><span class="text-[13px] text-gray-800 dark:text-gray-200 font-medium">${window.escapeHTML(pur.owner) || '-'}</span></div>
-                                <div class="flex flex-col"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Harga Beli</span><span class="text-[13px] text-gray-800 dark:text-gray-200 font-medium">${window.escapeHTML(pur.harga) || '-'}</span></div>
-                            </div>
-                            <div class="flex flex-col pt-1 w-full overflow-hidden"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Link Produk</span><span class="text-[13px]">${linkHtml}</span></div>
-                        </div>
-                        ${pur.keterangan ? `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed px-1 mt-2">${window.escapeHTML(pur.keterangan)}</div>` : ''}
-                    </div>
-                `;
-            } else if (note.category === 'memo') {
-                let lines = note.content.split('\n');
-                let htmlMemo = '<div class="space-y-2.5">';
-                lines.forEach((line, index) => {
-                    if (!line.trim()) return;
-                    let isChecked = line.startsWith('✓ ') || line.startsWith('- [x] ');
-                    let isUnchecked = line.startsWith('- [ ] ') || line.startsWith('☐ ');
-                    
-                    let cleanLine = line;
-                    if (isChecked) cleanLine = line.replace(/^(✓ |- \[x\] )/, '');
-                    else if (isUnchecked) cleanLine = line.replace(/^(- \[ \] |☐ )/, '');
-                    
-                    let icon = isChecked ? '<i class="fa-solid fa-circle-check text-green-500 text-[16px]"></i>' : '<i class="fa-regular fa-circle text-gray-300 dark:text-gray-600 text-[16px]"></i>';
-                    let lineClass = isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200';
-                    
-                    htmlMemo += `<div class="flex items-start cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 p-1.5 -ml-1.5 rounded-lg transition-colors" onclick="window.toggleMemoTask('${note.id}', ${index}); event.stopPropagation();">
-                        <div class="mt-0.5 mr-2.5 shrink-0 flex items-center justify-center">${icon}</div>
-                        <div class="${lineClass} text-[14px] leading-relaxed flex-1">${window.escapeHTML(cleanLine)}</div>
-                    </div>`;
-                });
-                htmlMemo += '</div>';
-                if(lines.length === 0 || !note.content.trim()) htmlMemo = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Kosong</p>';
-                previewContent = htmlMemo;
-            } else {
-                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${window.escapeHTML(note.content)}</div>`;
-            }
-
-            let imagesHtml = '';
-            let filesHtml = '';
-            
-            if (note.attachments && note.attachments.length > 0) {
-                const imageAtts = note.attachments.filter(a => a.type === 'image');
-                const fileAtts = note.attachments.filter(a => a.type !== 'image');
-                
-                if (imageAtts.length > 0) {
-                    imagesHtml = `<div class="mb-4 space-y-3">`;
-                    imageAtts.forEach(att => {
-                        imagesHtml += `
-                        <div class="relative w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-900 group">
-                            <a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()">
-                                <img src="${att.data}" class="w-full h-auto hover:opacity-90 transition">
-                            </a>
-                            <div class="absolute top-3 right-3 flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
-                                <a href="${att.data}" download="${att.name || 'image.jpg'}" onclick="event.stopPropagation()" class="w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" title="Unduh Gambar">
-                                    <i class="fa-solid fa-download text-sm"></i>
-                                </a>
-                                <button onclick="window.removeCardImage('${note.id}', '${att.id}'); event.stopPropagation();" class="w-9 h-9 bg-red-500/80 hover:bg-red-600 text-white rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" title="Hapus Gambar">
-                                    <i class="fa-solid fa-times text-sm"></i>
-                                </button>
-                            </div>
-                        </div>`;
-                    });
-                    imagesHtml += `</div>`;
-                }
-                
-                if (fileAtts.length > 0) {
-                    filesHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
-                    fileAtts.forEach(att => {
-                        filesHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" onclick="event.stopPropagation()" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
-                    });
-                    filesHtml += `</div>`;
-                }
-            }
-
-            const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded-md ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0">${catConfig.icon} ${catConfig.title}</span>` : '';
-
-            const timeCreated = window.formatTime(note.timestamp);
-            const timeEdited = note.updatedAt && note.updatedAt !== note.timestamp ? window.formatTime(note.updatedAt) : '';
-            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1 truncate">Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}</div>`;
-
-            return `
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5">
-                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="window.toggleNote('${note.id}')">
-                        <div class="flex-1 pr-2 flex flex-col overflow-hidden">
-                            <div class="flex items-center flex-wrap gap-1.5 mb-0.5">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-[15px] leading-snug break-words">${window.escapeHTML(note.title)}</h3>
-                                ${badgeHtml}
-                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] shrink-0 ml-1"></i>' : ''}
-                            </div>
-                            ${timeHtml}
-                        </div>
-                        
-                        <div class="shrink-0 flex items-center justify-end">
-                            <!-- BARIS AKSI (Tersembunyi secara Default) -->
-                            <div id="note-actions-${note.id}" class="note-actions-menu hidden items-center bg-gray-100 dark:bg-gray-700/80 rounded-full px-1.5 py-1 space-x-1 border border-gray-200 dark:border-gray-600 shadow-sm mr-2 transition-all">
-                                ${['mylink', 'mypassword', 'myinstruction', 'mypurchase'].includes(note.category) ? `
-                                <button onclick="window.visitLink('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Kunjungi Link">
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
-                                </button>
-                                ` : ''}
-                                <button onclick="window.openCopyOptions('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-green-600 dark:text-green-400 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Salin Teks">
-                                    <i class="fa-regular fa-copy text-[11px]"></i>
-                                </button>
-                                <button onclick="window.openModal('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-blue-500 dark:text-blue-400 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Edit Catatan">
-                                    <i class="fa-solid fa-pen text-[11px]"></i>
-                                </button>
-                                <button onclick="window.openDeleteAlert('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-red-500 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Hapus Catatan">
-                                    <i class="fa-solid fa-trash text-[11px]"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- TOMBOL TRIGGER MENU -->
-                            <button onclick="window.toggleActions(event, '${note.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition mr-1" title="Menu Opsi">
-                                <i class="fa-solid fa-ellipsis-vertical"></i>
-                            </button>
-                            
-                            <!-- CHEVRON -->
-                            <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="note-icon-${note.id}"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-content border-t border-gray-100 dark:border-gray-700 ${openClass}" id="note-body-${note.id}">
-                        <div class="accordion-inner bg-gray-50/50 dark:bg-gray-800/50">
-                            <div class="p-4">
-                                ${imagesHtml}
-                                ${previewContent}
-                                ${filesHtml}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        };
-
-        window.renderNotes = function() {
-            const container = document.getElementById('notes-container');
-            container.innerHTML = '';
-
-            if (window.notes.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 pt-20">
-                        <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                        <p class="font-medium">Belum ada catatan.</p>
-                        <p class="text-sm">Klik tombol + untuk menambah.</p>
-                    </div>`;
-                return;
-            }
-
-            let html = '';
-
-            if (window.isGrouped) {
-                html += `<div class="columns-1 lg:columns-2 xl:columns-3 gap-5 md:gap-6">`;
-                
-                Object.keys(categories).forEach(catKey => {
-                    const catNotes = window.notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
-                    if (catNotes.length > 0) {
-                        const config = categories[catKey];
-                        const isCatOpen = window.openCategories.has(catKey);
-                        const openClass = isCatOpen ? "open" : "";
-                        
-                        html += `
-                            <div class="mb-5 md:mb-6 break-inside-avoid inline-block w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
-                                <div class="flex justify-between items-center px-4 py-3.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors" onclick="window.toggleCategory('${catKey}')">
-                                    <div class="flex items-center">
-                                        <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
-                                            ${config.icon}
-                                        </div>
-                                        <h2 class="text-[16px] font-bold text-gray-800 dark:text-white">${config.title}</h2>
-                                        <span class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs font-bold">${catNotes.length}</span>
-                                    </div>
-                                    <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="cat-icon-${catKey}"></i>
-                                </div>
-                                
-                                <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
-                                    <div class="accordion-inner bg-gray-50/50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
-                                        <div class="p-3.5 pb-0">
-                        `;
-                        catNotes.forEach(note => { html += window.buildNoteCard(note, false); });
-                        html += `       </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                html += `</div>`;
-            } else {
-                const allNotes = [...window.notes].sort((a,b) => b.timestamp - a.timestamp);
-                html += `<div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-5 lg:gap-6 pt-2">`;
-                allNotes.forEach(note => { html += window.buildNoteCard(note, false); });
-                html += `</div>`;
-            }
-
-            container.innerHTML = html;
-        };
-
-        window.onload = () => {
-            window.initTheme();
-            window.updateUndoRedoUI();
-            window.loadNotes();
-        };
+        // Tunggu 100ms agar kode utama termuat dahulu, baru timpa fungsinya
+        setTimeout(() => initCloud(), 100);
     </script>
 </body>
 </html>
