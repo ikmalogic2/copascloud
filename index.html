@@ -883,7 +883,7 @@
             let targetCarouselCount = 3; 
 
             if (editId) {
-                const note = window.notes.find(n => n.id === editId);
+                const note = window.notes.find(n => String(n.id) === String(editId));
                 if (note) {
                     document.getElementById('note-id').value = note.id;
                     document.getElementById('note-title').value = note.title;
@@ -1200,7 +1200,7 @@
         };
 
         window.toggleMemoTask = async function(noteId, idx) {
-            const note = window.notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => String(n.id) === String(noteId));
             if (!note) return;
             
             const oldState = JSON.parse(JSON.stringify(note));
@@ -1230,7 +1230,7 @@
 
         window.removeCardImage = async function(noteId, attId) {
             if(!confirm("Hapus lampiran gambar ini?")) return;
-            const note = window.notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => String(n.id) === String(noteId));
             if(!note) return;
             
             const oldState = JSON.parse(JSON.stringify(note));
@@ -1248,7 +1248,7 @@
         };
 
         window.copyCarouselCard = function(noteId, cardId) {
-            const note = window.notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => String(n.id) === String(noteId));
             if (!note) return;
             try {
                 const items = JSON.parse(note.content);
@@ -1267,7 +1267,7 @@
 
         window.deleteCarouselCard = async function(noteId, cardId) {
             if (!confirm("Hapus kartu ini dari Carousel?")) return;
-            const note = window.notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => String(n.id) === String(noteId));
             if (!note) return;
 
             const oldState = JSON.parse(JSON.stringify(note));
@@ -1294,7 +1294,7 @@
             if (!file) return;
             
             window.processImageFile(file, async (dataUrl) => {
-                const note = window.notes.find(n => n.id === window.activeCarouselEdit.noteId);
+                const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId));
                 if (note) {
                     const oldState = JSON.parse(JSON.stringify(note));
                     try {
@@ -1328,7 +1328,7 @@
 
         window.openEditCarouselCardModal = function(noteId, cardId) {
             window.activeCarouselEdit = { noteId, cardId };
-            const note = window.notes.find(n => n.id === noteId);
+            const note = window.notes.find(n => String(n.id) === String(noteId));
             if (!note) return;
             try {
                 const items = JSON.parse(note.content);
@@ -1361,7 +1361,7 @@
         };
 
         window.saveEditCarouselCard = async function() {
-            const note = window.notes.find(n => n.id === window.activeCarouselEdit.noteId);
+            const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId));
             if (!note) return;
 
             const oldState = JSON.parse(JSON.stringify(note));
@@ -1413,7 +1413,7 @@
 
         window.executeCopy = function(withTitle) {
             if (window.noteIdToCopy === null) return;
-            const note = window.notes.find(n => n.id === window.noteIdToCopy);
+            const note = window.notes.find(n => String(n.id) === String(window.noteIdToCopy));
             if (!note) {
                 window.closeCopyOptions();
                 return;
@@ -1480,7 +1480,7 @@
         };
 
         window.visitLink = function(id) {
-            const note = window.notes.find(n => n.id === id);
+            const note = window.notes.find(n => String(n.id) === String(id));
             if (!note) return;
             
             if (note.category === 'mypassword' || note.category === 'myinstruction' || note.category === 'mypurchase') {
