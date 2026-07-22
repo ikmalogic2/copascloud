@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>i-cloud</title>
     
-    <!-- Google Fonts: Space Grotesk -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter (Standar iOS) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,26 +21,27 @@
 
     <style>
         body {
-            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .modal-enter { transform: translateY(100%); opacity: 0; transition: all 0.3s ease-out; }
+        .modal-enter { transform: translateY(100%); opacity: 0; transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s; }
         .modal-active { transform: translateY(0); opacity: 1; }
         
+        /* Glassmorphism murni gaya iOS */
         .glass-header {
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background-color: rgba(242, 242, 247, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid rgba(0,0,0,0.1);
         }
 
         .dark .glass-header {
-            background-color: rgba(17, 24, 39, 0.85);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background-color: rgba(28, 28, 30, 0.75);
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
         }
 
         .accordion-content {
@@ -55,12 +56,12 @@
         .chevron-icon.open { transform: rotate(180deg); }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-gray-900 transition-colors duration-300">
+<body class="flex flex-col h-screen overflow-hidden bg-[#F2F2F7] dark:bg-[#000000] transition-colors duration-300">
 
-    <header class="glass-header fixed top-0 w-full z-20 h-14 flex items-center justify-between px-4 md:px-6 lg:px-8">
-        <div class="flex items-center space-x-2 text-gray-800 dark:text-white">
-            <i class="fa-solid fa-cloud text-xl text-blue-500"></i>
-            <h1 class="text-[17px] font-bold tracking-tight">i-cloud</h1>
+    <header class="glass-header fixed top-0 w-full z-20 h-16 flex items-center justify-between px-4 md:px-6 lg:px-8">
+        <div class="flex items-center space-x-2 text-gray-900 dark:text-white">
+            <i id="cloud-icon" class="fa-solid fa-cloud text-xl text-gray-400 transition-colors duration-500"></i>
+            <h1 class="text-[18px] font-bold tracking-tight">i-cloud</h1>
         </div>
         
         <div class="flex items-center space-x-3">
@@ -82,34 +83,47 @@
             <button onclick="window.toggleGroupView()" id="btn-group" class="w-8 h-8 flex items-center justify-center text-indigo-500 active:opacity-50 text-[18px]" title="Kategorikan">
                 <i class="fa-solid fa-layer-group"></i>
             </button>
-            <button onclick="window.openModal()" class="w-8 h-8 flex items-center justify-center text-blue-600 dark:text-blue-400 active:opacity-50 text-[24px]" title="Tambah Catatan">
+            <button onclick="window.openModal()" class="w-8 h-8 flex items-center justify-center text-blue-500 active:opacity-50 text-[24px]" title="Tambah Catatan">
                 <i class="fa-solid fa-circle-plus"></i>
             </button>
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto hide-scrollbar pt-20 pb-10 px-4 lg:px-8" id="main-area">
-        <div id="notes-container" class="w-full max-w-[1600px] mx-auto">
+    <!-- pt-28 (112px) dan mt-4 (16px) ditambahkan agar judul kartu pertama tidak terpotong header -->
+    <main class="flex-1 overflow-y-auto hide-scrollbar pt-28 pb-12 px-4 lg:px-8" id="main-area">
+        <div id="notes-container" class="w-full max-w-[1600px] mx-auto mt-4">
             <!-- Catatan akan di-render di sini via JavaScript -->
         </div>
     </main>
 
-    <div id="modal-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-30 hidden opacity-0 transition-opacity duration-300" onclick="window.closeModal()"></div>
-    
-    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-gray-800 rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
-        <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-3xl shrink-0">
-            <button onclick="window.closeModal()" class="text-gray-500 dark:text-gray-400 font-medium">Batal</button>
-            <h2 class="font-semibold text-[17px] text-gray-800 dark:text-white" id="modal-title">Buat Catatan</h2>
-            <button onclick="window.saveNote()" class="text-blue-600 dark:text-blue-400 font-bold">Simpan</button>
+    <!-- iOS SYSTEM ACTION SHEET: Context Menu Khusus Catatan -->
+    <div id="action-sheet-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="window.closeActionSheet()"></div>
+    <div id="action-sheet" class="fixed inset-x-4 bottom-6 md:max-w-sm md:mx-auto z-50 hidden flex-col gap-2 transition-transform duration-300 translate-y-[200%]">
+        <div class="bg-[#F2F2F7]/95 dark:bg-[#1C1C1E]/95 backdrop-blur-xl rounded-2xl overflow-hidden flex flex-col shadow-2xl">
+            <button id="as-btn-visit" onclick="window.actionVisit()" class="hidden px-5 py-4 text-[17px] font-medium text-gray-900 dark:text-white border-b border-gray-300/50 dark:border-gray-600/50 hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 transition-colors">Kunjungi Tautan</button>
+            <button onclick="window.actionCopy()" class="px-5 py-4 text-[17px] font-medium text-gray-900 dark:text-white border-b border-gray-300/50 dark:border-gray-600/50 hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 transition-colors">Salin Catatan</button>
+            <button onclick="window.actionEdit()" class="px-5 py-4 text-[17px] font-medium text-gray-900 dark:text-white border-b border-gray-300/50 dark:border-gray-600/50 hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 transition-colors">Edit Catatan</button>
+            <button onclick="window.actionDelete()" class="px-5 py-4 text-[17px] font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-black/10 transition-colors">Hapus Catatan</button>
+        </div>
+        <button onclick="window.closeActionSheet()" class="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-2xl px-5 py-4 text-[17px] font-bold text-blue-500 hover:bg-black/5 dark:hover:bg-white/5 active:bg-black/10 shadow-2xl transition-colors">Batal</button>
+    </div>
+
+    <!-- MODAL UTAMA TAMBAH/EDIT CATATAN -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-300" onclick="window.closeModal()"></div>
+    <div id="modal" class="fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-[#1C1C1E] rounded-t-3xl h-[85vh] md:max-w-2xl md:mx-auto shadow-2xl modal-enter flex flex-col transition-colors">
+        <div class="flex justify-between items-center px-5 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-[#1C1C1E] rounded-t-3xl shrink-0">
+            <button onclick="window.closeModal()" class="text-blue-500 font-medium text-[17px]">Batal</button>
+            <h2 class="font-semibold text-[17px] text-gray-900 dark:text-white" id="modal-title">Buat Catatan</h2>
+            <button onclick="window.saveNote()" class="text-blue-500 font-bold text-[17px]">Simpan</button>
         </div>
         
-        <div class="p-5 flex-1 overflow-y-auto hide-scrollbar bg-white dark:bg-gray-800">
+        <div class="p-5 flex-1 overflow-y-auto hide-scrollbar bg-white dark:bg-[#1C1C1E]">
             <input type="hidden" id="note-id">
             
             <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Pilih Kategori</label>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kategori</label>
                 <div class="relative">
-                    <select id="note-category" onchange="window.toggleInputFields()" class="w-full appearance-none bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-colors">
+                    <select id="note-category" onchange="window.toggleInputFields()" class="w-full appearance-none bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none text-gray-900 dark:text-white py-3 px-4 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
                         <option value="brandkit">💼 Brand Kit</option>
                         <option value="carousel">🗂️ Carousel Notes</option>
                         <option value="copas" selected>📋 Copas</option>
@@ -131,21 +145,21 @@
                         <option value="screenshot">📸 Screenshot</option>
                         <option value="styleart">🎨 Style Art</option>
                     </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 dark:text-gray-400">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
                         <i class="fa-solid fa-chevron-down text-sm"></i>
                     </div>
                 </div>
             </div>
 
             <div class="mb-4">
-                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[20px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-300 dark:placeholder-gray-500 py-2 border-b border-gray-100 dark:border-gray-700">
+                <input type="text" id="note-title" placeholder="Judul Catatan..." class="w-full text-[22px] font-bold focus:outline-none text-black dark:text-white bg-transparent placeholder-gray-400 dark:placeholder-gray-500 py-2 border-b border-gray-200 dark:border-gray-800">
             </div>
 
             <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Lampiran (File max 800KB)</label>
-                <div class="flex space-x-2 mb-2">
-                    <button onclick="document.getElementById('attach-image').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-image text-blue-500 dark:text-blue-400 mr-1"></i> Gambar</button>
-                    <button onclick="document.getElementById('attach-file').click()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg text-sm font-medium transition"><i class="fa-solid fa-paperclip text-purple-500 dark:text-purple-400 mr-1"></i> File</button>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Lampiran (Otomatis Kompres)</label>
+                <div class="flex space-x-2 mb-3">
+                    <button onclick="document.getElementById('attach-image').click()" class="bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white px-4 py-2.5 rounded-xl text-[14px] font-medium transition flex items-center shadow-sm"><i class="fa-solid fa-image text-blue-500 mr-2"></i> Gambar</button>
+                    <button onclick="document.getElementById('attach-file').click()" class="bg-[#F2F2F7] dark:bg-[#2C2C2E] hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white px-4 py-2.5 rounded-xl text-[14px] font-medium transition flex items-center shadow-sm"><i class="fa-solid fa-paperclip text-purple-500 mr-2"></i> File</button>
                     <input type="file" id="attach-image" accept="image/*" class="hidden" onchange="window.handleFileUpload(event, 'image')" multiple>
                     <input type="file" id="attach-file" accept=".txt,.pdf,.html,.json,.doc,.docx,.xls,.xlsx,.csv" class="hidden" onchange="window.handleFileUpload(event, 'file')" multiple>
                 </div>
@@ -153,86 +167,86 @@
             </div>
             
             <!-- Mode Teks Biasa -->
-            <div id="normal-input-container" class="w-full flex-col flex h-48">
-                <textarea id="note-content" placeholder="Ketik isi catatan di sini..." class="w-full h-full text-[16px] focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500 resize-none leading-relaxed bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-100 dark:border-gray-600"></textarea>
+            <div id="normal-input-container" class="w-full flex-col flex h-56">
+                <textarea id="note-content" placeholder="Ketik isi catatan di sini..." class="w-full h-full text-[16px] focus:outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none leading-relaxed bg-[#F2F2F7] dark:bg-[#2C2C2E] p-4 rounded-2xl border-none"></textarea>
             </div>
 
             <!-- Mode Carousel -->
             <div id="carousel-input-container" class="w-full flex-col hidden pb-5">
                 <div class="flex justify-between items-center mb-3">
-                    <label class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Isi Kartu Carousel</label>
-                    <div class="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1 border border-gray-200 dark:border-gray-600">
-                        <button onclick="window.changeCarouselCount(-1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-minus text-xs"></i></button>
-                        <span id="carousel-count-display" class="text-sm font-bold text-gray-800 dark:text-gray-200 w-6 text-center">3</span>
-                        <button onclick="window.changeCarouselCount(1)" class="w-7 h-7 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-plus text-xs"></i></button>
+                    <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Isi Kartu Carousel</label>
+                    <div class="flex items-center space-x-2 bg-[#F2F2F7] dark:bg-[#2C2C2E] rounded-lg p-1">
+                        <button onclick="window.changeCarouselCount(-1)" class="w-7 h-7 flex items-center justify-center text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-minus text-xs"></i></button>
+                        <span id="carousel-count-display" class="text-sm font-bold text-gray-900 dark:text-white w-6 text-center">3</span>
+                        <button onclick="window.changeCarouselCount(1)" class="w-7 h-7 flex items-center justify-center text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 rounded active:scale-95 transition-all"><i class="fa-solid fa-plus text-xs"></i></button>
                     </div>
                 </div>
-                <div id="carousel-cards-wrapper" class="space-y-3">
-                    <!-- Carousel inputs di-inject via JS -->
-                </div>
+                <div id="carousel-cards-wrapper" class="space-y-4"></div>
             </div>
             
             <!-- Mode My Password -->
             <div id="mypassword-input-container" class="w-full flex-col hidden space-y-4 pb-5">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Username / Email</label>
-                    <input type="text" id="pw-username" placeholder="Masukkan Username..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Username / Email</label>
+                    <input type="text" id="pw-username" placeholder="Masukkan Username..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Password</label>
-                    <input type="text" id="pw-password" placeholder="Masukkan Password..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Password</label>
+                    <input type="text" id="pw-password" placeholder="Masukkan Password..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / URL</label>
-                    <input type="url" id="pw-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Link / URL</label>
+                    <input type="url" id="pw-link" placeholder="https://..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
 
             <!-- Mode Revisi -->
             <div id="revisi-input-container" class="w-full flex-col hidden space-y-4 pb-5">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Tujuan Revisi</label>
-                    <input type="text" id="rev-tujuan" placeholder="Misal: Perbaiki grammar, kurangi pengulangan..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Tujuan Revisi</label>
+                    <input type="text" id="rev-tujuan" placeholder="Misal: Perbaiki grammar..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Teks Utama</label>
-                    <textarea id="rev-content" placeholder="Ketik teks yang akan atau telah direvisi..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Teks Utama</label>
+                    <textarea id="rev-content" placeholder="Ketik teks di sini..." class="w-full h-40 bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-4 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
                 </div>
             </div>
 
             <!-- Mode Instruction -->
             <div id="instruction-input-container" class="w-full flex-col hidden space-y-4 pb-5">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link / Referensi</label>
-                    <input type="url" id="inst-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Link / Referensi</label>
+                    <input type="url" id="inst-link" placeholder="https://..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Instruksi / Catatan</label>
-                    <textarea id="inst-content" placeholder="Ketik instruksi di sini..." class="w-full h-40 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Instruksi / Catatan</label>
+                    <textarea id="inst-content" placeholder="Ketik instruksi di sini..." class="w-full h-40 bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-4 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
                 </div>
             </div>
 
             <!-- Mode My Purchase -->
             <div id="mypurchase-input-container" class="w-full flex-col hidden space-y-4 pb-5">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Nama Produk</label>
-                    <input type="text" id="pur-nama" placeholder="Misal: Template Premium X..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Nama Produk</label>
+                    <input type="text" id="pur-nama" placeholder="Misal: Template X..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Owner</label>
+                        <input type="text" id="pur-owner" placeholder="Nama Penjual..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Harga Beli</label>
+                        <input type="text" id="pur-harga" placeholder="Rp..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Owner / Creator</label>
-                    <input type="text" id="pur-owner" placeholder="Nama Pembuat/Penjual..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Link Produk</label>
+                    <input type="url" id="pur-link" placeholder="https://..." class="w-full bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-3.5 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Harga Beli</label>
-                    <input type="text" id="pur-harga" placeholder="Misal: Rp 150.000..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Link Produk</label>
-                    <input type="url" id="pur-link" placeholder="https://..." class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase mb-1">Keterangan / Lisensi</label>
-                    <textarea id="pur-keterangan" placeholder="Ketik keterangan tambahan di sini..." class="w-full h-24 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Keterangan</label>
+                    <textarea id="pur-keterangan" placeholder="Catatan tambahan..." class="w-full h-24 bg-[#F2F2F7] dark:bg-[#2C2C2E] border-none p-4 rounded-xl text-[16px] text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none leading-relaxed"></textarea>
                 </div>
             </div>
 
@@ -240,73 +254,63 @@
             <div id="oneshot-input-container" class="w-full flex-col hidden pb-5 items-center justify-center py-6">
                 <div class="w-20 h-20 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center text-4xl mb-4">🎯</div>
                 <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Mode Anti-Distraksi</h3>
-                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks akan otomatis hilang per kata saat Anda menekan spasi untuk melatih aliran ide tanpa henti.</p>
-                <button onclick="window.openOneShotFullscreen()" class="bg-rose-500 hover:bg-rose-600 text-white px-8 py-3.5 rounded-2xl font-bold transition-colors shadow-lg active:scale-95 w-full md:w-auto flex items-center justify-center">
+                <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-6 px-4">Teks otomatis hilang per kata saat spasi. Fokus aliran ide.</p>
+                <button onclick="window.openOneShotFullscreen()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3.5 rounded-full font-bold transition-colors shadow-sm active:scale-95 w-full md:w-auto flex items-center justify-center">
                     <i class="fa-solid fa-expand mr-2"></i> Buka Kanvas One Shot
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM DELETE ALERT OVERLAY -->
-    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="delete-alert-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4 text-red-500">
-                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Hapus Catatan?</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Tindakan ini tidak dapat dibatalkan. Catatan akan dihapus permanen.</p>
+    <!-- IOS SYSTEM ALERT: DELETE -->
+    <div id="delete-alert-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="delete-alert-box" class="bg-[#F2F2F7]/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl rounded-2xl w-full max-w-[270px] overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-5 text-center">
+                <h3 class="text-[17px] font-semibold text-gray-900 dark:text-white mb-1">Hapus Catatan?</h3>
+                <p class="text-[13px] text-gray-900 dark:text-gray-300">Catatan ini akan dihapus permanen dari iCloud.</p>
             </div>
-            <div class="flex border-t border-gray-100 dark:border-gray-700">
-                <button onclick="window.closeDeleteAlert()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
-                <button onclick="window.confirmDelete()" class="flex-1 py-3.5 text-red-600 dark:text-red-500 font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Hapus</button>
+            <div class="flex border-t border-gray-300/50 dark:border-gray-600/50">
+                <button onclick="window.closeDeleteAlert()" class="flex-1 py-3 text-blue-500 font-normal text-[17px] hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-r border-gray-300/50 dark:border-gray-600/50 active:bg-black/10">Batal</button>
+                <button onclick="window.confirmDelete()" class="flex-1 py-3 text-red-500 font-semibold text-[17px] hover:bg-black/5 dark:hover:bg-white/5 transition-colors active:bg-black/10">Hapus</button>
             </div>
         </div>
     </div>
 
-    <!-- CUSTOM COPY OPTIONS OVERLAY -->
-    <div id="copy-options-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="copy-options-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xs overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="p-5 text-center border-b border-gray-100 dark:border-gray-700">
-                <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-3 text-blue-500">
-                    <i class="fa-regular fa-copy text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Opsi Salin</h3>
+    <!-- IOS SYSTEM ALERT: COPY -->
+    <div id="copy-options-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="copy-options-box" class="bg-[#F2F2F7]/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl rounded-2xl w-full max-w-[270px] overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="p-4 text-center border-b border-gray-300/50 dark:border-gray-600/50">
+                <h3 class="text-[14px] text-gray-500 font-medium">Opsi Salin</h3>
             </div>
             <div class="flex flex-col">
-                <button onclick="window.executeCopy(true)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Beserta Judul</button>
-                <button onclick="window.executeCopy(false)" class="py-4 text-gray-800 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700">Tanpa Judul</button>
-                <button onclick="window.closeCopyOptions()" class="py-4 text-red-500 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">Batal</button>
+                <button onclick="window.executeCopy(true)" class="py-3.5 text-blue-500 font-normal text-[17px] hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-gray-300/50 dark:border-gray-600/50 active:bg-black/10">Beserta Judul</button>
+                <button onclick="window.executeCopy(false)" class="py-3.5 text-blue-500 font-normal text-[17px] hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-gray-300/50 dark:border-gray-600/50 active:bg-black/10">Hanya Isi Teks</button>
+                <button onclick="window.closeCopyOptions()" class="py-3.5 text-gray-900 dark:text-white font-semibold text-[17px] hover:bg-black/5 dark:hover:bg-white/5 transition-colors active:bg-black/10">Batal</button>
             </div>
         </div>
     </div>
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center pointer-events-none">
         <i class="fa-solid fa-check-circle text-green-400 dark:text-green-500 text-lg mr-3"></i>
-        <span id="toast-message" class="text-[14px] font-medium">Notifikasi</span>
+        <span id="toast-message" class="text-[15px] font-medium">Notifikasi</span>
     </div>
 
-    <!-- CUSTOM ONE SHOT FULLSCREEN KANVAS -->
-    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-gray-900 z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
+    <!-- KANVAS ONE SHOT -->
+    <div id="oneshot-fullscreen-overlay" class="fixed inset-0 bg-[#F2F2F7] dark:bg-[#000000] z-[100] hidden flex-col transition-opacity duration-300 opacity-0">
         <div class="absolute top-6 left-6 right-6 flex justify-between items-center z-30 pointer-events-none">
-            <div id="oneshot-fs-stats" class="text-sm font-bold text-rose-500 bg-rose-100 dark:bg-rose-900/30 px-4 py-2 rounded-full shadow-sm pointer-events-auto">0 Kata</div>
-            <button onclick="window.closeOneShotFullscreen()" class="w-12 h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-lg flex items-center justify-center text-gray-800 dark:text-white hover:scale-105 active:scale-95 transition pointer-events-auto" title="Selesai / Keluar Kanvas">
-                <i class="fa-solid fa-check text-xl"></i>
+            <div id="oneshot-fs-stats" class="text-sm font-bold text-gray-500 bg-gray-200 dark:bg-gray-800 px-4 py-2 rounded-full pointer-events-auto">0 Kata</div>
+            <button onclick="window.closeOneShotFullscreen()" class="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-900 dark:text-white active:scale-95 pointer-events-auto">
+                <i class="fa-solid fa-check text-lg"></i>
             </button>
         </div>
-
         <textarea id="oneshot-fs-hidden" class="hidden"></textarea>
-
         <div class="flex-1 flex items-center justify-center p-8 relative overflow-hidden z-10">
-            <div id="oneshot-fs-visible" contenteditable="true" autocapitalize="none" oninput="window.handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-5xl md:text-[6vw] font-black text-gray-800 dark:text-gray-200 focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 dark:empty:before:text-gray-700 leading-tight break-words" data-placeholder="Ketik di sini..."></div>
+            <div id="oneshot-fs-visible" contenteditable="true" oninput="window.handleOneShotInput(event)" class="w-full max-w-5xl mx-auto text-center text-4xl md:text-[5vw] font-bold text-gray-900 dark:text-white focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400 leading-tight" data-placeholder="Ketik..."></div>
         </div>
-
-        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-lg md:text-2xl leading-relaxed text-gray-800 dark:text-gray-200 z-20 border border-gray-200 dark:border-gray-700"></div>
-
+        <div id="oneshot-fs-preview-box" class="absolute inset-x-6 top-24 bottom-28 md:inset-x-24 md:top-32 md:bottom-32 bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-md rounded-3xl shadow-2xl p-8 hidden overflow-y-auto text-lg md:text-xl text-gray-900 dark:text-white z-20"></div>
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
-            <button onclick="window.toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 active:scale-95 transition flex items-center text-sm md:text-base">
+            <button onclick="window.toggleOneShotPreview()" id="btn-oneshot-preview" class="bg-blue-500 text-white px-6 py-3 rounded-full font-bold shadow-sm active:scale-95 transition flex items-center text-sm">
                 <i class="fa-solid fa-eye mr-2"></i> <span id="oneshot-preview-btn-text">Intip Teks</span>
             </button>
         </div>
@@ -314,19 +318,16 @@
 
     <input type="file" id="carousel-image-input" accept="image/*" class="hidden" onchange="window.handleCarouselImageUpload(event)">
 
-    <!-- CUSTOM EDIT CAROUSEL CARD MODAL -->
-    <div id="edit-card-overlay" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="edit-card-box" class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
-                <h3 class="font-bold text-gray-900 dark:text-white">Edit Kartu Carousel</h3>
-                <button onclick="window.closeEditCarouselCardModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"><i class="fa-solid fa-times"></i></button>
+    <!-- IOS MODAL: EDIT CAROUSEL -->
+    <div id="edit-card-overlay" class="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="edit-card-box" class="bg-[#F2F2F7] dark:bg-[#1C1C1E] rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col">
+            <div class="px-5 py-4 border-b border-gray-300/50 dark:border-gray-600/50 flex justify-between items-center">
+                <button onclick="window.closeEditCarouselCardModal()" class="text-blue-500 text-[17px]">Batal</button>
+                <h3 class="font-semibold text-[17px] text-gray-900 dark:text-white">Edit Kartu</h3>
+                <button onclick="window.saveEditCarouselCard()" class="text-blue-500 font-bold text-[17px]">Simpan</button>
             </div>
-            <div class="p-5 flex-1 bg-white dark:bg-gray-800">
-                <textarea id="edit-card-textarea" placeholder="Isi kartu..." class="w-full h-32 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-            </div>
-            <div class="flex border-t border-gray-100 dark:border-gray-700">
-                <button onclick="window.closeEditCarouselCardModal()" class="flex-1 py-3.5 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-r border-gray-100 dark:border-gray-700">Batal</button>
-                <button onclick="window.saveEditCarouselCard()" class="flex-1 py-3.5 text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">Simpan</button>
+            <div class="p-5 flex-1 bg-white dark:bg-[#000000]">
+                <textarea id="edit-card-textarea" placeholder="Isi kartu..." class="w-full h-32 bg-transparent text-[16px] text-gray-900 dark:text-white focus:outline-none resize-none"></textarea>
             </div>
         </div>
     </div>
@@ -335,7 +336,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Konfigurasi Firebase milik pengguna
         const firebaseConfig = {
             apiKey: "AIzaSyAE3MKjPaHvYijBpd5ASU8z2MUFOTkSHGA",
             authDomain: "prompt-ikmal.firebaseapp.com",
@@ -354,30 +354,30 @@
             window.onSnapshot = onSnapshot;
             window.collection = collection;
         } catch(e) {
-            console.error("Firebase Initialization Error", e);
+            console.error("Firebase Init Error", e);
         }
 
         const categories = {
-            brandkit: { title: "Brand Kit", icon: "💼", color: "text-violet-500 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/30" },
-            carousel: { title: "Carousel Notes", icon: "🗂️", color: "text-pink-500 dark:text-pink-400", bg: "bg-pink-100 dark:bg-pink-900/30" },
-            copas: { title: "Copas", icon: "📋", color: "text-green-500 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
-            efekfont: { title: "Efek Font", icon: "🔤", color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
-            error: { title: "Error Book", icon: "🐛", color: "text-red-500 dark:text-red-400", bg: "bg-red-100 dark:bg-red-900/30" },
-            gemsgpt: { title: "GEMS/GPT", icon: "💎", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30" },
-            jenisfont: { title: "Jenis Font", icon: "🔠", color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/30" },
-            jurnal: { title: "Jurnal", icon: "📓", color: "text-amber-600 dark:text-amber-500", bg: "bg-amber-100 dark:bg-amber-900/30" },
-            laporan: { title: "Laporan", icon: "📊", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500 dark:text-indigo-400", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
-            memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500 dark:text-yellow-400", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
-            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
-            mypassword: { title: "My Password", icon: "🔑", color: "text-teal-500 dark:text-teal-400", bg: "bg-teal-100 dark:bg-teal-900/30" },
-            myprompt: { title: "My Prompt", icon: "⌨️", color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
-            mypurchase: { title: "My Purchase", icon: "🛍️", color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
-            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500 dark:text-rose-400", bg: "bg-rose-100 dark:bg-rose-900/30" },
-            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500 dark:text-cyan-400", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
-            screenshot: { title: "Screenshot", icon: "📸", color: "text-sky-500 dark:text-sky-400", bg: "bg-sky-100 dark:bg-sky-900/30" },
-            styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500 dark:text-fuchsia-400", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
+            brandkit: { title: "Brand Kit", icon: "💼", color: "text-violet-500", bg: "bg-violet-100 dark:bg-violet-900/30" },
+            carousel: { title: "Carousel", icon: "🗂️", color: "text-pink-500", bg: "bg-pink-100 dark:bg-pink-900/30" },
+            copas: { title: "Copas", icon: "📋", color: "text-green-500", bg: "bg-green-100 dark:bg-green-900/30" },
+            efekfont: { title: "Efek Font", icon: "🔤", color: "text-emerald-500", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
+            error: { title: "Error Book", icon: "🐛", color: "text-red-500", bg: "bg-red-100 dark:bg-red-900/30" },
+            gemsgpt: { title: "GEMS/GPT", icon: "💎", color: "text-indigo-500", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
+            ideation: { title: "Ideation", icon: "💡", color: "text-amber-500", bg: "bg-amber-100 dark:bg-amber-900/30" },
+            jenisfont: { title: "Jenis Font", icon: "🔠", color: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-900/30" },
+            jurnal: { title: "Jurnal", icon: "📓", color: "text-amber-600", bg: "bg-amber-100 dark:bg-amber-900/30" },
+            laporan: { title: "Laporan", icon: "📊", color: "text-indigo-500", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
+            myinstruction: { title: "Instruction", icon: "💻", color: "text-indigo-500", bg: "bg-indigo-100 dark:bg-indigo-900/30" },
+            memo: { title: "Memo Tasks", icon: "📝", color: "text-yellow-500", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
+            mylink: { title: "My Link", icon: "🔗", color: "text-purple-500", bg: "bg-purple-100 dark:bg-purple-900/30" },
+            mypassword: { title: "Password", icon: "🔑", color: "text-teal-500", bg: "bg-teal-100 dark:bg-teal-900/30" },
+            myprompt: { title: "Prompt", icon: "⌨️", color: "text-orange-500", bg: "bg-orange-100 dark:bg-orange-900/30" },
+            mypurchase: { title: "Purchase", icon: "🛍️", color: "text-emerald-500", bg: "bg-emerald-100 dark:bg-emerald-900/30" },
+            oneshot: { title: "One Shot", icon: "🎯", color: "text-rose-500", bg: "bg-rose-100 dark:bg-rose-900/30" },
+            revisi: { title: "Revisi", icon: "🔄", color: "text-cyan-500", bg: "bg-cyan-100 dark:bg-cyan-900/30" },
+            screenshot: { title: "Screenshot", icon: "📸", color: "text-sky-500", bg: "bg-sky-100 dark:bg-sky-900/30" },
+            styleart: { title: "Style Art", icon: "🎨", color: "text-fuchsia-500", bg: "bg-fuchsia-100 dark:bg-fuchsia-900/30" }
         };
 
         window.notes = [];
@@ -392,8 +392,10 @@
         window.noteIdToDelete = null;
         window.noteIdToCopy = null;
         window.activeCarouselEdit = { noteId: null, cardId: null };
+        
+        window.activeNoteId = null; 
 
-        // SISTEM UNDO/REDO CLOUD
+        // Sistem Undo/Redo
         window.actionHistory = [];
         window.redoStack = [];
 
@@ -418,84 +420,63 @@
         };
 
         window.performUndo = async function() {
-            if (window.actionHistory.length === 0) return window.showToast("Tidak ada tindakan untuk di-undo");
+            if (window.actionHistory.length === 0) return window.showToast("Tidak ada tindakan undo");
             const action = window.actionHistory.pop();
             window.redoStack.push(action);
             window.updateUndoRedoUI();
-
             window.showToast("Mengembalikan (Undo)...");
             try {
-                if (action.old) {
-                    await window.setDoc(window.doc(window.db, "notes", action.old.id.toString()), action.old);
-                } else if (action.new) {
-                    await window.deleteDoc(window.doc(window.db, "notes", action.new.id.toString()));
-                }
+                if (action.old) await window.setDoc(window.doc(window.db, "notes", action.old.id.toString()), action.old);
+                else if (action.new) await window.deleteDoc(window.doc(window.db, "notes", action.new.id.toString()));
             } catch(e) { window.showToast("Gagal Undo"); }
         };
 
         window.performRedo = async function() {
-            if (window.redoStack.length === 0) return window.showToast("Tidak ada tindakan untuk di-redo");
+            if (window.redoStack.length === 0) return window.showToast("Tidak ada tindakan redo");
             const action = window.redoStack.pop();
             window.actionHistory.push(action);
             window.updateUndoRedoUI();
-
             window.showToast("Menerapkan ulang (Redo)...");
             try {
-                if (action.new) {
-                    await window.setDoc(window.doc(window.db, "notes", action.new.id.toString()), action.new);
-                } else if (action.old) {
-                    await window.deleteDoc(window.doc(window.db, "notes", action.old.id.toString()));
-                }
+                if (action.new) await window.setDoc(window.doc(window.db, "notes", action.new.id.toString()), action.new);
+                else if (action.old) await window.deleteDoc(window.doc(window.db, "notes", action.old.id.toString()));
             } catch(e) { window.showToast("Gagal Redo"); }
         };
 
         window.initTheme = function() {
-            try {
-                const savedTheme = localStorage.getItem('theme');
-                const html = document.documentElement;
-                const icon = document.getElementById('theme-icon');
-                
-                if (savedTheme === 'light') {
-                    html.classList.remove('dark');
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                    document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
-                } else {
-                    html.classList.add('dark');
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
-                    document.getElementById('btn-theme').classList.replace('text-gray-500', 'text-yellow-500');
-                }
-            } catch(e) {}
+            const savedTheme = localStorage.getItem('theme');
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (savedTheme === 'light') {
+                html.classList.remove('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                document.getElementById('btn-theme').classList.replace('text-yellow-500', 'text-gray-500');
+            }
         };
 
         window.toggleTheme = function() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
             const btn = document.getElementById('btn-theme');
-            
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
+                icon.classList.replace('fa-sun', 'fa-moon');
                 btn.classList.replace('text-yellow-500', 'text-gray-500');
-                try { localStorage.setItem('theme', 'light'); } catch(e){}
+                localStorage.setItem('theme', 'light');
             } else {
                 html.classList.add('dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
+                icon.classList.replace('fa-moon', 'fa-sun');
                 btn.classList.replace('text-gray-500', 'text-yellow-500');
-                try { localStorage.setItem('theme', 'dark'); } catch(e){}
+                localStorage.setItem('theme', 'dark');
             }
         };
 
         window.showToast = function(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-message').innerText = message;
-            
             toast.classList.remove('translate-y-20', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
-            
             clearTimeout(window.toastTimeout);
             window.toastTimeout = setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
@@ -508,137 +489,85 @@
             return str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
         };
 
+        window.formatTextWithLinks = function(text) {
+            if (!text) return '';
+            const safeText = window.escapeHTML(text);
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return safeText.replace(urlRegex, function(url) {
+                return `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${url}</a>`;
+            });
+        };
+
         window.formatTime = function(timestamp) {
             if (!timestamp) return '';
             const date = new Date(timestamp);
-            return date.toLocaleDateString('id-ID', {
-                day: 'numeric', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            }).replace(/\./g, ':');
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(/\./g, ':');
         };
 
         window.openOneShotFullscreen = function() {
             const overlay = document.getElementById('oneshot-fullscreen-overlay');
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                window.placeCaretAtEnd(document.getElementById('oneshot-fs-visible'));
-            }, 10);
+            overlay.classList.remove('hidden'); overlay.classList.add('flex');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); window.placeCaretAtEnd(document.getElementById('oneshot-fs-visible')); }, 10);
         };
-
         window.closeOneShotFullscreen = function() {
             const overlay = document.getElementById('oneshot-fullscreen-overlay');
             overlay.classList.add('opacity-0');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         };
-
         window.handleOneShotInput = function(e) {
             const visibleEl = document.getElementById('oneshot-fs-visible');
             const hiddenEl = document.getElementById('oneshot-fs-hidden');
             let val = visibleEl.innerText.replace(/\u00A0/g, " "); 
-
             if (val.length === 1 && val.match(/[a-z]/)) {
                 const hiddenVal = hiddenEl.value;
                 if (hiddenVal === "" || /(?:[.!?])[\s\n]*$/.test(hiddenVal)) {
-                    val = val.toUpperCase();
-                    visibleEl.innerText = val;
-                    window.placeCaretAtEnd(visibleEl);
+                    val = val.toUpperCase(); visibleEl.innerText = val; window.placeCaretAtEnd(visibleEl);
                 }
             }
-
             if (val.includes(' ') || val.includes('\n')) {
                 const match = val.match(/^(.*[\s\n]+)([^\s\n]*)$/);
                 if (match) {
-                    hiddenEl.value += match[1];
-                    visibleEl.innerText = match[2];
-                    window.placeCaretAtEnd(visibleEl);
+                    hiddenEl.value += match[1]; visibleEl.innerText = match[2]; window.placeCaretAtEnd(visibleEl);
                 }
             }
             window.updateOneShotStats();
-            
             const box = document.getElementById('oneshot-fs-preview-box');
-            if (!box.classList.contains('hidden')) {
-                box.innerText = hiddenEl.value + visibleEl.innerText;
-            }
+            if (!box.classList.contains('hidden')) box.innerText = hiddenEl.value + visibleEl.innerText;
         };
-
         window.placeCaretAtEnd = function(el) {
             el.focus();
             if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
-                const range = document.createRange();
-                range.selectNodeContents(el);
-                range.collapse(false);
-                const sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
+                const range = document.createRange(); range.selectNodeContents(el); range.collapse(false);
+                const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
             }
         };
-
         window.updateOneShotStats = function() {
-            const hiddenVal = document.getElementById('oneshot-fs-hidden')?.value || "";
-            const visibleVal = document.getElementById('oneshot-fs-visible')?.innerText || "";
-            const text = (hiddenVal + visibleVal).trim();
-            const wordCount = text ? text.split(/\s+/).length : 0;
-            const statEl = document.getElementById('oneshot-fs-stats');
-            if(statEl) statEl.innerText = `${wordCount} Kata`;
+            const text = ((document.getElementById('oneshot-fs-hidden')?.value || "") + (document.getElementById('oneshot-fs-visible')?.innerText || "")).trim();
+            document.getElementById('oneshot-fs-stats').innerText = `${text ? text.split(/\s+/).length : 0} Kata`;
         };
-
         window.toggleOneShotPreview = function() {
             const box = document.getElementById('oneshot-fs-preview-box');
             const hidden = document.getElementById('oneshot-fs-hidden');
             const visible = document.getElementById('oneshot-fs-visible');
             const btnText = document.getElementById('oneshot-preview-btn-text');
             const btnIcon = document.querySelector('#btn-oneshot-preview i');
-
             if (box.classList.contains('hidden')) {
-                box.innerText = hidden.value + visible.innerText;
-                box.classList.remove('hidden');
-                btnText.innerText = "Tutup Intip";
-                btnIcon.className = "fa-solid fa-eye-slash mr-2";
+                box.innerText = hidden.value + visible.innerText; box.classList.remove('hidden');
+                btnText.innerText = "Tutup Intip"; btnIcon.className = "fa-solid fa-eye-slash mr-2";
             } else {
-                box.classList.add('hidden');
-                btnText.innerText = "Intip Teks";
-                btnIcon.className = "fa-solid fa-eye mr-2";
-                window.placeCaretAtEnd(visible);
+                box.classList.add('hidden'); btnText.innerText = "Intip Teks"; btnIcon.className = "fa-solid fa-eye mr-2"; window.placeCaretAtEnd(visible);
             }
         };
 
         window.toggleInputFields = function() {
             const category = document.getElementById('note-category').value;
-            const normalContainer = document.getElementById('normal-input-container');
-            const carouselContainer = document.getElementById('carousel-input-container');
-            const pwContainer = document.getElementById('mypassword-input-container');
-            const revContainer = document.getElementById('revisi-input-container');
-            const oneshotContainer = document.getElementById('oneshot-input-container');
-            const instContainer = document.getElementById('instruction-input-container');
-            const purContainer = document.getElementById('mypurchase-input-container');
-
-            [normalContainer, carouselContainer, pwContainer, revContainer, oneshotContainer, instContainer, purContainer].forEach(el => {
-                if(el) {
-                    el.classList.add('hidden');
-                    el.classList.remove('flex');
-                }
+            ['normal', 'carousel', 'mypassword', 'revisi', 'oneshot', 'instruction', 'mypurchase'].forEach(id => {
+                const el = document.getElementById(`${id}-input-container`);
+                if(el) { el.classList.add('hidden'); el.classList.remove('flex'); }
             });
-
-            if (category === 'carousel') {
-                carouselContainer.classList.remove('hidden'); carouselContainer.classList.add('flex');
-            } else if (category === 'mypassword') {
-                pwContainer.classList.remove('hidden'); pwContainer.classList.add('flex');
-            } else if (category === 'revisi') {
-                revContainer.classList.remove('hidden'); revContainer.classList.add('flex');
-            } else if (category === 'oneshot') {
-                oneshotContainer.classList.remove('hidden'); oneshotContainer.classList.add('flex');
-            } else if (category === 'myinstruction') {
-                instContainer.classList.remove('hidden'); instContainer.classList.add('flex');
-            } else if (category === 'mypurchase') {
-                purContainer.classList.remove('hidden'); purContainer.classList.add('flex');
-            } else {
-                normalContainer.classList.remove('hidden'); normalContainer.classList.add('flex');
-            }
+            const activeId = category === 'myinstruction' ? 'instruction' : category;
+            const targetEl = document.getElementById(`${activeId}-input-container`) || document.getElementById('normal-input-container');
+            targetEl.classList.remove('hidden'); targetEl.classList.add('flex');
         };
 
         window.initCarouselInputs = function(count = 3) {
@@ -646,33 +575,26 @@
             document.getElementById('carousel-count-display').innerText = count;
             const wrapper = document.getElementById('carousel-cards-wrapper');
             wrapper.innerHTML = '';
-            
-            for(let i=1; i<=count; i++) {
-                wrapper.appendChild(window.createCarouselInputGroup(i, i));
-            }
+            for(let i=1; i<=count; i++) wrapper.appendChild(window.createCarouselInputGroup(i, i));
             wrapper.appendChild(window.createCarouselInputGroup('caption', 'Caption'));
         };
 
         window.createCarouselInputGroup = function(id, label) {
             const div = document.createElement('div');
             div.id = `car-input-group-${id}`;
-            div.className = "relative bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-3 rounded-xl transition-colors mt-3";
-            
+            div.className = "relative bg-[#F2F2F7] dark:bg-[#2C2C2E] p-4 rounded-2xl mt-4";
             const badgeClass = id === 'caption' ? 'bg-purple-500 w-auto px-2' : 'bg-pink-500 w-6';
-            
             div.innerHTML = `
-                <div class="absolute -top-2 -left-2 ${badgeClass} text-white h-6 flex items-center justify-center rounded-full text-[11px] font-bold shadow-md z-10">${label}</div>
-                <textarea id="car-content-${id}" placeholder="Konten ${id === 'caption' ? 'caption' : 'kartu ke-'+id}..." class="w-full bg-transparent text-[15px] text-gray-800 dark:text-gray-200 focus:outline-none resize-none h-16 pt-1"></textarea>
-                
-                <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                    <button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[12px] text-blue-500 hover:text-blue-600 font-medium flex items-center">
-                        <i class="fa-solid fa-image mr-1"></i> Tambah Gambar
+                <div class="absolute -top-2.5 -left-2.5 ${badgeClass} text-white h-6 flex items-center justify-center rounded-full text-[11px] font-bold shadow-md z-10">${label}</div>
+                <textarea id="car-content-${id}" placeholder="Konten ${id === 'caption' ? 'caption' : 'kartu ke-'+id}..." class="w-full bg-transparent text-[15px] text-gray-900 dark:text-white focus:outline-none resize-none h-16"></textarea>
+                <div class="mt-2 pt-3 border-t border-gray-300 dark:border-gray-600 flex justify-between items-center">
+                    <button onclick="document.getElementById('modal-car-img-${id}').click()" class="text-[13px] text-blue-500 font-medium flex items-center">
+                        <i class="fa-solid fa-image mr-1.5"></i> Tambah Gambar
                     </button>
                     <input type="file" id="modal-car-img-${id}" accept="image/*" class="hidden" onchange="window.handleModalCarouselImage(event, '${id}')">
-                    
                     <div id="car-img-preview-box-${id}" class="hidden flex items-center space-x-2">
-                        <img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded border border-gray-300 dark:border-gray-500">
-                        <button onclick="window.removeModalCarouselImage('${id}')" class="text-red-500 hover:text-red-600 text-[12px] bg-red-50 dark:bg-red-900/30 w-5 h-5 rounded flex items-center justify-center"><i class="fa-solid fa-times"></i></button>
+                        <img id="car-img-preview-src-${id}" src="" class="w-8 h-8 object-cover rounded-md border border-gray-300 dark:border-gray-600">
+                        <button onclick="window.removeModalCarouselImage('${id}')" class="text-red-500 text-[12px] bg-red-100 dark:bg-red-900/30 w-5 h-5 rounded-full flex items-center justify-center"><i class="fa-solid fa-times"></i></button>
                     </div>
                 </div>
             `;
@@ -681,14 +603,9 @@
 
         window.changeCarouselCount = function(delta) {
             const newCount = window.currentCarouselCount + delta;
-            if (newCount < 1 || newCount > 20) {
-                if (newCount > 20) window.showToast("Maksimal 20 kartu.");
-                return;
-            }
-            
+            if (newCount < 1 || newCount > 20) return;
             const wrapper = document.getElementById('carousel-cards-wrapper');
             const captionEl = document.getElementById('car-input-group-caption');
-            
             if (delta > 0) {
                 window.currentCarouselCount++;
                 wrapper.insertBefore(window.createCarouselInputGroup(window.currentCarouselCount, window.currentCarouselCount), captionEl);
@@ -708,106 +625,57 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    // Lebih agresif untuk mode Carousel & Cloud: Maksimal dimensi 600px
-                    const MAX_DIMENSION = 600;
-                    if (width > height && width > MAX_DIMENSION) {
-                        height = Math.round(height * MAX_DIMENSION / width);
-                        width = MAX_DIMENSION;
-                    } else if (height > MAX_DIMENSION) {
-                        width = Math.round(width * MAX_DIMENSION / height);
-                        height = MAX_DIMENSION;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
+                    let width = img.width; let height = img.height;
+                    const MAX_DIMENSION = 600; // Kompresi Agresif untuk keamanan Firestore
+                    if (width > height && width > MAX_DIMENSION) { height = Math.round(height * MAX_DIMENSION / width); width = MAX_DIMENSION; } 
+                    else if (height > MAX_DIMENSION) { width = Math.round(width * MAX_DIMENSION / height); height = MAX_DIMENSION; }
+                    canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    
-                    // Solid Background mencegah PNG jadi balok hitam
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.fillRect(0, 0, width, height);
+                    ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.4); // Kualitas 40%
                     
-                    // Kompresi Kualitas 40% (sangat penting agar bisa banyak gambar di Carousel)
-                    const dataURL = canvas.toDataURL('image/jpeg', 0.4);
-                    
-                    if (dataURL.length > 500 * 1024) {
-                        window.showToast("Gambar masih terlalu besar. Mohon potong (crop) gambar Anda sedikit.");
-                        return;
-                    }
+                    if (dataURL.length > 800 * 1024) { window.showToast("Gambar terlalu kompleks/besar untuk Firestore. Mohon potong (crop) gambar Anda."); return; }
                     callback(dataURL, file.name, 'image/jpeg');
                 };
-                img.onerror = function() {
-                    window.showToast("Format gambar tidak didukung.");
-                };
+                img.onerror = function() { window.showToast("Format gambar tidak didukung."); };
                 img.src = e.target.result;
             };
-            reader.onerror = function() {
-                window.showToast("Gagal membaca file.");
-            };
+            reader.onerror = function() { window.showToast("Gagal membaca file gambar."); };
             reader.readAsDataURL(file);
         };
 
         window.handleModalCarouselImage = function(event, index) {
-            const file = event.target.files[0];
-            if (!file) return;
-            window.processImageFile(file, (dataUrl) => {
-                window.currentCarouselImages[index] = dataUrl;
-                window.renderModalCarouselImagePreview(index);
-            });
+            const file = event.target.files[0]; if (!file) return;
+            window.processImageFile(file, (dataUrl) => { window.currentCarouselImages[index] = dataUrl; window.renderModalCarouselImagePreview(index); });
             event.target.value = '';
         };
 
         window.removeModalCarouselImage = function(index) {
-            delete window.currentCarouselImages[index];
-            window.renderModalCarouselImagePreview(index);
+            delete window.currentCarouselImages[index]; window.renderModalCarouselImagePreview(index);
         };
 
         window.renderModalCarouselImagePreview = function(index) {
             const box = document.getElementById(`car-img-preview-box-${index}`);
             const img = document.getElementById(`car-img-preview-src-${index}`);
             if (!box || !img) return; 
-
-            if (window.currentCarouselImages[index]) {
-                img.src = window.currentCarouselImages[index];
-                box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-            }
+            if (window.currentCarouselImages[index]) { img.src = window.currentCarouselImages[index]; box.classList.remove('hidden'); } 
+            else box.classList.add('hidden');
         };
 
         window.handleFileUpload = function(event, type) {
-            const files = event.target.files;
-            if (!files) return;
-
+            const files = event.target.files; if (!files) return;
             Array.from(files).forEach(file => {
                 if (type === 'image') {
                     window.processImageFile(file, (dataUrl, fileName, mimeType) => {
-                        window.currentAttachments.push({
-                            id: Date.now() + Math.random(),
-                            type: 'image',
-                            name: fileName,
-                            data: dataUrl,
-                            mimeType: mimeType
-                        });
+                        window.currentAttachments.push({ id: Date.now() + Math.random(), type: 'image', name: fileName, data: dataUrl, mimeType: mimeType });
                         window.renderAttachmentPreview();
                     });
                 } else {
-                    if (file.size > 1024 * 1024 * 0.8) { 
-                        window.showToast(`File ${file.name} terlalu besar (Maks 800KB).`);
-                        return;
-                    }
+                    if (file.size > 1024 * 1024 * 0.8) { window.showToast(`File max 800KB untuk keamanan Cloud.`); return; }
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        window.currentAttachments.push({
-                            id: Date.now() + Math.random(),
-                            type: 'file',
-                            name: file.name,
-                            data: e.target.result,
-                            mimeType: file.type
-                        });
+                        window.currentAttachments.push({ id: Date.now() + Math.random(), type: 'file', name: file.name, data: e.target.result, mimeType: file.type });
                         window.renderAttachmentPreview();
                     };
                     reader.readAsDataURL(file);
@@ -817,26 +685,24 @@
         };
 
         window.removeAttachment = function(id) {
-            window.currentAttachments = window.currentAttachments.filter(a => a.id !== id);
-            window.renderAttachmentPreview();
+            window.currentAttachments = window.currentAttachments.filter(a => a.id !== id); window.renderAttachmentPreview();
         };
 
         window.renderAttachmentPreview = function() {
-            const container = document.getElementById('attachment-preview');
-            container.innerHTML = '';
+            const container = document.getElementById('attachment-preview'); container.innerHTML = '';
             window.currentAttachments.forEach(att => {
                 if (att.type === 'image') {
                     container.innerHTML += `
-                        <div class="relative w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden shrink-0 shadow-sm">
+                        <div class="relative w-16 h-16 rounded-xl border border-gray-300 dark:border-gray-600 overflow-hidden shrink-0 shadow-sm">
                             <img src="${att.data}" class="object-cover w-full h-full" />
-                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-0 right-0 bg-red-500/90 text-white w-5 h-5 flex items-center justify-center text-xs"><i class="fa-solid fa-times"></i></button>
+                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-1 right-1 bg-red-500/90 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-times"></i></button>
                         </div>
                     `;
                 } else {
                     container.innerHTML += `
-                        <div class="relative bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 px-3 py-2 rounded-lg text-xs flex items-center max-w-[150px] shadow-sm text-gray-700 dark:text-gray-200">
-                            <i class="fa-solid fa-file text-gray-400 mr-2"></i> <span class="truncate pr-4">${att.name}</span>
-                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-1 right-1 bg-red-500/90 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px]"><i class="fa-solid fa-times"></i></button>
+                        <div class="relative bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-xl text-xs flex items-center max-w-[150px] shadow-sm text-gray-900 dark:text-white">
+                            <i class="fa-solid fa-file text-blue-500 mr-2"></i> <span class="truncate pr-4">${att.name}</span>
+                            <button onclick="window.removeAttachment(${att.id})" class="absolute top-1 right-1 text-red-500 w-4 h-4 rounded-full flex items-center justify-center text-[10px]"><i class="fa-solid fa-times"></i></button>
                         </div>
                     `;
                 }
@@ -847,42 +713,16 @@
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
             
-            document.getElementById('note-id').value = "";
-            document.getElementById('note-title').value = "";
-            document.getElementById('note-content').value = "";
+            ['note-id', 'note-title', 'note-content', 'pw-username', 'pw-password', 'pw-link', 'rev-tujuan', 'rev-content', 'inst-link', 'inst-content', 'pur-nama', 'pur-owner', 'pur-harga', 'pur-link', 'pur-keterangan', 'oneshot-fs-hidden'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.value = "";
+            });
+            document.getElementById('oneshot-fs-visible').innerText = "";
+            window.updateOneShotStats();
+            document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
             
-            if (document.getElementById('pw-username')) {
-                document.getElementById('pw-username').value = "";
-                document.getElementById('pw-password').value = "";
-                document.getElementById('pw-link').value = "";
-            }
-            if (document.getElementById('rev-tujuan')) {
-                document.getElementById('rev-tujuan').value = "";
-                document.getElementById('rev-content').value = "";
-            }
-            if (document.getElementById('inst-link')) {
-                document.getElementById('inst-link').value = "";
-                document.getElementById('inst-content').value = "";
-            }
-            if (document.getElementById('pur-nama')) {
-                document.getElementById('pur-nama').value = "";
-                document.getElementById('pur-owner').value = "";
-                document.getElementById('pur-harga').value = "";
-                document.getElementById('pur-link').value = "";
-                document.getElementById('pur-keterangan').value = "";
-            }
-            if (document.getElementById('oneshot-fs-hidden')) {
-                document.getElementById('oneshot-fs-hidden').value = "";
-                document.getElementById('oneshot-fs-visible').innerText = "";
-                window.updateOneShotStats();
-                document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
-            }
-            
-            window.currentAttachments = []; 
-            window.currentCarouselImages = {}; 
-            
+            window.currentAttachments = []; window.currentCarouselImages = {}; 
             document.getElementById('modal-title').innerText = "Buat Catatan";
-            let targetCarouselCount = 3; 
+            let targetCount = 3; 
 
             if (editId) {
                 const note = window.notes.find(n => String(n.id) === String(editId));
@@ -891,123 +731,76 @@
                     document.getElementById('note-title').value = note.title;
                     document.getElementById('note-category').value = note.category;
                     document.getElementById('modal-title').innerText = "Edit Catatan";
-                    
                     if (note.attachments) window.currentAttachments = [...note.attachments];
 
-                    if (note.category === 'carousel') {
-                        let parsed = [];
-                        try { parsed = JSON.parse(note.content); } catch(e) {}
-                        
-                        const regularCards = parsed.filter(c => !c.isCaption);
-                        const captionCard = parsed.find(c => c.isCaption);
-                        
-                        if (regularCards.length > 0) targetCarouselCount = regularCards.length;
-                        window.initCarouselInputs(targetCarouselCount); 
+                    let p = {}; try{p = JSON.parse(note.content);}catch(e){}
 
-                        for(let i=1; i<=targetCarouselCount; i++) {
-                            if (regularCards[i-1]) {
-                                document.getElementById(`car-content-${i}`).value = regularCards[i-1].content || '';
-                                if (regularCards[i-1].image) {
-                                    window.currentCarouselImages[i] = regularCards[i-1].image;
-                                    window.renderModalCarouselImagePreview(i);
-                                }
+                    if (note.category === 'carousel') {
+                        const r = (Array.isArray(p)?p:[]).filter(c => !c.isCaption); const c = (Array.isArray(p)?p:[]).find(c => c.isCaption);
+                        if (r.length > 0) targetCount = r.length;
+                        window.initCarouselInputs(targetCount); 
+                        for(let i=1; i<=targetCount; i++) {
+                            if (r[i-1]) {
+                                document.getElementById(`car-content-${i}`).value = r[i-1].content || '';
+                                if (r[i-1].image) { window.currentCarouselImages[i] = r[i-1].image; window.renderModalCarouselImagePreview(i); }
                             }
                         }
-                        
-                        if (captionCard) {
-                            const capEl = document.getElementById('car-content-caption');
-                            if (capEl) capEl.value = captionCard.content || '';
-                            if (captionCard.image) {
-                                window.currentCarouselImages['caption'] = captionCard.image;
-                                window.renderModalCarouselImagePreview('caption');
-                            }
+                        if (c) {
+                            document.getElementById('car-content-caption').value = c.content || '';
+                            if (c.image) { window.currentCarouselImages['caption'] = c.image; window.renderModalCarouselImagePreview('caption'); }
                         }
                     } else if (note.category === 'mypassword') {
-                        let pwData = { username: '', password: '', link: '' };
-                        try { pwData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('pw-username')) {
-                            document.getElementById('pw-username').value = pwData.username || '';
-                            document.getElementById('pw-password').value = pwData.password || '';
-                            document.getElementById('pw-link').value = pwData.link || '';
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
+                        document.getElementById('pw-username').value = p.username || ''; document.getElementById('pw-password').value = p.password || ''; document.getElementById('pw-link').value = p.link || '';
+                        window.initCarouselInputs(targetCount);
                     } else if (note.category === 'revisi') {
-                        let revData = { tujuan: '', content: '' };
-                        try { revData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('rev-tujuan')) {
-                            document.getElementById('rev-tujuan').value = revData.tujuan || '';
-                            document.getElementById('rev-content').value = revData.content || '';
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
+                        document.getElementById('rev-tujuan').value = p.tujuan || ''; document.getElementById('rev-content').value = p.content || '';
+                        window.initCarouselInputs(targetCount);
                     } else if (note.category === 'myinstruction') {
-                        let instData = { link: '', content: '' };
-                        try { instData = JSON.parse(note.content); } catch(e) { instData.content = note.content; }
-                        if (document.getElementById('inst-link')) {
-                            document.getElementById('inst-link').value = instData.link || '';
-                            document.getElementById('inst-content').value = instData.content || '';
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
+                        document.getElementById('inst-link').value = p.link || ''; document.getElementById('inst-content').value = p.content || (typeof p === 'string'?note.content:'');
+                        window.initCarouselInputs(targetCount);
                     } else if (note.category === 'mypurchase') {
-                        let purData = { nama: '', owner: '', harga: '', link: '', keterangan: '' };
-                        try { purData = JSON.parse(note.content); } catch(e) {}
-                        if (document.getElementById('pur-nama')) {
-                            document.getElementById('pur-nama').value = purData.nama || '';
-                            document.getElementById('pur-owner').value = purData.owner || '';
-                            document.getElementById('pur-harga').value = purData.harga || '';
-                            document.getElementById('pur-link').value = purData.link || '';
-                            document.getElementById('pur-keterangan').value = purData.keterangan || '';
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
+                        document.getElementById('pur-nama').value = p.nama || ''; document.getElementById('pur-owner').value = p.owner || ''; document.getElementById('pur-harga').value = p.harga || ''; document.getElementById('pur-link').value = p.link || ''; document.getElementById('pur-keterangan').value = p.keterangan || '';
+                        window.initCarouselInputs(targetCount);
                     } else if (note.category === 'oneshot') {
-                        if (document.getElementById('oneshot-fs-hidden')) {
-                            document.getElementById('oneshot-fs-hidden').value = note.content || '';
-                            document.getElementById('oneshot-fs-visible').innerText = '';
-                            window.updateOneShotStats();
-                            document.getElementById('oneshot-fs-preview-box').classList.add('hidden');
-                        }
-                        window.initCarouselInputs(targetCarouselCount);
+                        document.getElementById('oneshot-fs-hidden').value = note.content || '';
+                        window.initCarouselInputs(targetCount);
                     } else {
                         document.getElementById('note-content').value = note.content;
-                        window.initCarouselInputs(targetCarouselCount);
+                        window.initCarouselInputs(targetCount);
                     }
                 }
-            } else {
-                window.initCarouselInputs(targetCarouselCount);
-            }
+            } else window.initCarouselInputs(targetCount);
 
-            window.renderAttachmentPreview();
-            window.toggleInputFields();
-
+            window.renderAttachmentPreview(); window.toggleInputFields();
             overlay.classList.remove('hidden');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                modal.classList.add('modal-active');
-            }, 10);
+            setTimeout(() => { overlay.classList.remove('opacity-0'); modal.classList.add('modal-active'); }, 10);
         };
 
         window.closeModal = function() {
             const overlay = document.getElementById('modal-overlay');
             const modal = document.getElementById('modal');
-            overlay.classList.add('opacity-0');
-            modal.classList.remove('modal-active');
+            overlay.classList.add('opacity-0'); modal.classList.remove('modal-active');
             setTimeout(() => overlay.classList.add('hidden'), 300);
         };
 
         window.loadNotes = function() {
-            if (!window.db || !window.collection) {
-                window.showToast("Menunggu koneksi Firebase...");
-                return;
-            }
+            // Muat dari LocalStorage Dulu agar instant
+            const localData = localStorage.getItem('icloud_notes');
+            if(localData) { window.notes = JSON.parse(localData); window.renderNotes(); }
+            
+            if (!window.db || !window.collection) return;
             window.onSnapshot(window.collection(window.db, "notes"), (snapshot) => {
-                window.notes = snapshot.docs.map(doc => {
-                    let data = doc.data();
-                    if (!data.id) data.id = doc.id; // PROTEKSI: Gunakan ID dokumen bawaan jika field id kosong
-                    return data;
-                });
+                window.notes = snapshot.docs.map(doc => { let d = doc.data(); if (!d.id) d.id = doc.id; return d; });
+                localStorage.setItem('icloud_notes', JSON.stringify(window.notes)); // Simpan cache
+                
+                // Ubah icon cloud jadi biru tanda sync sukses
+                const cloudIcon = document.getElementById('cloud-icon');
+                if(cloudIcon) {
+                    cloudIcon.classList.remove('text-gray-400');
+                    cloudIcon.classList.add('text-blue-500');
+                }
+                
                 window.renderNotes();
-            }, (error) => {
-                console.error("Firebase error", error);
-                window.showToast("Gagal memuat catatan (Periksa Koneksi)");
             });
         };
 
@@ -1016,313 +809,203 @@
             const category = document.getElementById('note-category').value;
             const titleInput = document.getElementById('note-title').value.trim();
             
-            let content = "";
-            let rawTextForTitle = "";
+            let content = ""; let rawTextForTitle = "";
 
             if (category === 'carousel') {
-                const carouselData = [];
-                let parsedOld = [];
-                
-                if (id) {
-                    const existingNote = window.notes.find(n => n.id == id);
-                    if (existingNote) {
-                        try { parsedOld = JSON.parse(existingNote.content); } catch(e){}
-                    }
-                }
-
-                const oldRegulars = parsedOld.filter(c => !c.isCaption);
-                const oldCaption = parsedOld.find(c => c.isCaption);
+                const carouselData = []; let parsedOld = [];
+                if (id) { const ex = window.notes.find(n => String(n.id) === String(id)); if(ex) try { parsedOld = JSON.parse(ex.content); } catch(e){} }
+                const oldReg = parsedOld.filter(c => !c.isCaption); const oldCap = parsedOld.find(c => c.isCaption);
 
                 let oldIdx = 0;
                 for(let i=1; i<=window.currentCarouselCount; i++) {
-                    const elTxt = document.getElementById(`car-content-${i}`);
-                    const txt = elTxt ? elTxt.value.trim() : "";
-                    const img = window.currentCarouselImages[i] || null;
-                    
-                    carouselData.push({ 
-                        id: oldRegulars[oldIdx]?.id || (Date.now() + i + Math.random()),
-                        content: txt,
-                        image: img,
-                        isCaption: false
-                    });
-                    if (!rawTextForTitle && txt) rawTextForTitle = txt; 
-                    oldIdx++;
+                    const txt = document.getElementById(`car-content-${i}`)?.value.trim() || "";
+                    carouselData.push({ id: oldReg[oldIdx]?.id || (Date.now() + i), content: txt, image: window.currentCarouselImages[i] || null, isCaption: false });
+                    if (!rawTextForTitle && txt) rawTextForTitle = txt; oldIdx++;
                 }
-                
-                const capTxtEl = document.getElementById('car-content-caption');
-                const capTxt = capTxtEl ? capTxtEl.value.trim() : "";
-                const capImg = window.currentCarouselImages['caption'] || null;
-                
-                carouselData.push({
-                    id: oldCaption?.id || (Date.now() + 999 + Math.random()),
-                    content: capTxt,
-                    image: capImg,
-                    isCaption: true
-                });
+                const capTxt = document.getElementById('car-content-caption')?.value.trim() || "";
+                carouselData.push({ id: oldCap?.id || (Date.now() + 999), content: capTxt, image: window.currentCarouselImages['caption'] || null, isCaption: true });
                 if (!rawTextForTitle && capTxt) rawTextForTitle = capTxt;
-                
                 content = JSON.stringify(carouselData);
-
             } else if (category === 'mypassword') {
-                const pwData = {
-                    username: document.getElementById('pw-username').value.trim(),
-                    password: document.getElementById('pw-password').value.trim(),
-                    link: document.getElementById('pw-link').value.trim()
-                };
-                content = JSON.stringify(pwData);
-                rawTextForTitle = pwData.username || pwData.link || "My Password";
-
+                const p = { username: document.getElementById('pw-username').value.trim(), password: document.getElementById('pw-password').value.trim(), link: document.getElementById('pw-link').value.trim() };
+                content = JSON.stringify(p); rawTextForTitle = p.username || p.link || "My Password";
             } else if (category === 'revisi') {
-                const revData = {
-                    tujuan: document.getElementById('rev-tujuan').value.trim(),
-                    content: document.getElementById('rev-content').value.trim()
-                };
-                content = JSON.stringify(revData);
-                rawTextForTitle = revData.tujuan || revData.content || "Revisi";
-
+                const p = { tujuan: document.getElementById('rev-tujuan').value.trim(), content: document.getElementById('rev-content').value.trim() };
+                content = JSON.stringify(p); rawTextForTitle = p.tujuan || p.content || "Revisi";
             } else if (category === 'myinstruction') {
-                const instData = {
-                    link: document.getElementById('inst-link').value.trim(),
-                    content: document.getElementById('inst-content').value.trim()
-                };
-                content = JSON.stringify(instData);
-                rawTextForTitle = instData.content || instData.link || "Instruction";
-
+                const p = { link: document.getElementById('inst-link').value.trim(), content: document.getElementById('inst-content').value.trim() };
+                content = JSON.stringify(p); rawTextForTitle = p.content || p.link || "Instruction";
             } else if (category === 'mypurchase') {
-                const purData = {
-                    nama: document.getElementById('pur-nama').value.trim(),
-                    owner: document.getElementById('pur-owner').value.trim(),
-                    harga: document.getElementById('pur-harga').value.trim(),
-                    link: document.getElementById('pur-link').value.trim(),
-                    keterangan: document.getElementById('pur-keterangan').value.trim()
-                };
-                content = JSON.stringify(purData);
-                rawTextForTitle = purData.nama || purData.owner || "My Purchase";
-
+                const p = { nama: document.getElementById('pur-nama').value.trim(), owner: document.getElementById('pur-owner').value.trim(), harga: document.getElementById('pur-harga').value.trim(), link: document.getElementById('pur-link').value.trim(), keterangan: document.getElementById('pur-keterangan').value.trim() };
+                content = JSON.stringify(p); rawTextForTitle = p.nama || p.owner || "My Purchase";
             } else if (category === 'oneshot') {
-                const hiddenVal = document.getElementById('oneshot-fs-hidden').value;
-                const visibleVal = document.getElementById('oneshot-fs-visible').innerText;
-                content = hiddenVal + visibleVal;
-                rawTextForTitle = content;
-
+                content = document.getElementById('oneshot-fs-hidden').value + document.getElementById('oneshot-fs-visible').innerText; rawTextForTitle = content;
             } else {
-                content = document.getElementById('note-content').value.trim();
-                rawTextForTitle = content;
+                content = document.getElementById('note-content').value.trim(); rawTextForTitle = content;
             }
 
-            let title = titleInput;
-            if (!title) {
-                if (rawTextForTitle) {
-                    let cleanText = rawTextForTitle.replace(/^- \[[xX ]\]\s*/i, '');
-                    const words = cleanText.trim().split(/\s+/);
-                    title = words.slice(0, 4).join(' '); 
-                    if (words.length > 4) title += '...';
-                } else {
-                    title = "Tanpa Judul";
-                }
-            }
-
-            const attachmentsToSave = [...window.currentAttachments];
+            let title = titleInput || (rawTextForTitle ? rawTextForTitle.replace(/^- \[[xX ]\]\s*/i, '').trim().split(/\s+/).slice(0, 4).join(' ') + (rawTextForTitle.split(/\s+/).length>4?'...':'') : "Tanpa Judul");
+            
             let existingNote = id ? window.notes.find(n => String(n.id) === String(id)) : null;
             const finalId = id ? (isNaN(Number(id)) ? id : Number(id)) : Date.now();
             
-            const payload = {
-                id: finalId,
-                category: category,
-                title: title,
-                content: content,
-                attachments: attachmentsToSave,
-                timestamp: existingNote ? existingNote.timestamp : Date.now(),
-                updatedAt: Date.now()
-            };
+            const payload = { id: finalId, category: category, title: title, content: content, attachments: [...window.currentAttachments], timestamp: existingNote ? existingNote.timestamp : Date.now(), updatedAt: Date.now() };
 
-            // CEK UKURAN PAYLOAD UNTUK MENCEGAH ERROR LIMIT 1MB DARI FIRESTORE
-            const payloadSize = JSON.stringify(payload).length;
-            if (payloadSize > 950000) { // ~950KB batas aman
-                window.showToast("Gagal: Total ukuran (teks + gambar) melebihi batas 1MB Cloud. Kurangi gambar!");
-                return;
-            }
-
-            const oldState = existingNote ? JSON.parse(JSON.stringify(existingNote)) : null;
-            const newState = JSON.parse(JSON.stringify(payload));
+            if (JSON.stringify(payload).length > 950000) return window.showToast("Gagal: Total 1MB Cloud Limit. Kurangi gambar!");
 
             try {
-                window.showToast("Menyimpan ke Cloud...");
+                window.showToast("Menyimpan...");
                 await window.setDoc(window.doc(window.db, "notes", payload.id.toString()), payload);
-                window.pushHistory('save', oldState, newState);
-                window.showToast("Catatan berhasil disimpan ke Cloud!");
+                window.pushHistory('save', existingNote ? JSON.parse(JSON.stringify(existingNote)) : null, JSON.parse(JSON.stringify(payload)));
                 window.closeModal();
-            } catch (error) {
-                console.error(error);
-                window.showToast("Gagal menyimpan. (Mungkin File Terlalu Besar)");
-            }
+            } catch (error) { window.showToast("Gagal menyimpan."); }
         };
 
-        window.openDeleteAlert = function(id) {
-            window.noteIdToDelete = id;
-            const overlay = document.getElementById('delete-alert-overlay');
-            const box = document.getElementById('delete-alert-box');
+        // IOS STYLE ACTION SHEET FUNCS
+        window.openActionSheet = function(e, id, category) {
+            e.stopPropagation();
+            window.activeNoteId = id;
+            const visitBtn = document.getElementById('as-btn-visit');
+            
+            // Perlihatkan tombol visit khusus kategori ini
+            if (['mylink', 'mypassword', 'myinstruction', 'mypurchase', 'gemsgpt'].includes(category)) {
+                visitBtn.classList.remove('hidden');
+                visitBtn.classList.add('block');
+            } else {
+                visitBtn.classList.add('hidden');
+                visitBtn.classList.remove('block');
+            }
+
+            const overlay = document.getElementById('action-sheet-overlay');
+            const sheet = document.getElementById('action-sheet');
+
             overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
+            sheet.classList.remove('hidden');
+            sheet.classList.add('flex');
+
             setTimeout(() => {
                 overlay.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-                box.classList.add('scale-100');
+                sheet.classList.remove('translate-y-[200%]');
+                sheet.classList.add('translate-y-0');
             }, 10);
         };
 
-        window.closeDeleteAlert = function() {
-            const overlay = document.getElementById('delete-alert-overlay');
-            const box = document.getElementById('delete-alert-box');
+        window.closeActionSheet = function() {
+            const overlay = document.getElementById('action-sheet-overlay');
+            const sheet = document.getElementById('action-sheet');
+
             overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
+            sheet.classList.remove('translate-y-0');
+            sheet.classList.add('translate-y-[200%]');
+
             setTimeout(() => {
                 overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                window.noteIdToDelete = null;
+                sheet.classList.add('hidden');
+                sheet.classList.remove('flex');
+                window.activeNoteId = null;
             }, 300);
         };
 
-        window.confirmDelete = async function() {
-            if (window.noteIdToDelete !== null && window.noteIdToDelete !== undefined) {
-                const noteToDelete = window.notes.find(n => String(n.id) === String(window.noteIdToDelete));
-                const oldState = noteToDelete ? JSON.parse(JSON.stringify(noteToDelete)) : null;
+        // Actions dari menu Action Sheet
+        window.actionVisit = function() {
+            const id = window.activeNoteId;
+            window.closeActionSheet();
+            setTimeout(() => window.visitLink(id), 100);
+        };
+        window.actionCopy = function() {
+            const id = window.activeNoteId;
+            window.closeActionSheet();
+            setTimeout(() => window.openCopyOptions(id), 300);
+        };
+        window.actionEdit = function() {
+            const id = window.activeNoteId;
+            window.closeActionSheet();
+            setTimeout(() => window.openModal(id), 300);
+        };
+        window.actionDelete = function() {
+            const id = window.activeNoteId;
+            window.closeActionSheet();
+            setTimeout(() => window.openDeleteAlert(id), 300);
+        };
 
+        // ALERTS & MENUS
+        window.openDeleteAlert = function(id) {
+            window.noteIdToDelete = id; 
+            const overlay = document.getElementById('delete-alert-overlay'); const box = document.getElementById('delete-alert-box');
+            overlay.classList.remove('hidden'); overlay.classList.add('flex');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
+        };
+        window.closeDeleteAlert = function() {
+            const overlay = document.getElementById('delete-alert-overlay'); const box = document.getElementById('delete-alert-box');
+            overlay.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); window.noteIdToDelete = null; }, 300);
+        };
+        window.confirmDelete = async function() {
+            if (window.noteIdToDelete) {
+                const note = window.notes.find(n => String(n.id) === String(window.noteIdToDelete));
                 try {
                     await window.deleteDoc(window.doc(window.db, "notes", String(window.noteIdToDelete)));
-                    if(oldState) window.pushHistory('delete', oldState, null);
-                    window.showToast("Catatan dihapus.");
-                    window.closeDeleteAlert();
-                } catch (e) {
-                    console.error("Error Delete:", e);
-                    window.showToast("Gagal menghapus.");
-                }
+                    if(note) window.pushHistory('delete', JSON.parse(JSON.stringify(note)), null);
+                    window.closeDeleteAlert(); window.showToast("Dihapus");
+                } catch (e) { window.showToast("Gagal menghapus"); }
             }
         };
 
         window.toggleMemoTask = async function(noteId, idx) {
-            const note = window.notes.find(n => String(n.id) === String(noteId));
-            if (!note) return;
-            
+            const note = window.notes.find(n => String(n.id) === String(noteId)); if (!note) return;
             const oldState = JSON.parse(JSON.stringify(note));
-
-            let lines = note.content.split('\n');
-            let line = lines[idx];
-            
-            if (line.startsWith('✓ ') || line.startsWith('- [x] ')) {
-                lines[idx] = line.replace(/^(✓ |- \[x\] )/, '☐ ');
-            } else if (line.startsWith('- [ ] ') || line.startsWith('☐ ')) {
-                lines[idx] = line.replace(/^(- \[ \] |☐ )/, '✓ ');
-            } else {
-                lines[idx] = '✓ ' + line;
-            }
-            
-            note.content = lines.join('\n');
-            note.updatedAt = Date.now();
-            const newState = JSON.parse(JSON.stringify(note));
-            
-            try {
-                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                window.pushHistory('update', oldState, newState);
-            } catch(e) {
-                window.showToast("Gagal memperbarui status centang.");
-            }
+            let lines = note.content.split('\n'); let line = lines[idx];
+            if (line.startsWith('✓ ') || line.startsWith('- [x] ')) lines[idx] = line.replace(/^(✓ |- \[x\] )/, '☐ ');
+            else if (line.startsWith('- [ ] ') || line.startsWith('☐ ')) lines[idx] = line.replace(/^(- \[ \] |☐ )/, '✓ ');
+            else lines[idx] = '✓ ' + line;
+            note.content = lines.join('\n'); note.updatedAt = Date.now();
+            try { await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note); window.pushHistory('update', oldState, JSON.parse(JSON.stringify(note))); } catch(e) {}
         };
 
         window.removeCardImage = async function(noteId, attId) {
-            if(!confirm("Hapus lampiran gambar ini?")) return;
-            const note = window.notes.find(n => String(n.id) === String(noteId));
-            if(!note) return;
-            
+            if(!confirm("Hapus lampiran ini?")) return;
+            const note = window.notes.find(n => String(n.id) === String(noteId)); if(!note) return;
             const oldState = JSON.parse(JSON.stringify(note));
-            note.attachments = note.attachments.filter(a => a.id !== attId);
-            note.updatedAt = Date.now();
-            const newState = JSON.parse(JSON.stringify(note));
-
-            try {
-                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                window.pushHistory('update', oldState, newState);
-                window.showToast("Gambar dihapus.");
-            } catch(e) {
-                window.showToast("Gagal menghapus.");
-            }
+            note.attachments = note.attachments.filter(a => a.id !== attId); note.updatedAt = Date.now();
+            try { await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note); window.pushHistory('update', oldState, JSON.parse(JSON.stringify(note))); window.showToast("Terhapus"); } catch(e) {}
         };
 
         window.copyCarouselCard = function(noteId, cardId) {
-            const note = window.notes.find(n => String(n.id) === String(noteId));
-            if (!note) return;
+            const note = window.notes.find(n => String(n.id) === String(noteId)); if (!note) return;
             try {
-                const items = JSON.parse(note.content);
-                const card = items.find(i => i.id === cardId);
+                const items = JSON.parse(note.content); const card = items.find(i => i.id === cardId);
                 if (card) {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = card.content;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    window.showToast("Teks kartu disalin!");
+                    const ta = document.createElement('textarea'); ta.value = card.content; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); window.showToast("Disalin!");
                 }
             } catch(e) {}
         };
 
         window.deleteCarouselCard = async function(noteId, cardId) {
-            if (!confirm("Hapus kartu ini dari Carousel?")) return;
-            const note = window.notes.find(n => String(n.id) === String(noteId));
-            if (!note) return;
-
+            if (!confirm("Hapus kartu?")) return;
+            const note = window.notes.find(n => String(n.id) === String(noteId)); if (!note) return;
             const oldState = JSON.parse(JSON.stringify(note));
             try {
-                let items = JSON.parse(note.content);
-                items = items.filter(i => i.id !== cardId);
-                note.content = JSON.stringify(items);
-                note.updatedAt = Date.now();
-                const newState = JSON.parse(JSON.stringify(note));
-
-                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                window.pushHistory('update', oldState, newState);
-                window.showToast("Kartu dihapus.");
+                let items = JSON.parse(note.content).filter(i => i.id !== cardId);
+                note.content = JSON.stringify(items); note.updatedAt = Date.now();
+                await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note); window.pushHistory('update', oldState, JSON.parse(JSON.stringify(note))); window.showToast("Kartu dihapus.");
             } catch(e) {}
         };
 
-        window.triggerCarouselImageUpload = function(noteId, cardId) {
-            window.activeCarouselEdit = { noteId, cardId };
-            document.getElementById('carousel-image-input').click();
-        };
-
+        window.triggerCarouselImageUpload = function(noteId, cardId) { window.activeCarouselEdit = { noteId, cardId }; document.getElementById('carousel-image-input').click(); };
         window.handleCarouselImageUpload = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
+            const file = event.target.files[0]; if (!file) return;
             window.processImageFile(file, async (dataUrl) => {
                 const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId));
                 if (note) {
                     const oldState = JSON.parse(JSON.stringify(note));
                     try {
-                        let items = JSON.parse(note.content);
-                        let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
+                        let items = JSON.parse(note.content); let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
                         if (card) {
-                            card.image = dataUrl;
-                            note.content = JSON.stringify(items);
-                            note.updatedAt = Date.now();
-                            
-                            // CEK UKURAN PAYLOAD SEBELUM DISIMPAN
-                            const payloadSize = JSON.stringify(note).length;
-                            if (payloadSize > 950000) {
-                                window.showToast("Gagal: Penambahan gambar ini membuat catatan melebihi batas 1MB Cloud.");
-                                return;
-                            }
-
-                            const newState = JSON.parse(JSON.stringify(note));
-                            window.showToast("Menyimpan ke Cloud...");
-                            await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                            window.pushHistory('update', oldState, newState);
-                            window.showToast("Gambar ditambahkan ke kartu!");
+                            card.image = dataUrl; note.content = JSON.stringify(items); note.updatedAt = Date.now();
+                            if (JSON.stringify(note).length > 950000) return window.showToast("Limit 1MB!");
+                            await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note); window.pushHistory('update', oldState, JSON.parse(JSON.stringify(note))); window.showToast("Gambar masuk!");
                         }
-                    } catch(err) {
-                        window.showToast("Gagal menyimpan gambar.");
-                    }
+                    } catch(err) {}
                 }
             });
             event.target.value = '';
@@ -1330,479 +1013,215 @@
 
         window.openEditCarouselCardModal = function(noteId, cardId) {
             window.activeCarouselEdit = { noteId, cardId };
-            const note = window.notes.find(n => String(n.id) === String(noteId));
-            if (!note) return;
+            const note = window.notes.find(n => String(n.id) === String(noteId)); if (!note) return;
             try {
-                const items = JSON.parse(note.content);
-                const card = items.find(i => i.id === cardId);
+                const card = JSON.parse(note.content).find(i => i.id === cardId);
                 if (card) {
                     document.getElementById('edit-card-textarea').value = card.content;
-                    const overlay = document.getElementById('edit-card-overlay');
-                    const box = document.getElementById('edit-card-box');
-                    overlay.classList.remove('hidden');
-                    overlay.classList.add('flex');
-                    setTimeout(() => {
-                        overlay.classList.remove('opacity-0');
-                        box.classList.remove('scale-95');
-                        box.classList.add('scale-100');
-                    }, 10);
+                    const overlay = document.getElementById('edit-card-overlay'); const box = document.getElementById('edit-card-box');
+                    overlay.classList.remove('hidden'); overlay.classList.add('flex');
+                    setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
                 }
             } catch(e) {}
         };
-
         window.closeEditCarouselCardModal = function() {
-            const overlay = document.getElementById('edit-card-overlay');
-            const box = document.getElementById('edit-card-box');
-            overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }, 300);
+            const overlay = document.getElementById('edit-card-overlay'); const box = document.getElementById('edit-card-box');
+            overlay.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, 300);
         };
-
         window.saveEditCarouselCard = async function() {
-            const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId));
-            if (!note) return;
-
+            const note = window.notes.find(n => String(n.id) === String(window.activeCarouselEdit.noteId)); if (!note) return;
             const oldState = JSON.parse(JSON.stringify(note));
             try {
-                let items = JSON.parse(note.content);
-                let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
+                let items = JSON.parse(note.content); let card = items.find(i => i.id === window.activeCarouselEdit.cardId);
                 if (card) {
-                    card.content = document.getElementById('edit-card-textarea').value;
-                    note.content = JSON.stringify(items);
-                    note.updatedAt = Date.now();
-                    const newState = JSON.parse(JSON.stringify(note));
-
-                    await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
-                    window.pushHistory('update', oldState, newState);
-                    window.closeEditCarouselCardModal();
-                    window.showToast("Kartu diperbarui!");
+                    card.content = document.getElementById('edit-card-textarea').value; note.content = JSON.stringify(items); note.updatedAt = Date.now();
+                    await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note); window.pushHistory('update', oldState, JSON.parse(JSON.stringify(note)));
+                    window.closeEditCarouselCardModal(); window.showToast("Tersimpan!");
                 }
             } catch(e) {}
         };
 
         window.openCopyOptions = function(id) {
-            window.noteIdToCopy = id;
-            const overlay = document.getElementById('copy-options-overlay');
-            const box = document.getElementById('copy-options-box');
-            
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-                box.classList.add('scale-100');
-            }, 10);
+            window.noteIdToCopy = id; 
+            const overlay = document.getElementById('copy-options-overlay'); const box = document.getElementById('copy-options-box');
+            overlay.classList.remove('hidden'); overlay.classList.add('flex');
+            setTimeout(() => { overlay.classList.remove('opacity-0'); box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
         };
-
         window.closeCopyOptions = function() {
-            const overlay = document.getElementById('copy-options-overlay');
-            const box = document.getElementById('copy-options-box');
-            
-            overlay.classList.add('opacity-0');
-            box.classList.remove('scale-100');
-            box.classList.add('scale-95');
-            
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-                window.noteIdToCopy = null;
-            }, 300);
+            const overlay = document.getElementById('copy-options-overlay'); const box = document.getElementById('copy-options-box');
+            overlay.classList.add('opacity-0'); box.classList.remove('scale-100'); box.classList.add('scale-95');
+            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); window.noteIdToCopy = null; }, 300);
         };
-
         window.executeCopy = function(withTitle) {
-            if (window.noteIdToCopy === null) return;
-            const note = window.notes.find(n => String(n.id) === String(window.noteIdToCopy));
-            if (!note) {
-                window.closeCopyOptions();
-                return;
-            }
-            
-            let textToCopy = "";
-            if (withTitle && note.title) {
-                textToCopy += `${note.title}\n\n`;
-            }
-            
+            if (!window.noteIdToCopy) return;
+            const note = window.notes.find(n => String(n.id) === String(window.noteIdToCopy)); if (!note) { window.closeCopyOptions(); return; }
+            let textToCopy = withTitle && note.title ? `${note.title}\n\n` : "";
             if (note.category === 'carousel') {
-                try {
-                    let items = JSON.parse(note.content);
-                    let numIdx = 1;
-                    const cardTexts = items.map((it) => {
-                        const title = it.isCaption ? 'Caption' : `Kartu ${numIdx++}`;
-                        return `[${title}]\n${it.content}`;
-                    }).join('\n\n---\n\n');
-                    textToCopy += cardTexts;
-                } catch(e) {}
+                try { let i=1; textToCopy += JSON.parse(note.content).map(it => `[${it.isCaption?'Caption':`Kartu ${i++}`}]\n${it.content}`).join('\n\n---\n\n'); } catch(e){}
             } else if (note.category === 'mypassword') {
-                try {
-                    let pw = JSON.parse(note.content);
-                    textToCopy += `Username: ${pw.username}\nPassword: ${pw.password}\nLink: ${pw.link}`;
-                } catch(e) {}
+                try { let p = JSON.parse(note.content); textToCopy += `Username: ${p.username}\nPassword: ${p.password}\nLink: ${p.link}`; } catch(e){}
             } else if (note.category === 'revisi') {
-                try {
-                    let rev = JSON.parse(note.content);
-                    textToCopy += `Tujuan Revisi: ${rev.tujuan}\n\nTeks:\n${rev.content}`;
-                } catch(e) {}
+                try { let p = JSON.parse(note.content); textToCopy += `Tujuan: ${p.tujuan}\n\nTeks:\n${p.content}`; } catch(e){}
             } else if (note.category === 'myinstruction') {
-                try {
-                    let inst = JSON.parse(note.content);
-                    if (inst.link) textToCopy += `Link: ${inst.link}\n\n`;
-                    textToCopy += `Instruksi:\n${inst.content}`;
-                } catch(e) {
-                    textToCopy += note.content;
-                }
+                try { let p = JSON.parse(note.content); if(p.link) textToCopy += `Link: ${p.link}\n\n`; textToCopy += `Instruksi:\n${p.content}`; } catch(e){ textToCopy += note.content; }
             } else if (note.category === 'mypurchase') {
-                try {
-                    let pur = JSON.parse(note.content);
-                    textToCopy += `Nama Produk: ${pur.nama}\nOwner: ${pur.owner}\nHarga Beli: ${pur.harga}\nLink: ${pur.link}\n\nKeterangan:\n${pur.keterangan}`;
-                } catch(e) {
-                    textToCopy += note.content;
-                }
-            } else {
-                textToCopy += note.content;
-            }
+                try { let p = JSON.parse(note.content); textToCopy += `Produk: ${p.nama}\nOwner: ${p.owner}\nHarga: ${p.harga}\nLink: ${p.link}\n\nKet:\n${p.keterangan}`; } catch(e){ textToCopy += note.content; }
+            } else textToCopy += note.content;
             
-            const textarea = document.createElement('textarea');
-            textarea.value = textToCopy.trim();
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                document.execCommand('copy');
-                window.showToast("Teks berhasil disalin!");
-            } catch (err) {
-                window.showToast("Gagal menyalin teks.");
-            }
-            
-            document.body.removeChild(textarea);
-            window.closeCopyOptions();
+            const ta = document.createElement('textarea'); ta.value = textToCopy.trim(); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+            window.showToast("Disalin!"); window.closeCopyOptions();
         };
 
         window.visitLink = function(id) {
-            const note = window.notes.find(n => String(n.id) === String(id));
-            if (!note) return;
-            
-            if (note.category === 'mypassword' || note.category === 'myinstruction' || note.category === 'mypurchase') {
+            const note = window.notes.find(n => String(n.id) === String(id)); if (!note) return;
+            if (['mypassword', 'myinstruction', 'mypurchase'].includes(note.category)) {
                 try {
-                    const data = JSON.parse(note.content);
-                    if (data.link) {
-                        let url = data.link;
-                        if (!url.match(/^https?:\/\//i)) { url = 'https://' + url; }
-                        window.open(url, '_blank');
-                        window.showToast("Membuka tautan...");
-                        return;
-                    }
+                    const p = JSON.parse(note.content);
+                    if (p.link) { window.open(p.link.match(/^https?:\/\//i) ? p.link : 'https://' + p.link, '_blank'); return; }
                 } catch(e) {}
-                if (note.category === 'mypassword' || note.category === 'mypurchase') {
-                    window.showToast("Tidak ada tautan.");
-                    return;
-                }
             }
-
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const matches = note.content.match(urlRegex);
-            
-            if (matches && matches.length > 0) {
-                window.open(matches[0], '_blank');
-                window.showToast("Membuka tautan...");
-            } else {
-                window.showToast("Tidak ditemukan link pada catatan ini.");
-            }
+            const match = note.content.match(/(https?:\/\/[^\s]+)/g);
+            if (match && match.length > 0) window.open(match[0], '_blank'); else window.showToast("Tidak ada link di catatan ini");
         };
 
         window.toggleCategory = function(catKey) {
-            const content = document.getElementById(`cat-body-${catKey}`);
-            const icon = document.getElementById(`cat-icon-${catKey}`);
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-            if (isOpen) window.openCategories.add(catKey);
-            else window.openCategories.delete(catKey);
-        };
-
-        window.toggleActions = function(e, id) {
-            e.stopPropagation(); // Cegah akordion ikut terbuka saat klik menu
-            const el = document.getElementById(`note-actions-${id}`);
-            if (el.classList.contains('hidden')) {
-                // Sembunyikan menu lain yang mungkin sedang terbuka agar rapi
-                document.querySelectorAll('.note-actions-menu').forEach(menu => {
-                    menu.classList.add('hidden');
-                    menu.classList.remove('flex');
-                });
-                el.classList.remove('hidden');
-                el.classList.add('flex');
-            } else {
-                el.classList.add('hidden');
-                el.classList.remove('flex');
-            }
+            const content = document.getElementById(`cat-body-${catKey}`); const icon = document.getElementById(`cat-icon-${catKey}`);
+            const isOpen = content.classList.toggle('open'); icon.classList.toggle('open');
+            if (isOpen) window.openCategories.add(catKey); else window.openCategories.delete(catKey);
         };
 
         window.toggleNote = function(noteId) {
-            // Sembunyikan menu aksi otomatis jika sedang terbuka dan area kartu diklik
-            const actionsMenu = document.getElementById(`note-actions-${noteId}`);
-            if (actionsMenu && !actionsMenu.classList.contains('hidden')) {
-                actionsMenu.classList.add('hidden');
-                actionsMenu.classList.remove('flex');
-            }
-
-            const content = document.getElementById(`note-body-${noteId}`);
-            const icon = document.getElementById(`note-icon-${noteId}`);
-            const isOpen = content.classList.toggle('open');
-            icon.classList.toggle('open');
-            if (isOpen) window.openNotes.add(noteId);
-            else window.openNotes.delete(noteId);
+            const content = document.getElementById(`note-body-${noteId}`); const icon = document.getElementById(`note-icon-${noteId}`);
+            const isOpen = content.classList.toggle('open'); icon.classList.toggle('open');
+            if (isOpen) window.openNotes.add(String(noteId)); else window.openNotes.delete(String(noteId));
         };
 
         window.toggleGroupView = function() {
             window.isGrouped = !window.isGrouped;
             const btn = document.getElementById('btn-group');
-            if (window.isGrouped) {
-                btn.innerHTML = '<i class="fa-solid fa-list"></i>'; 
-                btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
-                btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg');
-            }
+            if (window.isGrouped) { btn.innerHTML = '<i class="fa-solid fa-list"></i>'; btn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg'); } 
+            else { btn.innerHTML = '<i class="fa-solid fa-layer-group"></i>'; btn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/40', 'rounded-lg'); }
             window.renderNotes();
         };
 
         window.buildNoteCard = function(note, showBadge = false) {
             const catConfig = categories[note.category] || categories['memo'];
-            const isNoteOpen = window.openNotes.has(String(note.id));
-            const openClass = isNoteOpen ? "open" : "";
+            const isNoteOpen = window.openNotes.has(String(note.id)); const openClass = isNoteOpen ? "open" : "";
             
             let previewContent = '';
-            
             if (note.category === 'carousel') {
-                let items = [];
-                try { items = JSON.parse(note.content); } catch(e){}
-                
+                let items = []; try { items = JSON.parse(note.content); } catch(e){}
                 previewContent = `<div class="flex gap-3 overflow-x-auto hide-scrollbar py-3 pl-2 items-start">`;
-                
                 let numIdx = 1;
                 items.forEach((it) => {
                     const imgHtml = it.image ? `
                     <div class="relative group">
-                        <img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-lg mb-3 shadow-sm border border-gray-200 dark:border-gray-600">
-                        <a href="${it.image}" download="carousel_${it.id}.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm transition opacity-100 md:opacity-0 md:group-hover:opacity-100" title="Unduh Gambar">
+                        <img src="${it.image}" class="w-full h-auto max-h-64 object-cover object-center rounded-xl mb-3 shadow-sm border border-gray-200 dark:border-gray-700">
+                        <a href="${it.image}" download="carousel_${it.id}.jpg" onclick="event.stopPropagation()" class="absolute top-2 right-2 w-8 h-8 bg-white/70 dark:bg-black/50 hover:bg-white dark:hover:bg-black text-gray-900 dark:text-white rounded-full flex items-center justify-center backdrop-blur-md shadow-sm transition" title="Unduh">
                             <i class="fa-solid fa-download text-xs"></i>
                         </a>
-                    </div>
-                    ` : '';
-                    
-                    const isCaption = it.isCaption;
-                    const badgeHtml = isCaption 
-                        ? `<div class="absolute -top-2 -left-2 bg-purple-500 text-white px-2 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">Caption</div>`
-                        : `<div class="absolute -top-2 -left-2 bg-pink-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">${numIdx++}</div>`;
-                        
+                    </div>` : '';
+                    const badgeHtml = it.isCaption ? `<div class="absolute -top-2 -left-2 bg-purple-500 text-white px-2 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">Caption</div>` : `<div class="absolute -top-2 -left-2 bg-pink-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold shadow-md z-10">${numIdx++}</div>`;
                     previewContent += `
-                        <div class="shrink-0 w-52 bg-gray-50 dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600 flex flex-col justify-between transition-colors relative">
+                        <div class="shrink-0 w-52 bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3.5 rounded-2xl flex flex-col justify-between relative">
                             ${badgeHtml}
                             <div>
                                 ${imgHtml}
-                                <div class="text-[13px] text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${window.escapeHTML(it.content)}</div>
+                                <div class="text-[14px] text-gray-900 dark:text-white whitespace-pre-wrap">${window.formatTextWithLinks(it.content)}</div>
                             </div>
-                            <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                                <button onclick="window.copyCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-green-500 hover:text-green-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Salin"><i class="fa-regular fa-copy text-[11px]"></i></button>
-                                <button onclick="window.openEditCarouselCardModal('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-blue-500 hover:text-blue-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Edit Teks"><i class="fa-solid fa-pen text-[11px]"></i></button>
-                                <button onclick="window.triggerCarouselImageUpload('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-purple-500 hover:text-purple-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Unggah Gambar"><i class="fa-solid fa-image text-[11px]"></i></button>
-                                <button onclick="window.deleteCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center rounded bg-white dark:bg-gray-600 text-red-500 hover:text-red-600 shadow-sm border border-gray-100 dark:border-gray-500 transition-colors" title="Hapus Kartu"><i class="fa-solid fa-trash text-[11px]"></i></button>
+                            <div class="mt-4 pt-3 border-t border-gray-300 dark:border-gray-600 flex justify-between items-center">
+                                <button onclick="window.copyCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="text-green-500 text-[13px] font-medium" title="Salin"><i class="fa-regular fa-copy"></i></button>
+                                <button onclick="window.openEditCarouselCardModal('${note.id}', '${it.id}'); event.stopPropagation();" class="text-blue-500 text-[13px] font-medium" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="window.triggerCarouselImageUpload('${note.id}', '${it.id}'); event.stopPropagation();" class="text-purple-500 text-[13px] font-medium" title="Unggah"><i class="fa-solid fa-image"></i></button>
+                                <button onclick="window.deleteCarouselCard('${note.id}', '${it.id}'); event.stopPropagation();" class="text-red-500 text-[13px] font-medium" title="Hapus"><i class="fa-solid fa-trash"></i></button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
-                previewContent += `</div>`;
-                if(items.length === 0) previewContent = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Carousel kosong</p>';
-                
+                previewContent += `</div>`; if(items.length === 0) previewContent = '<p class="text-[14px] text-gray-500 italic">Carousel kosong</p>';
             } else if (note.category === 'mypassword') {
-                let pw = {username: '', password: '', link: ''};
-                try { pw = JSON.parse(note.content); } catch(e){}
-                
-                let safeLink = window.escapeHTML(pw.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${safeLink}</a>` : '-';
-                
-                previewContent = `
-                    <div class="space-y-3 text-[14px] text-gray-700 dark:text-gray-300">
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Username / Email</span><span class="font-medium select-all">${window.escapeHTML(pw.username) || '-'}</span></div>
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Password</span><span class="font-mono bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded inline-block w-fit select-all">${window.escapeHTML(pw.password) || '-'}</span></div>
-                        <div class="flex flex-col"><span class="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider mb-0.5">Link / URL</span><span class="">${linkHtml}</span></div>
-                    </div>
-                `;
-                
-            } else if (note.category === 'mylink') {
-                const safeContent = window.escapeHTML(note.content);
-                const urlRegex = /(https?:\/\/[^\s]+)/g;
-                const linkedContent = safeContent.replace(urlRegex, function(url) {
-                    return `<a href="${url}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all">${url}</a>`;
-                });
-                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${linkedContent}</div>`;
-                
+                let p = {username: '', password: '', link: ''}; try { p = JSON.parse(note.content); } catch(e){}
+                let safeLink = window.escapeHTML(p.link); let linkHtml = safeLink ? `<a href="${safeLink.match(/^https?:\/\//i) ? safeLink : 'https://'+safeLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 hover:underline break-all">${safeLink}</a>` : '-';
+                previewContent = `<div class="space-y-3 text-[15px] text-gray-900 dark:text-white"><div class="flex flex-col"><span class="text-[12px] text-gray-500 uppercase font-semibold">Username</span><span class="font-medium select-all">${window.escapeHTML(p.username) || '-'}</span></div><div class="flex flex-col"><span class="text-[12px] text-gray-500 uppercase font-semibold">Password</span><span class="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded inline-block w-fit select-all">${window.escapeHTML(p.password) || '-'}</span></div><div class="flex flex-col"><span class="text-[12px] text-gray-500 uppercase font-semibold">Link</span><span>${linkHtml}</span></div></div>`;
             } else if (note.category === 'revisi') {
-                let rev = { tujuan: '', content: '' };
-                try { rev = JSON.parse(note.content); } catch(e){}
-                previewContent = `
-                    <div class="space-y-3">
-                        <div class="bg-cyan-50 dark:bg-cyan-900/20 p-3 rounded-xl border border-cyan-100 dark:border-cyan-800/50">
-                            <span class="block text-[11px] text-cyan-600 dark:text-cyan-400 uppercase font-bold tracking-wider mb-1">Tujuan Revisi</span>
-                            <span class="text-[13px] text-gray-800 dark:text-gray-200">${window.escapeHTML(rev.tujuan) || '-'}</span>
-                        </div>
-                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed px-1">
-                            ${window.escapeHTML(rev.content)}
-                        </div>
-                    </div>
-                `;
+                let p = { tujuan: '', content: '' }; try { p = JSON.parse(note.content); } catch(e){}
+                previewContent = `<div class="space-y-3"><div class="bg-blue-50 dark:bg-blue-900/20 p-3.5 rounded-2xl"><span class="block text-[12px] text-blue-500 uppercase font-semibold mb-1">Tujuan</span><span class="text-[14px] text-gray-900 dark:text-white">${window.escapeHTML(p.tujuan) || '-'}</span></div><div class="text-[15px] text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed px-1">${window.formatTextWithLinks(p.content)}</div></div>`;
             } else if (note.category === 'myinstruction') {
-                let inst = { link: '', content: '' };
-                try { inst = JSON.parse(note.content); } catch(e) { inst.content = note.content; }
-                
-                let safeLink = window.escapeHTML(inst.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 dark:text-blue-400 hover:underline break-all block mb-3 bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-lg border border-blue-100 dark:border-blue-800/50"><i class="fa-solid fa-link mr-1.5"></i>${safeLink}</a>` : '';
-                
-                previewContent = `
-                    <div>
-                        ${linkHtml}
-                        <div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${window.escapeHTML(inst.content)}</div>
-                    </div>
-                `;
+                let p = { link: '', content: '' }; try { p = JSON.parse(note.content); } catch(e) { p.content = note.content; }
+                let safeLink = window.escapeHTML(p.link); let linkHtml = safeLink ? `<a href="${safeLink.match(/^https?:\/\//i) ? safeLink : 'https://'+safeLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 hover:underline break-all block mb-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] p-3 rounded-xl"><i class="fa-solid fa-link mr-2"></i>${safeLink}</a>` : '';
+                previewContent = `<div>${linkHtml}<div class="text-[15px] text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed">${window.formatTextWithLinks(p.content)}</div></div>`;
             } else if (note.category === 'mypurchase') {
-                let pur = { nama: '', owner: '', harga: '', link: '', keterangan: '' };
-                try { pur = JSON.parse(note.content); } catch(e){}
-                
-                let safeLink = window.escapeHTML(pur.link);
-                let linkUrl = safeLink.match(/^https?:\/\//i) ? safeLink : 'https://' + safeLink;
-                let linkHtml = safeLink ? `<a href="${linkUrl}" target="_blank" onclick="event.stopPropagation()" class="text-emerald-600 dark:text-emerald-400 hover:underline truncate block w-full">${safeLink}</a>` : '-';
-                
-                previewContent = `
-                    <div class="space-y-3">
-                        <div class="bg-emerald-50 dark:bg-emerald-900/20 p-3.5 rounded-xl border border-emerald-100 dark:border-emerald-800/50 space-y-2.5">
-                            <div class="flex flex-col"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Nama Produk</span><span class="font-bold text-gray-900 dark:text-white text-[15px]">${window.escapeHTML(pur.nama) || '-'}</span></div>
-                            <div class="grid grid-cols-2 gap-3 pt-1">
-                                <div class="flex flex-col"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Owner / Creator</span><span class="text-[13px] text-gray-800 dark:text-gray-200 font-medium">${window.escapeHTML(pur.owner) || '-'}</span></div>
-                                <div class="flex flex-col"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Harga Beli</span><span class="text-[13px] text-gray-800 dark:text-gray-200 font-medium">${window.escapeHTML(pur.harga) || '-'}</span></div>
-                            </div>
-                            <div class="flex flex-col pt-1 w-full overflow-hidden"><span class="text-[11px] text-emerald-600 dark:text-emerald-500 uppercase font-bold tracking-wider mb-0.5">Link Produk</span><span class="text-[13px]">${linkHtml}</span></div>
-                        </div>
-                        ${pur.keterangan ? `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed px-1 mt-2">${window.escapeHTML(pur.keterangan)}</div>` : ''}
-                    </div>
-                `;
+                let p = { nama: '', owner: '', harga: '', link: '', keterangan: '' }; try { p = JSON.parse(note.content); } catch(e){}
+                let safeLink = window.escapeHTML(p.link); let linkHtml = safeLink ? `<a href="${safeLink.match(/^https?:\/\//i) ? safeLink : 'https://'+safeLink}" target="_blank" onclick="event.stopPropagation()" class="text-blue-500 hover:underline truncate block">${safeLink}</a>` : '-';
+                previewContent = `<div class="space-y-3"><div class="bg-[#F2F2F7] dark:bg-[#2C2C2E] p-4 rounded-2xl space-y-3"><div class="flex flex-col"><span class="text-[12px] text-gray-500 uppercase font-semibold">Produk</span><span class="font-bold text-gray-900 dark:text-white text-[16px]">${window.escapeHTML(p.nama) || '-'}</span></div><div class="flex gap-4"><div class="flex-1 flex flex-col"><span class="text-[12px] text-gray-500 uppercase font-semibold">Owner</span><span class="text-[14px] text-gray-900 dark:text-white">${window.escapeHTML(p.owner) || '-'}</span></div><div class="flex-1 flex flex-col"><span class="text-[12px] text-gray-500 uppercase font-semibold">Harga</span><span class="text-[14px] text-gray-900 dark:text-white">${window.escapeHTML(p.harga) || '-'}</span></div></div><div class="flex flex-col overflow-hidden"><span class="text-[12px] text-gray-500 uppercase font-semibold">Link</span><span class="text-[14px]">${linkHtml}</span></div></div>${p.keterangan ? `<div class="text-[15px] text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed px-1">${window.formatTextWithLinks(p.keterangan)}</div>` : ''}</div>`;
             } else if (note.category === 'memo') {
-                let lines = note.content.split('\n');
-                let htmlMemo = '<div class="space-y-2.5">';
-                lines.forEach((line, index) => {
+                let htmlMemo = '<div class="space-y-3">';
+                note.content.split('\n').forEach((line, index) => {
                     if (!line.trim()) return;
                     let isChecked = line.startsWith('✓ ') || line.startsWith('- [x] ');
-                    let isUnchecked = line.startsWith('- [ ] ') || line.startsWith('☐ ');
-                    
-                    let cleanLine = line;
-                    if (isChecked) cleanLine = line.replace(/^(✓ |- \[x\] )/, '');
-                    else if (isUnchecked) cleanLine = line.replace(/^(- \[ \] |☐ )/, '');
-                    
-                    let icon = isChecked ? '<i class="fa-solid fa-circle-check text-green-500 text-[16px]"></i>' : '<i class="fa-regular fa-circle text-gray-300 dark:text-gray-600 text-[16px]"></i>';
-                    let lineClass = isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200';
-                    
-                    htmlMemo += `<div class="flex items-start cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 p-1.5 -ml-1.5 rounded-lg transition-colors" onclick="window.toggleMemoTask('${note.id}', ${index}); event.stopPropagation();">
-                        <div class="mt-0.5 mr-2.5 shrink-0 flex items-center justify-center">${icon}</div>
-                        <div class="${lineClass} text-[14px] leading-relaxed flex-1">${window.escapeHTML(cleanLine)}</div>
-                    </div>`;
+                    let cleanLine = line.replace(/^(✓ |- \[x\] |- \[ \] |☐ )/, '');
+                    let icon = isChecked ? '<i class="fa-solid fa-circle-check text-blue-500 text-[18px]"></i>' : '<i class="fa-regular fa-circle text-gray-400 text-[18px]"></i>';
+                    let lineClass = isChecked ? 'line-through text-gray-400' : 'text-gray-900 dark:text-white';
+                    htmlMemo += `<div class="flex items-start cursor-pointer active:opacity-50 transition-opacity" onclick="window.toggleMemoTask('${note.id}', ${index}); event.stopPropagation();"><div class="mt-0.5 mr-3 shrink-0">${icon}</div><div class="${lineClass} text-[15px] leading-relaxed flex-1">${window.formatTextWithLinks(cleanLine)}</div></div>`;
                 });
-                htmlMemo += '</div>';
-                if(lines.length === 0 || !note.content.trim()) htmlMemo = '<p class="text-[13px] text-gray-400 dark:text-gray-500 italic">Kosong</p>';
-                previewContent = htmlMemo;
+                htmlMemo += '</div>'; if(!note.content.trim()) htmlMemo = '<p class="text-[14px] text-gray-500 italic">Kosong</p>'; previewContent = htmlMemo;
             } else {
-                previewContent = `<div class="text-[14px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">${window.escapeHTML(note.content)}</div>`;
+                previewContent = `<div class="text-[15px] text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed">${window.formatTextWithLinks(note.content)}</div>`;
             }
 
-            let imagesHtml = '';
-            let filesHtml = '';
-            
+            let imagesHtml = ''; let filesHtml = '';
             if (note.attachments && note.attachments.length > 0) {
-                const imageAtts = note.attachments.filter(a => a.type === 'image');
-                const fileAtts = note.attachments.filter(a => a.type !== 'image');
-                
-                if (imageAtts.length > 0) {
+                const imgA = note.attachments.filter(a => a.type === 'image'); const fileA = note.attachments.filter(a => a.type !== 'image');
+                if (imgA.length > 0) {
                     imagesHtml = `<div class="mb-4 space-y-3">`;
-                    imageAtts.forEach(att => {
+                    imgA.forEach(att => {
                         imagesHtml += `
-                        <div class="relative w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm bg-gray-100 dark:bg-gray-900 group">
-                            <a href="${att.data}" target="_blank" title="Klik untuk lihat penuh" onclick="event.stopPropagation()">
-                                <img src="${att.data}" class="w-full h-auto hover:opacity-90 transition">
-                            </a>
-                            <div class="absolute top-3 right-3 flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition">
-                                <a href="${att.data}" download="${att.name || 'image.jpg'}" onclick="event.stopPropagation()" class="w-9 h-9 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" title="Unduh Gambar">
-                                    <i class="fa-solid fa-download text-sm"></i>
-                                </a>
-                                <button onclick="window.removeCardImage('${note.id}', '${att.id}'); event.stopPropagation();" class="w-9 h-9 bg-red-500/80 hover:bg-red-600 text-white rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" title="Hapus Gambar">
-                                    <i class="fa-solid fa-times text-sm"></i>
-                                </button>
+                        <div class="relative w-full rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm bg-gray-100 dark:bg-gray-900">
+                            <a href="${att.data}" target="_blank" onclick="event.stopPropagation()"><img src="${att.data}" class="w-full h-auto"></a>
+                            <div class="absolute top-3 right-3 flex space-x-2">
+                                <a href="${att.data}" download="${att.name}" onclick="event.stopPropagation()" class="w-9 h-9 bg-white/70 dark:bg-black/50 text-gray-900 dark:text-white rounded-full flex items-center justify-center backdrop-blur-md shadow-sm active:scale-95"><i class="fa-solid fa-download text-sm"></i></a>
+                                <button onclick="window.removeCardImage('${note.id}', '${att.id}'); event.stopPropagation();" class="w-9 h-9 bg-white/70 dark:bg-black/50 text-red-500 rounded-full flex items-center justify-center backdrop-blur-md shadow-sm active:scale-95"><i class="fa-solid fa-trash text-sm"></i></button>
                             </div>
                         </div>`;
                     });
                     imagesHtml += `</div>`;
                 }
-                
-                if (fileAtts.length > 0) {
-                    filesHtml = `<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">`;
-                    fileAtts.forEach(att => {
-                        filesHtml += `<a href="${att.data}" download="${att.name}" title="Klik untuk unduh" onclick="event.stopPropagation()" class="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-3 py-2 rounded-lg text-[13px] text-blue-600 dark:text-blue-400 font-medium flex items-center transition border border-gray-200 dark:border-gray-600 shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2 text-gray-400 dark:text-gray-500"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
+                if (fileA.length > 0) {
+                    filesHtml = `<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 flex flex-wrap gap-2">`;
+                    fileA.forEach(att => {
+                        filesHtml += `<a href="${att.data}" download="${att.name}" onclick="event.stopPropagation()" class="bg-[#F2F2F7] dark:bg-[#2C2C2E] px-4 py-2.5 rounded-xl text-[14px] text-blue-500 font-medium flex items-center shadow-sm"><i class="fa-solid fa-file-arrow-down mr-2"></i> <span class="truncate max-w-[140px]">${att.name}</span></a>`;
                     });
                     filesHtml += `</div>`;
                 }
             }
 
-            const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded-md ${catConfig.bg} ${catConfig.color} text-[11px] font-bold ml-2 shrink-0">${catConfig.icon} ${catConfig.title}</span>` : '';
-
-            const timeCreated = window.formatTime(note.timestamp);
-            const timeEdited = note.updatedAt && note.updatedAt !== note.timestamp ? window.formatTime(note.updatedAt) : '';
-            const timeHtml = `<div class="text-[11px] text-gray-400 dark:text-gray-500 mt-1 truncate">Dibuat: ${timeCreated} ${timeEdited ? ` &bull; Diedit: ${timeEdited}` : ''}</div>`;
+            const badgeHtml = showBadge ? `<span class="px-2 py-0.5 rounded text-[11px] font-bold ml-2 shrink-0 ${catConfig.bg} ${catConfig.color}">${catConfig.icon} ${catConfig.title}</span>` : '';
+            const timeHtml = `<div class="text-[12px] text-gray-400 mt-1 truncate">Dibuat: ${window.formatTime(note.timestamp)}</div>`;
 
             return `
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors break-inside-avoid inline-block w-full mb-4 md:mb-5">
-                    <div class="px-4 py-3.5 flex justify-between items-center cursor-pointer active:bg-gray-50 dark:active:bg-gray-700 transition" onclick="window.toggleNote('${note.id}')">
-                        <div class="flex-1 pr-2 flex flex-col overflow-hidden">
+                <div class="bg-white dark:bg-[#1C1C1E] rounded-3xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden break-inside-avoid inline-block w-full mb-4 md:mb-5 relative group">
+                    <div class="px-5 py-4 flex justify-between items-start cursor-pointer transition" onclick="window.toggleNote('${note.id}')">
+                        <div class="flex-1 pr-3 overflow-hidden">
                             <div class="flex items-center flex-wrap gap-1.5 mb-0.5">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-[15px] leading-snug break-words">${window.escapeHTML(note.title)}</h3>
+                                <h3 class="font-bold text-gray-900 dark:text-white text-[16px] leading-snug break-words">${window.escapeHTML(note.title)}</h3>
                                 ${badgeHtml}
-                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 dark:text-gray-500 text-[11px] shrink-0 ml-1"></i>' : ''}
+                                ${note.attachments && note.attachments.length > 0 ? '<i class="fa-solid fa-paperclip text-gray-400 text-[12px] shrink-0 ml-1"></i>' : ''}
                             </div>
                             ${timeHtml}
                         </div>
                         
-                        <div class="shrink-0 flex items-center justify-end">
-                            <!-- BARIS AKSI (Tersembunyi secara Default) -->
-                            <div id="note-actions-${note.id}" class="note-actions-menu hidden items-center bg-gray-100 dark:bg-gray-700/80 rounded-full px-1.5 py-1 space-x-1 border border-gray-200 dark:border-gray-600 shadow-sm mr-2 transition-all">
-                                ${['mylink', 'mypassword', 'myinstruction', 'mypurchase'].includes(note.category) ? `
-                                <button onclick="window.visitLink('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-indigo-600 dark:text-indigo-400 bg-white dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Kunjungi Link">
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
-                                </button>
-                                ` : ''}
-                                <button onclick="window.openCopyOptions('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-green-600 dark:text-green-400 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Salin Teks">
-                                    <i class="fa-regular fa-copy text-[11px]"></i>
-                                </button>
-                                <button onclick="window.openModal('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-blue-500 dark:text-blue-400 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Edit Catatan">
-                                    <i class="fa-solid fa-pen text-[11px]"></i>
-                                </button>
-                                <button onclick="window.openDeleteAlert('${note.id}'); event.stopPropagation();" class="w-7 h-7 flex items-center justify-center text-red-500 dark:text-red-400 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-gray-600 rounded-full transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]" title="Hapus Catatan">
-                                    <i class="fa-solid fa-trash text-[11px]"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- TOMBOL TRIGGER MENU -->
-                            <button onclick="window.toggleActions(event, '${note.id}')" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition mr-1" title="Menu Opsi">
-                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                        <div class="shrink-0 flex items-center pt-1 relative">
+                            <!-- Tombol Trigger iOS Action Sheet -->
+                            <button onclick="window.openActionSheet(event, '${note.id}', '${note.category}')" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 active:bg-gray-100 dark:active:bg-gray-800 transition mr-2">
+                                <i class="fa-solid fa-ellipsis"></i>
                             </button>
-                            
-                            <!-- CHEVRON -->
-                            <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="note-icon-${note.id}"></i>
+                            <i class="fa-solid fa-chevron-down text-gray-300 dark:text-gray-600 text-sm chevron-icon ${openClass}" id="note-icon-${note.id}"></i>
                         </div>
                     </div>
                     
-                    <div class="accordion-content border-t border-gray-100 dark:border-gray-700 ${openClass}" id="note-body-${note.id}">
-                        <div class="accordion-inner bg-gray-50/50 dark:bg-gray-800/50">
-                            <div class="p-4">
+                    <div class="accordion-content ${openClass}" id="note-body-${note.id}">
+                        <div class="accordion-inner">
+                            <div class="px-5 pb-5 pt-1">
                                 ${imagesHtml}
                                 ${previewContent}
                                 ${filesHtml}
@@ -1814,54 +1233,32 @@
         };
 
         window.renderNotes = function() {
-            const container = document.getElementById('notes-container');
-            container.innerHTML = '';
-
+            const container = document.getElementById('notes-container'); container.innerHTML = '';
             if (window.notes.length === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 pt-20">
-                        <i class="fa-regular fa-folder-open text-6xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                        <p class="font-medium">Belum ada catatan.</p>
-                        <p class="text-sm">Klik tombol + untuk menambah.</p>
-                    </div>`;
-                return;
+                container.innerHTML = `<div class="flex flex-col items-center justify-center text-gray-400 pt-32"><i class="fa-regular fa-folder-open text-7xl mb-5 text-gray-300 dark:text-gray-700"></i><p class="font-medium text-lg">Kosong</p></div>`; return;
             }
-
             let html = '';
-
             if (window.isGrouped) {
                 html += `<div class="columns-1 lg:columns-2 xl:columns-3 gap-5 md:gap-6">`;
-                
                 Object.keys(categories).forEach(catKey => {
                     const catNotes = window.notes.filter(n => n.category === catKey).sort((a,b) => b.timestamp - a.timestamp);
                     if (catNotes.length > 0) {
-                        const config = categories[catKey];
-                        const isCatOpen = window.openCategories.has(catKey);
-                        const openClass = isCatOpen ? "open" : "";
-                        
+                        const config = categories[catKey]; const openClass = window.openCategories.has(catKey) ? "open" : "";
                         html += `
-                            <div class="mb-5 md:mb-6 break-inside-avoid inline-block w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden transition-colors">
-                                <div class="flex justify-between items-center px-4 py-3.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 active:bg-gray-100 dark:active:bg-gray-700 transition-colors" onclick="window.toggleCategory('${catKey}')">
+                            <div class="mb-5 md:mb-6 break-inside-avoid inline-block w-full bg-white dark:bg-[#1C1C1E] border border-gray-200 dark:border-gray-800 rounded-3xl shadow-sm overflow-hidden">
+                                <div class="flex justify-between items-center px-5 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#2C2C2E] transition-colors" onclick="window.toggleCategory('${catKey}')">
                                     <div class="flex items-center">
-                                        <div class="w-8 h-8 rounded-lg ${config.bg} ${config.color} flex items-center justify-center mr-3">
-                                            ${config.icon}
-                                        </div>
-                                        <h2 class="text-[16px] font-bold text-gray-800 dark:text-white">${config.title}</h2>
-                                        <span class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs font-bold">${catNotes.length}</span>
+                                        <div class="w-9 h-9 rounded-xl ${config.bg} ${config.color} flex items-center justify-center mr-3 text-lg">${config.icon}</div>
+                                        <h2 class="text-[17px] font-bold text-gray-900 dark:text-white">${config.title}</h2>
+                                        <span class="ml-3 bg-[#F2F2F7] dark:bg-[#2C2C2E] text-gray-500 px-2.5 py-0.5 rounded-md text-[13px] font-semibold">${catNotes.length}</span>
                                     </div>
-                                    <i class="fa-solid fa-chevron-down text-gray-400 dark:text-gray-500 text-sm chevron-icon ${openClass}" id="cat-icon-${catKey}"></i>
+                                    <i class="fa-solid fa-chevron-down text-gray-300 dark:text-gray-600 text-sm chevron-icon ${openClass}" id="cat-icon-${catKey}"></i>
                                 </div>
-                                
                                 <div class="accordion-content ${openClass}" id="cat-body-${catKey}">
-                                    <div class="accordion-inner bg-gray-50/50 dark:bg-gray-900/30 border-t border-gray-100 dark:border-gray-700">
-                                        <div class="p-3.5 pb-0">
-                        `;
+                                    <div class="accordion-inner bg-gray-50/50 dark:bg-[#000000] border-t border-gray-100 dark:border-gray-800">
+                                        <div class="p-4 pb-0">`;
                         catNotes.forEach(note => { html += window.buildNoteCard(note, false); });
-                        html += `       </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+                        html += `</div></div></div></div>`;
                     }
                 });
                 html += `</div>`;
@@ -1871,15 +1268,10 @@
                 allNotes.forEach(note => { html += window.buildNoteCard(note, false); });
                 html += `</div>`;
             }
-
             container.innerHTML = html;
         };
 
-        window.onload = () => {
-            window.initTheme();
-            window.updateUndoRedoUI();
-            window.loadNotes();
-        };
+        window.onload = () => { window.initTheme(); window.updateUndoRedoUI(); window.loadNotes(); };
     </script>
 </body>
 </html>
