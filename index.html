@@ -601,8 +601,8 @@
                     let width = img.width;
                     let height = img.height;
                     
-                    // Lebih agresif: Maksimal dimensi 800px
-                    const MAX_DIMENSION = 800;
+                    // Lebih agresif untuk mode Carousel & Cloud: Maksimal dimensi 600px
+                    const MAX_DIMENSION = 600;
                     if (width > height && width > MAX_DIMENSION) {
                         height = Math.round(height * MAX_DIMENSION / width);
                         width = MAX_DIMENSION;
@@ -620,11 +620,11 @@
                     ctx.fillRect(0, 0, width, height);
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Kompresi Kualitas 50%
-                    const dataURL = canvas.toDataURL('image/jpeg', 0.5);
+                    // Kompresi Kualitas 40% (sangat penting agar bisa banyak gambar di Carousel)
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.4);
                     
-                    if (dataURL.length > 850 * 1024) {
-                        window.showToast("Gambar masih terlalu besar (>800KB). Mohon potong (crop) gambar Anda.");
+                    if (dataURL.length > 500 * 1024) {
+                        window.showToast("Gambar masih terlalu besar. Mohon potong (crop) gambar Anda sedikit.");
                         return;
                     }
                     callback(dataURL, file.name, 'image/jpeg');
@@ -972,6 +972,13 @@
                 updatedAt: Date.now()
             };
 
+            // CEK UKURAN PAYLOAD UNTUK MENCEGAH ERROR LIMIT 1MB DARI FIRESTORE
+            const payloadSize = JSON.stringify(payload).length;
+            if (payloadSize > 950000) { // ~950KB batas aman
+                window.showToast("Gagal: Total ukuran (teks + gambar) melebihi batas 1MB Cloud. Kurangi gambar!");
+                return;
+            }
+
             try {
                 window.showToast("Menyimpan ke Cloud...");
                 await window.setDoc(window.doc(window.db, "notes", payload.id.toString()), payload);
@@ -1087,6 +1094,14 @@
                             card.image = dataUrl;
                             note.content = JSON.stringify(items);
                             note.updatedAt = Date.now();
+                            
+                            // CEK UKURAN PAYLOAD SEBELUM DISIMPAN
+                            const payloadSize = JSON.stringify(note).length;
+                            if (payloadSize > 950000) {
+                                window.showToast("Gagal: Penambahan gambar ini membuat catatan melebihi batas 1MB Cloud.");
+                                return;
+                            }
+
                             window.showToast("Menyimpan ke Cloud...");
                             await window.setDoc(window.doc(window.db, "notes", note.id.toString()), note);
                             window.showToast("Gambar ditambahkan ke kartu!");
